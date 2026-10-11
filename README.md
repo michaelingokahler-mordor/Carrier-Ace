@@ -1,6 +1,6 @@
 # Carrier Ace 0.1.0
 
-Eine eigene Arcade-Flugmission mit fiktiven Propellerflugzeugen: vom Träger starten, sechs Gegnerwellen überstehen, den Bomber Behemoth abschießen und wieder an Bord landen. Deutsche Oberfläche, Tastatur und Gamepad, ein Flugzeug und ein Level. Erfolgreiche Flüge dauern ungefähr vier bis fünf Minuten.
+Eine eigene Arcade-Flugmission, inspiriert von 1942 und Galaga, mit fiktiven Propellerflugzeugen: vom Träger starten, sechs Gegnerwellen überstehen, den Bomber Behemoth abschießen und wieder an Bord landen. Deutsche Oberfläche, Tastatur und Gamepad, ein Flugzeug und ein Level. Erfolgreiche Flüge dauern ungefähr vier bis fünf Minuten.
 
 ## Spielen
 
@@ -57,4 +57,4 @@ Der Testpilot verwendet Bewegung, Schüsse und Rollen; er überspringt keine Mis
 - `docs/VALIDATION.md`: tatsächliche Tests und verbleibende Grenzen.
 - `THIRD_PARTY_NOTICES.md`: Godot- und Asset-Hinweise.
 
-Das Projekt hat ein lokales Git-Repository auf `main`. Kein Remote, keine öffentliche Veröffentlichung. Builds, Engine, Importcache und private Ausgangsentwürfe werden ignoriert.
+GitHub-Repository: [michaelingokahler-mordor/Carrier-Ace](https://github.com/michaelingokahler-mordor/Carrier-Ace), Hauptbranch `main`. Builds, Engine, Importcache und private Ausgangsentwürfe werden ignoriert. Spielpakete entstehen lokal mit dem beschriebenen Buildskript.

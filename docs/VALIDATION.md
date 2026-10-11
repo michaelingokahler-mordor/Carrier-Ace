@@ -44,7 +44,7 @@ Runway-Verbrauch: **138 von 200 Credits**, Bilder 108, Effekte 18, Musik 12. Ver
 
 ## Lieferung und Wiederholung
 
-- Godot-Projekt mit eigenen Ressourcen und lokalem Git auf `main`, ohne Remote.
+- Godot-Projekt mit eigenen Ressourcen und Git auf `main`; die spätere GitHub-Anbindung ist in der README angegeben.
 - Windows x64: `CarrierAce-0.1.0-Windows-x64.zip`, eingebettetes Spielpaket.
 - Web: `CarrierAce-0.1.0-Web.zip`, lokale Engine-/Spieldateien und `Start-Browser.cmd` samt kleinem HTTP-Server.
 - Projektarchiv: `CarrierAce-0.1.0-Source.zip`, ohne Engine, Importcache, Builds und private Rohentwürfe.
