@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="EnemyProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/enemy_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = "interceptor"
+display_name = "R-07 Sturmvogel"
+armor = 6
+speed = 115.0
+radius = 19.0
+points = 100
+shoot_interval = 3.8
+texture_id = "interceptor"

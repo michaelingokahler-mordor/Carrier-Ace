@@ -1,0 +1,21 @@
+{
+  "armor": 100,
+  "bullets": 0,
+  "enemies": 0,
+  "engine": "4.7.2-stable (official)",
+  "events": ["TAKEOFF", "WAVES", "BOSS", "APPROACH", "LANDING", "VICTORY"],
+  "fps_samples": [48, 59, 61, 59, 61, 59, 61, 59, 61, 59, 61, 59, 61, 59, 61, 59, 61, 59, 61],
+  "kills": 94,
+  "lives": 3,
+  "phase": "VICTORY",
+  "physics_frames": 1177,
+  "platform": "Web",
+  "processed_seconds": 19.6166666666668,
+  "rolls": 2,
+  "score": 16500,
+  "seconds": 235.42,
+  "spawned": 94,
+  "verification": "PASS",
+  "wave": 6,
+  "weapon": 3
+}

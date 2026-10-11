@@ -1,0 +1,8 @@
+.godot/
+.tools/
+builds/
+output/
+__pycache__/
+*.tmp
+*.log
+assets/source/

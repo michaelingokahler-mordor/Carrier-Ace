@@ -1,0 +1,230 @@
+{
+  "project": "Carrier Ace",
+  "generated_on": "2026-10-11",
+  "budget_credits": 200,
+  "spent_credits": 138,
+  "starting_balance": 1379,
+  "balance_after_orders": 1241,
+  "source_provider": "Runway",
+  "assets": [
+    {
+      "name": "player",
+      "taskId": "a9278ed2-df98-4fa1-a890-b91f8ce95950",
+      "estimatedCredits": 8,
+      "prompt": "One isolated top-down fictional twin-boom propeller fighter sprite, nose pointing straight up, complete silhouette centered with generous empty margin, silver-blue metal, brass-yellow wing stripes, blue canopy, no markings or text. Crisp detailed 16-bit arcade pixel art, Amiga-era shaded pixels, strong readable silhouette, orthographic view with no perspective and no cast shadow. Solid pure magenta #FF00FF background, nothing else.",
+      "used": false
+    },
+    {
+      "name": "title",
+      "taskId": "bcef7906-c4f5-406f-a8d1-8ba5ecfd01d6",
+      "estimatedCredits": 8,
+      "prompt": "A single original landscape title-screen artwork without any letters or text. Detailed 16-bit pixel art, late Amiga arcade aesthetic, crisp pixel clusters and rich teal sea with white foam, an aircraft carrier heading toward the horizon on the right, a large silver-blue fictional twin-boom propeller fighter banking overhead, yellow wing stripes. Warm sunrise light, distant islands, clouds, navy and turquoise palette with brass highlights. Leave the left third dark calm ocean for a game menu, exciting but elegant naval aviation mood.",
+      "used": true
+    },
+    {
+      "name": "shot",
+      "taskId": "ed632374-2b97-449b-85cb-c72ffd597ef6",
+      "estimatedCredits": 1,
+      "prompt": "A single short crunchy propeller fighter machine-gun burst, tight punchy staccato arcade sampled sound, bright attack with a tiny metallic tail, dry close sound, no speech, no music, no ambient background.",
+      "used": true
+    },
+    {
+      "name": "fighter",
+      "taskId": "502f728c-385b-464b-8301-3d1ca80c0d7c",
+      "estimatedCredits": 8,
+      "prompt": "One isolated top-down fictional single-engine propeller fighter sprite with nose pointing straight DOWN. Olive green upper surfaces, red wing tips, brass cockpit frame, readable compact wings. Complete aircraft centered with empty margin. Detailed crisp 16-bit arcade pixel art, orthographic overhead view, no perspective, no cast shadow, no insignia, no letters. Solid pure magenta #FF00FF background.",
+      "status": "image",
+      "used": true
+    },
+    {
+      "name": "interceptor",
+      "taskId": "c6c66b69-8ef3-4bff-8ac9-0d1574b4eec7",
+      "estimatedCredits": 8,
+      "prompt": "One isolated top-down fictional fast propeller interceptor sprite with nose pointing straight DOWN. Burnt red fuselage, swept cream-colored wings, black canopy, two narrow engines. Complete aircraft centered with empty margin. Detailed crisp 16-bit arcade pixel art, orthographic overhead view, no perspective, no cast shadow, no insignia, no letters. Solid pure magenta #FF00FF background.",
+      "status": "image",
+      "used": true
+    },
+    {
+      "name": "armored",
+      "taskId": "116985f7-947a-4bba-8a82-d3796517c2ce",
+      "estimatedCredits": 8,
+      "prompt": "One isolated top-down fictional armored twin-engine propeller attack aircraft sprite with nose pointing straight DOWN. Ochre yellow metal, dark brown broad wings, blue cockpit, heavy angular fuselage. Complete aircraft centered with empty margin. Detailed crisp 16-bit arcade pixel art, orthographic overhead view, no perspective, no cast shadow, no insignia, no letters. Solid pure magenta #FF00FF background.",
+      "status": "image",
+      "used": false
+    },
+    {
+      "name": "boss",
+      "taskId": "3d83321e-ee9a-4dcd-bbd6-b3c2a53e548d",
+      "estimatedCredits": 8,
+      "prompt": "One isolated top-down fictional enormous four-engine propeller bomber sprite with nose pointing straight DOWN. Slate navy blue metal with brass stripes, broad wings, visible turret mounts, four propellers, heavy central fuselage. Complete aircraft centered with empty margin. Crisp detailed 16-bit arcade pixel art, orthographic overhead view, no perspective, no cast shadow, no insignia, no letters. Solid pure magenta #FF00FF background.",
+      "status": "image",
+      "used": false
+    },
+    {
+      "name": "carrier",
+      "taskId": "5221ba6d-c539-473e-a204-c0f91e50cccc",
+      "estimatedCredits": 8,
+      "prompt": "One isolated fictional aircraft carrier ship sprite viewed directly from above in perfect orthographic plan view, long vertical hull with pointed BOW facing UP and square stern DOWN. Long grey wooden flight deck with straight white dashed centerline, brass yellow takeoff arrows, visible arrestor wires at lower end, small island tower on right side. Entire ship centered, enough empty margin. Detailed crisp 16-bit arcade pixel art, no perspective, no text, no hull number, no water or shadow. Solid pure magenta #FF00FF background.",
+      "status": "image",
+      "used": true
+    },
+    {
+      "name": "ocean",
+      "taskId": "a26077ef-ccb0-4368-a427-6ab3121d78bd",
+      "estimatedCredits": 8,
+      "prompt": "A seamless tileable top-down ocean surface texture filling the entire image, rich dark teal and blue sea, small irregular turquoise wavelets and subtle foam pixels, absolutely no horizon, no sky, no boats, no land, no objects, no text. Detailed 16-bit arcade pixel art using small crisp pixel clusters, restrained contrast so bright game bullets remain readable. Even overhead illumination, seamless repeating texture.",
+      "status": "image",
+      "used": true
+    },
+    {
+      "name": "island",
+      "taskId": "f82911d6-44ef-4a8b-ba3f-08ab6f6b91b6",
+      "estimatedCredits": 8,
+      "prompt": "One isolated tropical island sprite viewed directly overhead, emerald jungle with scattered palm canopy clusters, warm sandy beach, grey rocks, thin turquoise shallows hugging the shore. Irregular crescent island silhouette centered with empty margin. Detailed 16-bit arcade pixel art, orthographic top-down, no perspective, no buildings, no text. Solid pure magenta #FF00FF background.",
+      "status": "image",
+      "used": true
+    },
+    {
+      "name": "player_v2",
+      "taskId": "fb3c0d69-3a04-484d-9f75-fdceddd377b8",
+      "estimatedCredits": 20,
+      "prompt": "One game-ready 16-bit pixel art sprite of an ORIGINAL fictional twin-boom propeller fighter seen exactly from overhead, nose straight up. Two clearly separated engine booms on left and right, each with a propeller at its FRONT; central short cockpit pod between them, twin tail fins connected by a horizontal rear stabilizer. Silver-blue aircraft, brass yellow wing stripes and navy canopy. Entire airplane silhouette centered. Crisp deliberately square shaded pixel clusters, limited 48-color palette, orthographic plan view, no perspective, NO drop shadow, no gear, no labels or emblems. Uniform pure magenta RGB 255,0,255 background, no gradient.",
+      "status": "image",
+      "used": true
+    },
+    {
+      "name": "engine",
+      "taskId": "908e8760-70dd-4c54-9703-2c2d791dea3c",
+      "estimatedCredits": 4,
+      "prompt": "Twin propeller aircraft motor, steady smooth low rumble with rhythmic propeller whirr, sampled 16-bit arcade feel, designed to loop seamlessly with constant power and no beginning or ending accent. No voices, no music, no wind gusts.",
+      "duration": 4,
+      "loop": true,
+      "status": "audio",
+      "used": true
+    },
+    {
+      "name": "explosion",
+      "taskId": "106febb6-3478-4fb5-abef-c173df79e546",
+      "estimatedCredits": 1,
+      "prompt": "Small aircraft explosion, short punchy retro arcade burst, crunchy low thump with bright crackle and a quick falling tail, dry isolated effect, no ambience, no voices, no music.",
+      "duration": 1,
+      "loop": false,
+      "status": "audio",
+      "used": true
+    },
+    {
+      "name": "enemy_shot",
+      "taskId": "e6c2aa34-097b-47d9-b18e-1a198a01c419",
+      "estimatedCredits": 1,
+      "prompt": "One small hostile aircraft cannon pulse, short sharp low-pitched retro arcade pop with metallic edge, distinctly lower than the player gun, no speech, no music, no background.",
+      "duration": 0.5,
+      "loop": false,
+      "status": "audio",
+      "used": true
+    },
+    {
+      "name": "explosion_big",
+      "taskId": "ed13b4aa-8c38-492b-822d-936e7930c879",
+      "estimatedCredits": 2,
+      "prompt": "Heavy bomber explosion, powerful crunchy sampled arcade boom followed by a brief crackling debris tail, isolated and dry, dramatic low punch, no voices or music.",
+      "duration": 2,
+      "loop": false,
+      "status": "audio",
+      "used": true
+    },
+    {
+      "name": "hit",
+      "taskId": "cfd1c1a4-7a8b-4b05-9d93-16dcffdab1d7",
+      "estimatedCredits": 1,
+      "prompt": "A single metallic aircraft armor impact, sharp dry clank with a short dull body, retro sampled arcade sound, no explosion, no voices, no music.",
+      "duration": 0.5,
+      "loop": false,
+      "status": "audio",
+      "used": true
+    },
+    {
+      "name": "pickup",
+      "taskId": "28532ce9-005e-4dcd-bb24-2a7cc130987b",
+      "estimatedCredits": 1,
+      "prompt": "One cheerful rising three-note arcade upgrade chime, bright 16-bit synthesized bell tones, extremely short clean tail, no background or voice.",
+      "duration": 0.7,
+      "loop": false,
+      "status": "audio",
+      "used": true
+    },
+    {
+      "name": "roll",
+      "taskId": "63f2c9f7-2329-442d-8dc6-c18d93b8c740",
+      "estimatedCredits": 1,
+      "prompt": "Aircraft barrel roll, a quick airy propeller whoosh circling past, light retro arcade sampled feel, isolated sound, no voices, no music.",
+      "duration": 1,
+      "loop": false,
+      "status": "audio",
+      "used": true
+    },
+    {
+      "name": "takeoff",
+      "taskId": "233c31e8-c266-45b7-bed8-acce58bb6fad",
+      "estimatedCredits": 3,
+      "prompt": "Propeller aircraft accelerating from a flight deck, smoothly rising motor pitch into a firm engine whirr, short sampled arcade sound, no radio, no speech, no music.",
+      "duration": 3,
+      "loop": false,
+      "status": "audio",
+      "used": true
+    },
+    {
+      "name": "landing",
+      "taskId": "4055a9a4-d5a1-4e5a-ae23-ed75e2ab2812",
+      "estimatedCredits": 2,
+      "prompt": "Aircraft arrestor hook catching a carrier wire, brief tire chirp and solid metallic cable clunk followed by a settling engine tick, isolated retro arcade sample, no voices, no music.",
+      "duration": 1.5,
+      "loop": false,
+      "status": "audio",
+      "used": true
+    },
+    {
+      "name": "ui",
+      "taskId": "034fe608-b2cf-4216-b6eb-eb5624a27dd2",
+      "estimatedCredits": 1,
+      "prompt": "One short warm arcade menu confirmation blip, rounded analog synth tone with a tiny bright click, no music, no voice, no ambience.",
+      "duration": 0.5,
+      "loop": false,
+      "status": "audio",
+      "used": true
+    },
+    {
+      "name": "title_music",
+      "taskId": "52ae86f1-4602-42c8-91f9-d4e1af67ed44",
+      "estimatedCredits": 4,
+      "prompt": "Instrumental classic Amiga tracker-style arcade flight game title music. Warm heroic synth melody, bright square-wave arpeggios, sampled punchy snare and kick, round electric synth bass, 116 BPM, rich melodic 16-bit computer game character. A confident nautical aviation adventure mood, memorable original theme, steady groove, a tidy ending suitable for a repeating menu loop. No vocals, no real-world songs, no orchestral realism.",
+      "loop": true,
+      "status": "audio",
+      "used": true
+    },
+    {
+      "name": "game_music",
+      "taskId": "9b73eda9-40f2-4def-8ff5-eecf7eff98ef",
+      "estimatedCredits": 8,
+      "prompt": "Instrumental soundtrack for an original 16-bit arcade propeller flight game over a tropical ocean. Amiga tracker character with bright melodic synth lead, quick arpeggios, sampled punchy drums and warm electric bass, 132 BPM. Energetic clear rhythm, adventurous heroic melody, restrained midrange so gunfire remains clear. Intro into a repeating main motif, varied middle passage and return to motif, no silence between phrases, loop-friendly ending. Original music, no vocals, no speech, no references to existing compositions.",
+      "loop": true,
+      "status": "audio",
+      "used": true
+    },
+    {
+      "name": "armored_v2",
+      "taskId": "9365f82d-94c6-4031-b7bc-48825b32648a",
+      "estimatedCredits": 8,
+      "prompt": "Single fictional bulky gold and brown twin-engine armored attacker for a vertical-scrolling arcade airplane game. STRICT orthographic overhead view looking straight down at aircraft, symmetrical horizontal wings, nose points exactly UP at 12 o'clock, tail DOWN at 6 o'clock. Flat 2D top-down sprite. Detailed 16-bit pixel art, hard pixel edges, small readable silhouette, shaded metal, no perspective, no tilt, no national symbols, no lettering, no shadow. Aircraft isolated centered on perfectly solid bright magenta #ff00ff background with generous margin.",
+      "status": "image",
+      "used": true
+    },
+    {
+      "name": "boss_v2",
+      "taskId": "f5cfecec-290a-4d05-9d24-5bcae40b842b",
+      "estimatedCredits": 8,
+      "prompt": "Single fictional huge navy blue and brass four-engine heavy bomber for a vertical-scrolling arcade airplane game. STRICT orthographic overhead view looking straight down at aircraft, symmetrical horizontal wings, nose points exactly UP at 12 o'clock, tail DOWN at 6 o'clock. Flat 2D top-down sprite. Detailed 16-bit pixel art, hard pixel edges, small readable silhouette, shaded metal, no perspective, no tilt, no national symbols, no lettering, no shadow. Aircraft isolated centered on perfectly solid bright magenta #ff00ff background with generous margin.",
+      "status": "image",
+      "used": true
+    }
+  ]
+}

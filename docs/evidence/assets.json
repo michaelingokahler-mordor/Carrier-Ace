@@ -1,0 +1,153 @@
+{
+  "art": {
+    "player": {
+      "size": [
+        64,
+        64
+      ],
+      "source": "player_v2",
+      "transparent_border": true
+    },
+    "fighter": {
+      "size": [
+        64,
+        64
+      ],
+      "source": "fighter",
+      "transparent_border": true
+    },
+    "interceptor": {
+      "size": [
+        64,
+        64
+      ],
+      "source": "interceptor",
+      "transparent_border": true
+    },
+    "armored": {
+      "size": [
+        80,
+        80
+      ],
+      "source": "armored_v2",
+      "transparent_border": true
+    },
+    "boss": {
+      "size": [
+        160,
+        132
+      ],
+      "source": "boss_v2",
+      "transparent_border": true
+    },
+    "carrier": {
+      "size": [
+        128,
+        340
+      ],
+      "source": "carrier",
+      "transparent_border": true
+    },
+    "island": {
+      "size": [
+        192,
+        144
+      ],
+      "source": "island",
+      "transparent_border": true
+    }
+  },
+  "audio": {
+    "shot": {
+      "seconds": 0.48,
+      "loop": false,
+      "channels": 1,
+      "pcm_peak": 0.708,
+      "seam_jump": null
+    },
+    "enemy_shot": {
+      "seconds": 0.48,
+      "loop": false,
+      "channels": 1,
+      "pcm_peak": 0.708,
+      "seam_jump": null
+    },
+    "engine": {
+      "seconds": 3.9,
+      "loop": true,
+      "channels": 1,
+      "pcm_peak": 0.708,
+      "seam_jump": 0.006873
+    },
+    "explosion": {
+      "seconds": 1.0,
+      "loop": false,
+      "channels": 1,
+      "pcm_peak": 0.708,
+      "seam_jump": null
+    },
+    "explosion_big": {
+      "seconds": 2.0,
+      "loop": false,
+      "channels": 1,
+      "pcm_peak": 0.708,
+      "seam_jump": null
+    },
+    "hit": {
+      "seconds": 0.48,
+      "loop": false,
+      "channels": 1,
+      "pcm_peak": 0.708,
+      "seam_jump": null
+    },
+    "pickup": {
+      "seconds": 0.68,
+      "loop": false,
+      "channels": 1,
+      "pcm_peak": 0.708,
+      "seam_jump": null
+    },
+    "roll": {
+      "seconds": 1.0,
+      "loop": false,
+      "channels": 1,
+      "pcm_peak": 0.708,
+      "seam_jump": null
+    },
+    "takeoff": {
+      "seconds": 3.0,
+      "loop": false,
+      "channels": 1,
+      "pcm_peak": 0.708,
+      "seam_jump": null
+    },
+    "landing": {
+      "seconds": 1.48,
+      "loop": false,
+      "channels": 1,
+      "pcm_peak": 0.708,
+      "seam_jump": null
+    },
+    "ui": {
+      "seconds": 0.48,
+      "loop": false,
+      "channels": 1,
+      "pcm_peak": 0.708,
+      "seam_jump": null
+    },
+    "title_music": {
+      "seconds": 30.522,
+      "loop": true,
+      "channels": 2,
+      "pcm_peak": 0.5,
+      "seam_jump": 0.000534
+    },
+    "game_music": {
+      "seconds": 152.671,
+      "loop": true,
+      "channels": 2,
+      "pcm_peak": 0.5,
+      "seam_jump": 0.001083
+    }
+  }
+}

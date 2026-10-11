@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="WaveProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/wave_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+title = "Schwere Eskorte"
+duration = 30.0
+pattern = "line"
+enemy_ids = PackedStringArray("fighter", "armored")
+pickup = "double"
+density = 4
