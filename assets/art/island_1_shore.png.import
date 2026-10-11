@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://1mn6v6y52dhi"
-path="res://.godot/imported/armored.png-94cf22a70ded487b60510b66f46eabb5.ctex"
+uid="uid://oqfn38j1d2ki"
+path="res://.godot/imported/island_1_shore.png-20d8b745ae60dd17d85e6cb9eb58c353.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/armored.png"
-dest_files=["res://.godot/imported/armored.png-94cf22a70ded487b60510b66f46eabb5.ctex"]
+source_file="res://assets/art/island_1_shore.png"
+dest_files=["res://.godot/imported/island_1_shore.png-20d8b745ae60dd17d85e6cb9eb58c353.ctex"]
 
 [params]
 

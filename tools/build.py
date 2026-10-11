@@ -17,14 +17,27 @@ def package():
         destination = ROOT/'builds'/folder
         for document in ['README.md', 'THIRD_PARTY_NOTICES.md']:
             shutil.copyfile(ROOT/document, destination/document)
-        shutil.copytree(ROOT/'docs', destination/'docs', dirs_exist_ok=True)
+        docs_destination = destination/'docs'
+        if docs_destination.exists():
+            # Generated package copies only; do not retain obsolete evidence.
+            assert docs_destination.resolve().parent == destination.resolve()
+            assert destination.resolve().parent == (ROOT/'builds').resolve()
+            shutil.rmtree(docs_destination)
+        shutil.copytree(ROOT/'docs', docs_destination)
     for folder, label in [('windows', 'Windows-x64'), ('web', 'Web')]:
-        package_path = ROOT/'builds'/f'CarrierAce-0.1.0-{label}.zip'
+        package_path = ROOT/'builds'/f'CarrierAce-0.2.0-{label}.zip'
         with zipfile.ZipFile(package_path, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
             for path in sorted((ROOT/'builds'/folder).rglob('*')):
                 if path.is_file() and path.suffix != '.import' and path.name != '.gdignore':
                     z.write(path, arcname=f'CarrierAce-{label}/'+path.relative_to(ROOT/'builds'/folder).as_posix())
-    hashes = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted((ROOT/'builds').glob('CarrierAce-0.1.0-*.zip'))}
+    source_roots = ['scripts', 'scenes', 'resources', 'shaders', 'web', 'tools', 'tests', 'docs', 'assets/art', 'assets/audio']
+    source_files = [ROOT/name for name in ['project.godot', 'export_presets.cfg', '.gitignore', 'README.md', 'THIRD_PARTY_NOTICES.md', 'assets/manifest.json', 'assets/revision02.json']]
+    for folder in source_roots:
+        source_files.extend(path for path in (ROOT/folder).rglob('*') if path.is_file() and '__pycache__' not in path.parts and path.suffix not in ['.log', '.tmp', '.pyc'])
+    with zipfile.ZipFile(ROOT/'builds/CarrierAce-0.2.0-Source.zip', 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
+        for path in sorted(source_files):
+            z.write(path, arcname='CarrierAce-Source/'+path.relative_to(ROOT).as_posix())
+    hashes = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted((ROOT/'builds').glob('CarrierAce-0.2.0-*.zip'))}
     (ROOT/'builds/SHA256SUMS.json').write_text(json.dumps(hashes, indent=2)+'\n')
     print(json.dumps(hashes, indent=2))
 

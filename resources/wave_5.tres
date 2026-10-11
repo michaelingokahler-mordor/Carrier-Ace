@@ -2,9 +2,9 @@
 [ext_resource type="Script" path="res://scripts/wave_profile.gd" id="1"]
 [resource]
 script = ExtResource("1")
-title = "Sturmfront"
+title = "Storm Front"
 duration = 30.0
 pattern = "arc"
-enemy_ids = PackedStringArray("interceptor", "fighter", "armored")
+enemy_ids = PackedStringArray("bomber_1", "bomber_2", "fighter_ace")
 pickup = "triple"
 density = 4

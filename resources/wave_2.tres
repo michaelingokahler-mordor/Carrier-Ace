@@ -2,9 +2,9 @@
 [ext_resource type="Script" path="res://scripts/wave_profile.gd" id="1"]
 [resource]
 script = ExtResource("1")
-title = "Über den Inseln"
+title = "Island Patrol"
 duration = 30.0
 pattern = "arc"
-enemy_ids = PackedStringArray("fighter", "interceptor")
+enemy_ids = PackedStringArray("biplane_1", "biplane_2", "biplane_ace")
 pickup = "repair"
 density = 3

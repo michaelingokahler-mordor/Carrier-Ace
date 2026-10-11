@@ -1,60 +1,60 @@
-# Carrier Ace 0.1.0
+# Carrier Ace 0.2.0 – Operation Blue Horizon
 
-Eine eigene Arcade-Flugmission, inspiriert von 1942 und Galaga, mit fiktiven Propellerflugzeugen: vom Träger starten, sechs Gegnerwellen überstehen, den Bomber Behemoth abschießen und wieder an Bord landen. Deutsche Oberfläche, Tastatur und Gamepad, ein Flugzeug und ein Level. Erfolgreiche Flüge dauern ungefähr vier bis fünf Minuten.
+Ein Arcade-Flugspiel mit F6F Hellcat, sechs Gegnerwellen, neun regulären Gegnerprofilen, separatem B-99-Boss und Trägerlandung. Die Spieloberfläche ist Englisch; diese Dokumentation bleibt Deutsch. Ein erfolgreicher Prüfflug dauert rund 4:07 Minuten.
 
 ## Spielen
 
-**Windows:** `CarrierAce-0.1.0-Windows-x64.zip` vollständig entpacken und `CarrierAce.exe` starten. Keine Installation und keine zusätzliche Engine erforderlich. Windows x64 mit einem aktuellen OpenGL-3.3-fähigen Grafiktreiber.
+Windows: `CarrierAce-0.2.0-Windows-x64.zip` entpacken und `CarrierAce.exe` starten. Es ist keine Installation erforderlich.
 
-**Browser unter Windows:** `CarrierAce-0.1.0-Web.zip` vollständig entpacken und `Start-Browser.cmd` starten. Das Konsolenfenster während des Spiels offen lassen. `CarrierServer.exe` stellt ausschließlich unter `http://127.0.0.1:1942/` einen lokalen HTTP-Server bereit. Beenden mit Strg+C. Keine Python-Installation erforderlich; der kleine Server nutzt das in Windows enthaltene .NET Framework 4.x. Bei belegtem Port: `CarrierServer.exe --port=1943`. Alternativ liegt ein PowerShell-Server bei; das Paket ändert keine Systemrichtlinien.
+Browser: `CarrierAce-0.2.0-Web.zip` entpacken und `Start-Browser.cmd` starten. Der mitgelieferte Server stellt das Spiel unter `http://127.0.0.1:1942/` bereit; Strg+C beendet ihn. Bei belegtem Port: `CarrierServer.exe --port=1943`. Der Server benötigt das in Windows enthaltene .NET Framework 4.x. Alternativ im Webordner `python -m http.server 1942 --bind 127.0.0.1` ausführen.
 
-Alternativ mit Python 3 im Webordner: `python -m http.server 1942 --bind 127.0.0.1`, danach `http://127.0.0.1:1942/` öffnen. `index.html` nicht direkt per Doppelklick öffnen. Aktueller Desktop-Browser mit WebGL 2 nötig. Der erste Tastendruck bzw. Klick schaltet Audio frei. Alle Grafik- und Audiodateien sind im Paket enthalten; während des Spiels werden keine externen Dienste aufgerufen.
+`index.html` über HTTP öffnen. Der Browser benötigt WebGL 2. Die erste Eingabe schaltet Audio frei. Alle Laufzeitdateien liegen lokal; das Spiel ruft keine externen Generierungsdienste auf.
 
 | Aktion | Tastatur | Gamepad |
 |---|---|---|
 | Fliegen | WASD / Pfeile | Linker Stick / Steuerkreuz |
 | Feuern, gedrückt halten | Leertaste / Z | Hauptbutton / A |
 | Rolle | Shift / X | Zweiter Button / B |
-| Pause | Esc / P | Start |
+| Pause / Zurück | Esc / P | Start |
 | Menü bedienen | Pfeile / Tab / Enter | Steuerkreuz / A |
 | Vollbild | F11 | — |
 
-Goldmarkierte Viererformationen vollständig abschießen, um das festgelegte Upgrade zu erhalten. Reparatur: +30 Panzerung bis 100. Doppelschuss und Trippelschuss bleiben bis zum Flugzeugverlust; schwächere Pickups setzen die Stufe nicht herab. Speed: +15%, höchstens 130%. Drei Rollen geben jeweils eine Sekunde Unverwundbarkeit. Nach einem Abschuss beginnt die komplette Mission mit dem nächsten der drei Flugzeuge von vorn. Nach dem dritten Abschuss ist Game Over.
+Die Hellcat startet mit Armor 3/3, Penetration 0, Speed Rating 2 und Single Shot. Normale Treffer kosten einen Panzerungspunkt, angekündigte Ace-Raketen zwei. Drei Rollen geben jeweils eine Sekunde Schutz. Nach einem Flugzeugverlust beginnt die gesamte Mission mit dem nächsten der drei Leben von vorn.
 
-Nach dem Boss erscheint der Träger. Kurz im grün markierten Einflugbereich bleiben: Nach 0,75 Sekunden übernimmt das Flugzeug die Landung. Ein verfehlter Anflug kostet kein Leben. Punkte gelten pro Versuch; der höchste Versuch wird gespeichert. Windows speichert Toneinstellungen und Highscore unter `%APPDATA%\Godot\app_userdata\Carrier Ace\carrier_ace.cfg`; der Browser nutzt lokalen Speicher. Privates Browsen bzw. blockierter Speicher kann dauerhafte Speicherung verhindern.
+Goldmarkierte Viererformationen vollständig abschießen: Reparatur +1 bis zum Maximum, Doppel-/Trippelschuss oder Speed. Waffen werden durch schwächere Pickups nicht herabgestuft. Speed addiert je Pickup 10% des Grundtempos; die Hellcat erreicht 195 → 214,5 → 234 → 253,5 → 260 logische Pixel/s.
+
+Nach dem Boss 0,75 Sekunden im grünen Einflugbereich bleiben; danach übernimmt das Spiel die Landung. Ein verfehlter Anflug kostet kein Leben. Die Flugzeugübersicht unter **Aircraft** zeigt nur Grundwerte. Sie lässt sich auch während der Pause öffnen.
+
+Highscore und Toneinstellungen werden lokal gespeichert: Windows unter `%APPDATA%\Godot\app_userdata\Carrier Ace\carrier_ace.cfg`, im Browser in dessen lokalem Speicher. Privates Browsen kann dauerhafte Speicherung verhindern.
 
 ## Projekt und Builds
 
-Festgeschrieben: **Godot 4.7.2 Standard**, GDScript und Compatibility-Renderer; 960×540 mit seitenverhältnistreuer Skalierung. Web ohne Threads. Die offiziellen Engine- und Exportdateien liegen lokal unter `.tools/` und sind nicht versioniert. Engine und Vorlagen müssen dieselbe Version haben. Das Projekt lässt sich über `project.godot` im Editor öffnen.
+Festgeschrieben: **Godot 4.7.2 Standard**, GDScript, Compatibility-Renderer und Webexport ohne Threads. Die logischen Koordinaten bleiben 960×540; `canvas_items`, lineare Filter und hochauflösende Texturen ermöglichen die Darstellung bei 1920×1080. Andere Seitenverhältnisse erhalten freie Randbereiche.
 
-```
+`project.godot` im Editor öffnen. Engine und Vorlagen sind nicht versioniert. Der Build erwartet `.tools/godot/Godot_v4.7.2-stable_win64_console.exe` und die vier in `export_presets.cfg` angegebenen Vorlagen unter `.tools/templates/`. [Offizieller Download](https://godotengine.org/download/windows/4.7.2/). `tools/fetch_templates.py` lädt die benötigten Teile des offiziellen Vorlagenarchivs.
+
+```powershell
 python tools/build.py
+python tools/run_godot.py --headless --script tests/test_core.gd
+python tools/run_godot.py --headless --script tests/test_ui.gd
+python tools/verify_windows.py
 ```
 
-Der Build erwartet `.tools/godot/Godot_v4.7.2-stable_win64_console.exe` sowie die vier in `export_presets.cfg` genannten Vorlagen unter `.tools/templates/`. Download: [offizielle Godot-Version](https://godotengine.org/download/windows/4.7.2/). `tools/fetch_templates.py` lädt nur die benötigten Teile des offiziellen Vorlagenarchivs. `build.py` prüft die Engine-Version, importiert, exportiert beide Plattformen und erstellt ZIPs mit Dokumentation sowie SHA-256-Prüfsummen unter `builds/`. Einen laufenden `CarrierServer.exe` vorher schließen. `python tools/build.py --package-only` aktualisiert nur die ZIPs vorhandener Exporte, etwa nach einer Dokumentationsänderung.
+`build.py` prüft die Engine-Version, importiert, exportiert Windows und Web und erstellt drei ZIPs einschließlich Quellprojekt und Dokumentation. SHA-256-Prüfsummen stehen in `builds/SHA256SUMS.json`. Einen laufenden `CarrierServer.exe` vor einem neuen Build schließen. `--package-only` aktualisiert ZIPs vorhandener Exporte.
 
-Regeltests:
+Der Export-Testpilot nutzt die normalen Kampfregeln. `CarrierAce.exe -- --verify --report=report.json` beschleunigt die Simulation zwölfmal; `--verify-real-time` arbeitet in normaler Missionsgeschwindigkeit. Im Web entsprechend `?verify=1` bzw. `?verify=1&realtime=1`. Die Parameter entfernen, um selbst zu spielen.
 
-```
-.tools/godot/Godot_v4.7.2-stable_win64_console.exe --headless --path . --script tests/test_core.gd
-.tools/godot/Godot_v4.7.2-stable_win64_console.exe --headless --path . --script tests/test_ui.gd
-```
+`resources/` enthält Profil- und Wellendaten. `AircraftCatalog` versorgt Mission und Übersicht mit denselben Ressourcen. `mission_model.gd` hält die Regeln; `ocean_background.gd` und `shaders/` steuern Meer, Brandung und Inselroute. `main.gd` verbindet Eingabe, Menüs, Speicher und Audio.
 
-Für isolierte lokale Tests gegebenenfalls `APPDATA` nur im aktuellen Prozess auf `.tools/runtime-profile` setzen. Der Build tut dies bereits. Native Prüfung mit unverändertem Spielmodell und automatischem Testpiloten:
-
-```
-CarrierAce.exe -- --verify --silent --report=report.json --capture-dir=captures
-```
-
-Der Testpilot verwendet Bewegung, Schüsse und Rollen; er überspringt keine Missionszustände und setzt keine Trefferpunkte. Der Prüflauf beschleunigt die Simulationszeit um Faktor 12. Im Browser aktiviert `?verify=1` denselben Testpiloten und zeigt den Zustand als Diagnosefeld. Diese Option ist für Entwickler; normales Spielen erfolgt ohne Parameter.
-
-`resources/` enthält Flugzeug-, Gegner-, Waffen- und Wellenprofile. `scripts/mission_model.gd` hält die Regeln unabhängig von Grafik und Audio. `scripts/world_view.gd` zeichnet die Welt; `main.gd` verbindet Eingabe, Menüs, Speicher und Audio. Grafikvorlagen und bezahlte Aufgaben sind in `assets/manifest.json` dokumentiert. Fertige PNG-/OGG-Assets sind versioniert. Unbearbeitete Entwürfe in `assets/source/` gehören nicht zum Laufzeitpaket. Die einmalige Asset-Aufbereitung benötigt Pillow, NumPy und FFmpeg; zum Spielen und normalen Exportieren sind sie nicht nötig.
+Fertige PNG- und OGG-Dateien sind versioniert. Die hochauflösende Grafikaufbereitung erfolgt mit `tools/prepare_revision_art.py`; sie benötigt Pillow und NumPy sowie lokal vorhandene Rohentwürfe. Diese liegen unter `assets/source/` und sind kein Bestandteil des Quellarchivs. Für das Spielen und Exportieren reichen die fertigen Assets. Audio aus 0.1 bleibt erhalten.
 
 ## Dokumentation
 
-- `docs/RESEARCH_1942.md`: deutsche Recherche, Quellen und Ableitungen.
-- `docs/DESIGN.md`: umgesetzte Werte, Wellen und Erweiterungspunkte.
-- `docs/VALIDATION.md`: tatsächliche Tests und verbleibende Grenzen.
-- `THIRD_PARTY_NOTICES.md`: Godot- und Asset-Hinweise.
+- `docs/RESEARCH_1942.md`: Recherche mit Versionsabgrenzung und Quellen.
+- `docs/DESIGN.md`: Regeln, Profile und Grafikablauf von 0.2.
+- `docs/VALIDATION.md`: tatsächliche Prüfungen, Belege und offene menschliche Abnahme.
+- `assets/manifest.json`: ursprüngliche Generierungen.
+- `assets/revision02.json`: neue Bilder, Aufgaben, Prompts und Budget.
+- `THIRD_PARTY_NOTICES.md`: Engine- und Asset-Hinweise.
 
-GitHub-Repository: [michaelingokahler-mordor/Carrier-Ace](https://github.com/michaelingokahler-mordor/Carrier-Ace), Hauptbranch `main`. Builds, Engine, Importcache und private Ausgangsentwürfe werden ignoriert. Spielpakete entstehen lokal mit dem beschriebenen Buildskript.
+[GitHub-Repository](https://github.com/michaelingokahler-mordor/Carrier-Ace), Hauptbranch `main`. Engine, Builds, Importcache und private Rohentwürfe bleiben außerhalb des Repositorys.

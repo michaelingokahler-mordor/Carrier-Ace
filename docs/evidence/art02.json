@@ -1,0 +1,130 @@
+{
+  "island_1": {
+    "runtime_size": [
+      1024,
+      768
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "island_2": {
+    "runtime_size": [
+      1024,
+      768
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "island_3": {
+    "runtime_size": [
+      1024,
+      768
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "player": {
+    "runtime_size": [
+      512,
+      512
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "biplane_1": {
+    "runtime_size": [
+      512,
+      512
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "fighter_1": {
+    "runtime_size": [
+      512,
+      512
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "fighter_ace": {
+    "runtime_size": [
+      512,
+      512
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "bomber_1": {
+    "runtime_size": [
+      512,
+      512
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "bomber_ace": {
+    "runtime_size": [
+      768,
+      768
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "boss": {
+    "runtime_size": [
+      768,
+      768
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "carrier": {
+    "runtime_size": [
+      512,
+      1200
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "biplane_2": {
+    "runtime_size": [
+      512,
+      512
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "biplane_ace": {
+    "runtime_size": [
+      512,
+      512
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "fighter_2": {
+    "runtime_size": [
+      512,
+      512
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "bomber_2": {
+    "runtime_size": [
+      512,
+      512
+    ],
+    "transparent_border": true,
+    "quantized": false
+  },
+  "title": {
+    "runtime_size": [
+      1920,
+      1080
+    ],
+    "transparent_border": null,
+    "quantized": false
+  }
+}

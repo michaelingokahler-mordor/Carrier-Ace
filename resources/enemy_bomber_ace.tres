@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="EnemyProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/enemy_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = "bomber_ace"
+display_name = "Bomber Ace"
+model_name = "Mitsubishi Ki-21"
+role = "Elite bomber"
+armor = 3
+speed_rating = 1
+projectile_damage = 2
+penetration = 0
+weapon_name = "Rockets"
+flight_style = "inherit"
+sprite_size = Vector2(126, 126)
+propeller_positions = PackedVector2Array(-15, 31, 15, 31)
+radius = 30.0
+points = 300
+shoot_interval = 3.2
+texture_id = "bomber_ace"

@@ -2,9 +2,9 @@
 [ext_resource type="Script" path="res://scripts/wave_profile.gd" id="1"]
 [resource]
 script = ExtResource("1")
-title = "Schwere Eskorte"
+title = "Heavy Escort"
 duration = 30.0
 pattern = "line"
-enemy_ids = PackedStringArray("fighter", "armored")
+enemy_ids = PackedStringArray("fighter_1", "fighter_ace", "bomber_1")
 pickup = "double"
 density = 4

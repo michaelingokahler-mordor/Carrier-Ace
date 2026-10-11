@@ -93,6 +93,11 @@ def audio(name, loop=False):
 
 
 def main():
+    if (ROOT/'assets/revision02.json').exists():
+        # Keep the 0.1 audio files; high-resolution art uses its own pipeline.
+        from prepare_revision_art import main as prepare_art
+        prepare_art()
+        return
     for directory in [ART, AUDIO, OUTPUT]:
         directory.mkdir(parents=True, exist_ok=True)
     report = {'art': {}, 'audio': {}}

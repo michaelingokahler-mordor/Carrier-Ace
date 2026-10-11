@@ -3,6 +3,6 @@
 [resource]
 script = ExtResource("1")
 level = 1
-display_name = "Einzelschuss"
+display_name = "Single Shot"
 angles = PackedFloat32Array(0.0)
 offsets = PackedFloat32Array(0.0)

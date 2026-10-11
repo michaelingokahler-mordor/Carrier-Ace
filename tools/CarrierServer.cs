@@ -18,14 +18,14 @@ class CarrierServer {
         }
         root = Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory);
         if (!File.Exists(Path.Combine(root, "index.html"))) {
-            Console.WriteLine("Bitte CarrierServer.exe im entpackten Webordner starten.");
+            Console.WriteLine("Start CarrierServer.exe inside the extracted Web folder.");
             Environment.ExitCode = 1; return;
         }
         var listener = new TcpListener(IPAddress.Loopback, port);
         try { listener.Start(); }
-        catch (SocketException) { Console.WriteLine("Port belegt. Start mit --port=1943 versuchen."); Environment.ExitCode = 1; return; }
+        catch (SocketException) { Console.WriteLine("Port in use. Try --port=1943."); Environment.ExitCode = 1; return; }
         string url = "http://127.0.0.1:" + port + "/";
-        Console.WriteLine("Carrier Ace: " + url + " | Beenden mit Strg+C");
+        Console.WriteLine("Carrier Ace: " + url + " | Stop with Ctrl+C");
         if (open) Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         while (true) {
             TcpClient client = listener.AcceptTcpClient();

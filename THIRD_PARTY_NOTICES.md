@@ -2,7 +2,7 @@
 
 Carrier Ace ist ein eigenständiger Prototyp unter einem Arbeitstitel. Es enthält keine übernommenen 1942-/Galaga-Sprites, ROMs oder Musikdateien. Quellen und Anhänge dienen der Recherche bzw. der gestalterischen Orientierung. Marken und historische Spieltitel gehören ihren jeweiligen Inhabern. Für den eigenen Quellcode wurde noch keine allgemeine Weiterverbreitungslizenz festgelegt.
 
-Grafikvorlagen, Soundeffekte und Musik wurden für dieses Projekt über den verbundenen Runway-Account erzeugt. Aufgaben, Prompts, Kosten und die verwendeten Entwürfe stehen in `assets/manifest.json`. Lokale Nachbearbeitung umfasst Transparenz, Pixelraster, Palette, Größen, OGG-Konvertierung, Pegel und Schleifen. Generierte Musikdateien sind Audioaufnahmen mit einer Tracker-Anmutung, keine editierbaren MOD-/XM-Kompositionen. Animierte Propeller, Rollen, Explosionen und Pickup-Symbole entstehen lokal im Renderer.
+Grafikvorlagen, Soundeffekte und Musik wurden für dieses Projekt über den verbundenen Runway-Account erzeugt. Aufgaben, Prompts, Kosten und die verwendeten Entwürfe stehen in `assets/manifest.json` (0.1) und `assets/revision02.json` (0.2). Die neue Grafik verwendet hochauflösende Illustrationen, lokale Freistellung und Größenanpassung ohne Pixelraster oder Farbquantisierung. Audioaufbereitung umfasst OGG-Konvertierung, Pegel und Schleifen. Generierte Musikdateien sind Audioaufnahmen mit einer Tracker-Anmutung, keine editierbaren MOD-/XM-Kompositionen. Animierte Propeller, Rollen, Explosionen, Heckwelle und Pickup-Symbole entstehen lokal im Renderer. Wasser und Küstenbrandung verwenden eigene Godot-Shader. Historische Flugzeugnamen sind Vorbilder für die Illustration; Werte und Bewaffnung sind fiktive Arcade-Regeln.
 
 ## Godot Engine
 

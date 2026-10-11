@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://qdfb0v7mglrc"
-path="res://.godot/imported/interceptor.png-72af68a305aeae90ed955a24510090cb.ctex"
+uid="uid://cbwjue88jfwhf"
+path="res://.godot/imported/island_3_shore.png-185dcd26787ddf3d311c051c0ff9f3c0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/interceptor.png"
-dest_files=["res://.godot/imported/interceptor.png-72af68a305aeae90ed955a24510090cb.ctex"]
+source_file="res://assets/art/island_3_shore.png"
+dest_files=["res://.godot/imported/island_3_shore.png-185dcd26787ddf3d311c051c0ff9f3c0.ctex"]
 
 [params]
 

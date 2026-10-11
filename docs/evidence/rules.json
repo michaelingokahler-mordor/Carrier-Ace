@@ -1,0 +1,19 @@
+{
+  "core": {
+    "checks": 135,
+    "failures": 0
+  },
+  "ui": {
+    "checks": 57,
+    "failures": 0
+  },
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "date": "2026-10-11",
+  "core_output": [
+    "FULL_MISSION {\"armor\":2,\"bullets\":0,\"enemies\":0,\"enemy_types\":[\"biplane_1\",\"biplane_2\",\"biplane_ace\",\"fighter_1\",\"fighter_2\",\"fighter_ace\",\"bomber_1\",\"bomber_2\",\"bomber_ace\",\"boss\"],\"events\":[\"TAKEOFF\",\"WAVES\",\"BOSS\",\"APPROACH\",\"LANDING\",\"VICTORY\"],\"kills\":76,\"lives\":3,\"phase\":\"VICTORY\",\"rolls\":0,\"score\":16700,\"seconds\":247.25,\"spawned\":94,\"speed\":214.5,\"speed_rating\":2,\"wave\":6,\"weapon\":3}",
+    "CORE_TESTS checks=135 failures=0"
+  ],
+  "ui_output": [
+    "UI_TESTS checks=57 failures=0"
+  ]
+}

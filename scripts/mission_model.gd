@@ -18,7 +18,7 @@ var phase: Phase = Phase.TITLE
 var paused := false
 var player := Vector2(480, 440)
 var bank := 0.0
-var armor := 100
+var armor := 3
 var lives := 3
 var rolls := 3
 var weapon := 1
@@ -34,6 +34,7 @@ var stage_spawned: Dictionary = {}
 var score := 0
 var kills := 0
 var spawned := 0
+var encountered_types: Dictionary = {}
 var landing_hold := 0.0
 var landing_from := Vector2.ZERO
 var enemies: Array[Dictionary] = []
@@ -45,8 +46,7 @@ var last_attempt_score := 0
 var run_events: Array[String] = []
 
 func _init() -> void:
-	for id in ["fighter", "interceptor", "armored", "boss"]:
-		profiles[id] = load("res://resources/enemy_%s.tres" % id)
+	profiles = AircraftCatalog.enemy_profiles()
 	for level in range(1, 4):
 		weapons[level] = load("res://resources/weapon_%d.tres" % level)
 	for index in range(1, 7):
@@ -78,6 +78,7 @@ func _reset_attempt() -> void:
 	score = 0
 	kills = 0
 	spawned = 0
+	encountered_types.clear()
 	landing_hold = 0.0
 	player = Vector2(480, 498)
 	bank = 0.0
@@ -99,7 +100,15 @@ func carrier_position() -> Vector2:
 	return Vector2(480, 220)
 
 func current_speed() -> float:
-	return aircraft.speed * (1.0 + 0.15 * speed_level)
+	return minf(260.0, aircraft.speed * (1.0 + 0.10 * speed_level))
+
+func add_speed_upgrade() -> bool:
+	if current_speed() >= 260.0: return false
+	speed_level += 1
+	return true
+
+func current_speed_bonus() -> float:
+	return (current_speed() / aircraft.speed - 1.0) * 100.0
 
 func tick(delta: float, movement: Vector2 = Vector2.ZERO, firing: bool = false, rolling: bool = false) -> void:
 	if paused or phase in [Phase.TITLE, Phase.VICTORY, Phase.GAME_OVER]:
@@ -161,7 +170,7 @@ func tick(delta: float, movement: Vector2 = Vector2.ZERO, firing: bool = false, 
 	_update_pickups(delta)
 	for enemy in enemies:
 		if not enemy.dead and player.distance_to(enemy.pos) < 10.0 + enemy.profile.radius:
-			damage_player(25)
+			damage_player(1)
 			if phase == Phase.DOWNED:
 				return
 
@@ -210,18 +219,21 @@ func _spawn_supply(index: int, pickup: String) -> void:
 	formations.register(formation_id, 4, pickup)
 	var center := 480.0 + sin(index * 1.7) * 170.0
 	for member in range(4):
-		_spawn_enemy("fighter", Vector2(center + (member - 1.5) * 46, -50 - absf(member - 1.5) * 32), "supply", formation_id, 0)
+		_spawn_enemy("biplane_1" if index < 2 else "fighter_1", Vector2(center + (member - 1.5) * 46, -50 - absf(member - 1.5) * 32), "supply", formation_id, 0)
 	event.emit("supply", {"pickup": pickup})
 
 func _spawn_enemy(kind: String, position: Vector2, pattern: String, formation: int = -1, side: int = 1) -> Dictionary:
 	var profile: EnemyProfile = profiles[kind]
+	if pattern not in ["boss", "supply"] and profile.flight_style != "inherit": pattern = profile.flight_style
 	var enemy: Dictionary = {"id": next_id, "profile": profile, "pos": position, "origin": position,
 		"age": 0.0, "hp": profile.armor, "pattern": pattern, "formation": formation,
-		"side": side, "shoot": 2.8 + fmod(next_id * 0.7, 2.0), "volley": 0, "dead": false,
+		"side": side, "shoot": 0.65 + fmod(next_id * 0.27, 0.65), "volley": 0, "dead": false,
+		"warning": 0.0, "aim": Vector2.DOWN,
 		"boss_pass": 1, "retreat": 0.0}
 	next_id += 1
 	enemies.append(enemy)
 	spawned += 1
+	encountered_types[kind] = true
 	return enemy
 
 func _update_enemies(delta: float) -> void:
@@ -251,18 +263,35 @@ func _update_enemies(delta: float) -> void:
 			_resolve_enemy(enemy, false)
 			continue
 		if enemy.pos.y > 80 and enemy.pos.y < 390:
+			if enemy.warning > 0:
+				enemy.warning = maxf(0.0, enemy.warning - delta)
+				if enemy.warning <= 0:
+					_fire_enemy(enemy)
+					enemy.shoot = profile.shoot_interval
+				continue
 			enemy.shoot -= delta
 			if enemy.shoot <= 0:
 				if enemy.pattern == "boss":
 					_fire_boss(enemy)
 					enemy.shoot = profile.shoot_interval
 				elif enemy.formation < 0:
-					_spawn_bullet(enemy.pos + Vector2(0, 18), enemy.pos.direction_to(player) * 155, false)
-					enemy.shoot = profile.shoot_interval
-					event.emit("sound", {"name": "enemy_shot"})
+					if profile.weapon_name == "Rockets":
+						enemy.aim = enemy.pos.direction_to(player)
+						enemy.warning = 0.6
+					else:
+						_fire_enemy(enemy)
+						enemy.shoot = profile.shoot_interval
 				else:
 					enemy.shoot = 99.0
 	enemies = enemies.filter(func(enemy: Dictionary) -> bool: return not enemy.dead)
+
+func _fire_enemy(enemy: Dictionary) -> void:
+	var profile: EnemyProfile = enemy.profile
+	var direction: Vector2 = enemy.aim if profile.weapon_name == "Rockets" else enemy.pos.direction_to(player)
+	var offsets := [-14, 14] if profile.weapon_name == "Double Shot" else [0]
+	for offset in offsets:
+		_spawn_bullet(enemy.pos + Vector2(offset, profile.sprite_size.y * 0.35), direction * (120 if profile.weapon_name == "Rockets" else 155), false, profile.projectile_damage, "rocket" if profile.weapon_name == "Rockets" else "bullet")
+	event.emit("sound", {"name": "enemy_shot"})
 
 func _fire_boss(enemy: Dictionary) -> void:
 	enemy.volley += 1
@@ -281,9 +310,10 @@ func _fire_player() -> void:
 		_spawn_bullet(player + Vector2(pattern.offsets[index], -23), Vector2.UP.rotated(pattern.angles[index]) * 780, true)
 	event.emit("sound", {"name": "shot"})
 
-func _spawn_bullet(position: Vector2, velocity: Vector2, friendly: bool) -> Dictionary:
+func _spawn_bullet(position: Vector2, velocity: Vector2, friendly: bool, damage: int = 1, kind: String = "bullet") -> Dictionary:
 	var bullet: Dictionary = {"pos": position, "previous": position, "velocity": velocity, "friendly": friendly,
-		"damage": aircraft.penetration if friendly else 10, "limit": aircraft.penetration if friendly else 1,
+		"damage": aircraft.projectile_damage if friendly else damage, "limit": clampi(aircraft.penetration, 0, 3) + 1 if friendly else 1,
+		"kind": kind,
 		"hits": {}, "dead": false}
 	bullets.append(bullet)
 	return bullet
@@ -374,8 +404,8 @@ func apply_pickup(kind: String) -> void:
 	match kind:
 		"double": weapon = maxi(weapon, 2)
 		"triple": weapon = 3
-		"repair": armor = mini(aircraft.armor, armor + 30)
-		"speed": speed_level = mini(2, speed_level + 1)
+		"repair": armor = mini(aircraft.armor, armor + 1)
+		"speed": add_speed_upgrade()
 	event.emit("pickup", {"kind": kind})
 	event.emit("sound", {"name": "pickup"})
 
@@ -402,4 +432,4 @@ func status() -> Dictionary:
 	return {"phase": Phase.keys()[phase], "wave": wave_index + 1, "lives": lives, "armor": armor,
 		"weapon": weapon, "rolls": rolls, "score": score, "kills": kills, "spawned": spawned,
 		"seconds": snappedf(mission_time, 0.01), "enemies": enemies.size(), "bullets": bullets.size(),
-		"events": run_events.duplicate()}
+		"enemy_types": encountered_types.keys(), "speed_rating": aircraft.speed_rating, "speed": current_speed(), "events": run_events.duplicate()}

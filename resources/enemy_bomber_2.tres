@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="EnemyProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/enemy_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = "bomber_2"
+display_name = "Bomber 2"
+model_name = "Mitsubishi Ki-30"
+role = "Bomber"
+armor = 2
+speed_rating = 1
+projectile_damage = 1
+penetration = 0
+weapon_name = "Single Shot"
+flight_style = "arc"
+sprite_size = Vector2(90, 90)
+propeller_positions = PackedVector2Array(0, 28.8)
+radius = 24.0
+points = 300
+shoot_interval = 2.8
+texture_id = "bomber_2"

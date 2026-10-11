@@ -4,8 +4,16 @@
 script = ExtResource("1")
 id = "boss"
 display_name = "B-99 Behemoth"
+model_name = "B-99 Behemoth"
+role = "Heavy bomber boss"
 armor = 300
-speed = 0.0
+speed_rating = 1
+projectile_damage = 1
+penetration = 0
+weapon_name = "Fan Fire"
+flight_style = "boss"
+sprite_size = Vector2(168, 168)
+propeller_positions = PackedVector2Array(-29, 47, 29, 47)
 radius = 62.0
 points = 3000
 shoot_interval = 2.0

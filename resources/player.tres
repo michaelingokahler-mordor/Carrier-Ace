@@ -2,9 +2,15 @@
 [ext_resource type="Script" path="res://scripts/aircraft_profile.gd" id="1"]
 [resource]
 script = ExtResource("1")
-display_name = "A-02 Albatros"
-armor = 100
-penetration = 2
-speed = 260.0
+display_name = "F6F Hellcat"
+model_name = "Grumman F6F Hellcat"
+role = "Carrier fighter"
+armor = 3
+penetration = 0
+speed_rating = 2
+projectile_damage = 1
 shot_interval = 0.145
 texture_id = "player"
+initial_weapon = 1
+sprite_size = Vector2(72, 72)
+propeller_positions = PackedVector2Array(0, -24)

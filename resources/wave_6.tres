@@ -2,9 +2,9 @@
 [ext_resource type="Script" path="res://scripts/wave_profile.gd" id="1"]
 [resource]
 script = ExtResource("1")
-title = "Letzte Verteidigung"
+title = "Final Defense"
 duration = 30.0
 pattern = "cross"
-enemy_ids = PackedStringArray("armored", "interceptor", "fighter")
+enemy_ids = PackedStringArray("bomber_ace", "fighter_ace", "biplane_ace", "bomber_2", "fighter_2")
 pickup = "repair"
 density = 5

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="EnemyProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/enemy_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+id = "fighter_ace"
+display_name = "Fighter Ace"
+model_name = "Nakajima Ki-44"
+role = "Elite fighter"
+armor = 2
+speed_rating = 2
+projectile_damage = 1
+penetration = 0
+weapon_name = "Double Shot"
+flight_style = "arc"
+sprite_size = Vector2(68, 68)
+propeller_positions = PackedVector2Array(0, 25.6)
+radius = 19.0
+points = 300
+shoot_interval = 2.8
+texture_id = "fighter_ace"

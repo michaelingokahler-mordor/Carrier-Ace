@@ -29,7 +29,7 @@ Japanische Veröffentlichung Ende 1984 und westliche Verbreitung 1985 erklären 
 
 Okamoto beschreibt ein bewusst zugängliches Shoot ’em up. Die Weltkriegsdarstellung sollte verständlich sein; erstmals wurde der westliche Markt gezielt berücksichtigt. Die amerikanische P-38 war eine entsprechende Wahl. Die oft zitierte 1942-Passage steht auf der Interviewseite in einer späteren Rückblicksammlung; die Seite enthält daneben ein CPS-1-Interview von 1989. Diese Zeitkontexte dürfen nicht gleichgesetzt werden. [Entwicklerinterviews und Rückblicke](https://shmuplations.com/cps1/)
 
-Das historische Szenario ist eine Arcade-Fantasie des Pazifikkriegs. Das Flugzeug „Super Ace“ und große japanische Gegnerflugzeuge dienen der schnellen visuellen Verständlichkeit. Trägereinsatz und Flugabläufe sind keine verlässliche historische Flugsimulation. Für Carrier Ace übernehmen wir den Ablauf als Fiktion mit eigenen Flugzeugnamen.
+Das historische Szenario ist eine Arcade-Fantasie des Pazifikkriegs. Das Flugzeug „Super Ace“ und große japanische Gegnerflugzeuge dienen der schnellen visuellen Verständlichkeit. Trägereinsatz und Flugabläufe sind keine verlässliche historische Flugsimulation. Für Carrier Ace übernehmen wir den Ablauf als Fiktion. Version 0.2 verwendet historische Vorbildnamen für die Hellcat und neun reguläre Gegner; die Mission und Spielwerte bleiben erfunden.
 
 ## 3. Arcade-Hardware und audiovisuelle Gestaltung
 
@@ -37,7 +37,7 @@ Für die Originalkonfiguration zeigt MAME zwei Z80 mit jeweils 3 MHz, einen 12-M
 
 **Ableitung aus Technik und Referenzbildern:** Ein scrollender Kachelhintergrund vermittelt Geschwindigkeit, während überschaubare Silhouetten und helle Geschosse die Aktion tragen. Kleine Flugzeuge müssen nicht fotorealistisch sein, um ihre Rolle zu zeigen. Meer, Inseln und Träger bilden eine kontinuierliche Welt; die obere Punkteanzeige bleibt davon getrennt.
 
-Carrier Ace wählt 960×540 im Querformat. Das ist eine bewusste Änderung gegenüber dem Hochkantautomaten. Seitliche Flugwege brauchen deshalb mehr Aufmerksamkeit, während die sichtbare Anflugstrecke kürzer wird. Zwei bis drei deutlich unterscheidbare Formen, helle Spielerprojektile, warme Gegnerprojektile und gedämpftes Wasser halten die Kampfinformation lesbar. Palette und Pixelraster vermitteln eine spätere Arcade-/Amiga-Anmutung, ohne die technischen Beschränkungen eines Amiga 500 zu simulieren.
+Carrier Ace wählt 960×540 im Querformat. Das ist eine bewusste Änderung gegenüber dem Hochkantautomaten. Seitliche Flugwege brauchen deshalb mehr Aufmerksamkeit, während die sichtbare Anflugstrecke kürzer wird. Doppeldecker, Jäger und Bomber besitzen unterscheidbare Silhouetten; helle Spielerprojektile, warme Gegnerprojektile und gedämpftes Wasser halten die Kampfinformation lesbar. Version 0.2 verlässt das Pixelraster und verwendet detaillierte Illustrationen mit einem 1920×1080-Titel sowie hochauflösenden Sprites. Die logischen Koordinaten bleiben 960×540.
 
 Die Musik des Originals darf nicht mit der C64-Fassung verwechselt werden. Deren bekannte Bearbeitung durch Mark Cooksey greift Musik aus *633 Squadron* auf. Für Carrier Ace wurden eigene instrumentale Audioaufnahmen erzeugt. Sie haben eine Tracker-Anmutung; sie sind keine MOD-Dateien und übernehmen keine Melodie aus 1942. [Port- und Musikübersicht](https://en.wikipedia.org/wiki/1942_(video_game))
 
@@ -49,7 +49,7 @@ Freie Bewegung in beiden Achsen und tödliche Treffer unterscheiden das Original
 
 Die Lebenszahl ist nicht unveränderlich: MAME dokumentiert 1, 2, 3 oder 5, mit drei als Default. Bonusleben beginnen je DIP-Wahl bei 20.000 oder 30.000 Punkten, weitere Schwellen folgen ebenfalls der Einstellung. Vier Schwierigkeitsstufen sind vorgesehen. „1942 hat immer drei Leben“ ist deshalb als Aussage über alle Automaten ungenau. [DIP-Einstellungen im Treiber](https://github.com/mamedev/mame/blob/master/src/mame/capcom/1942.cpp)
 
-**Ableitung:** Eine begrenzte Rolle macht Gefahr vorhersehbar und gibt eine taktische Reserve. Eine zusätzliche prozentuale Abschusswertung lädt dazu ein, bekannte Formationen sauberer zu spielen. Carrier Ace übernimmt die Quote im Ergebnis, verwendet aber 100 Panzerung und klar definierte Schadenswerte statt sofortigem Verlust durch jeden Treffer. Die drei Leben und der vollständige Missionsneustart sind feste Prototypregeln.
+**Ableitung:** Eine begrenzte Rolle macht Gefahr vorhersehbar und gibt eine taktische Reserve. Eine zusätzliche prozentuale Abschusswertung lädt dazu ein, bekannte Formationen sauberer zu spielen. Carrier Ace übernimmt die Quote im Ergebnis, verwendet aber drei Panzerungspunkte und klar definierte Schadenswerte statt sofortigem Verlust durch jeden Treffer. Die drei Leben und der vollständige Missionsneustart sind feste Prototypregeln.
 
 ## 5. POWs, Punkte und Träger laut Betreiberhandbuch
 
@@ -137,11 +137,11 @@ Galaga Arrangement erschien 1995 in Namco Classic Collection Vol. 1. Es variiert
 
 ## 10. Konkrete Umsetzung und Grenzen
 
-Das Level lehrt zuerst gerade Anflüge, dann Seitenbögen, Kreuzungen, gepanzerte Ziele und zuletzt Kombinationen. Reparatur belohnt den vollständigen Verband, ohne die Rundenstruktur zu ändern. Doppelschuss vergrößert den erfassten Bereich; Trippelschuss deckt die Mitte plus zwei leichte Winkel ab. Durchschlagen trifft höchstens zwei verschiedene Ziele; ein überlappender Gegner wird nicht mehrfach vom selben Projektil getroffen. Diese Regeln sind eigene, getestete Verträge.
+Das Level lehrt zuerst gerade Anflüge, dann Seitenbögen, Kreuzungen, gepanzerte Ziele und zuletzt Kombinationen. Reparatur belohnt den vollständigen Verband, ohne die Rundenstruktur zu ändern. Doppelschuss vergrößert den erfassten Bereich; Trippelschuss deckt die Mitte plus zwei leichte Winkel ab. Penetration zählt zusätzliche Ziele von null bis drei; die Hellcat beginnt mit null. Ein Geschoss kann je nach Profil höchstens ein bis vier verschiedene Ziele treffen; ein überlappender Gegner wird nicht mehrfach vom selben Projektil getroffen. Diese Regeln sind eigene, getestete Verträge.
 
 Panzerung puffert Fehler; Trefferschutz verhindert eine sofortige Schadenskette. Ein vollständiger Missionsneustart mit noch vorhandenen Leben macht einen Versuch überschaubar. Ein ruhiger Rückflug trennt Bossstress und Abschluss. Das Ergebnis zeigt die Abschussquote als Anreiz für einen besseren nächsten Versuch.
 
-Die eigenen Grafiken verwenden eine gedämpfte Meerespalette, metallische Spielerfarbe und drei erkennbare Gegnersilhouetten. Nationalität oder historische korrekte Flugzeugdaten bestimmen keine Mechanik. Audio dient der Rückmeldung: verschiedene Schüsse, Treffer, Pickup, Rolle und Landung. Die technische Loop-Aufbereitung verhindert abrupte Datensprünge; subjektive Lautheit und musikalische Passung bleiben Gegenstand des eigenen Hörtests.
+Die eigenen Grafiken verwenden eine gedämpfte Meerespalette, eine dunkelblaue Hellcat und drei erkennbare Gegnerfamilien mit neun Profilen. Historische Flugzeugdaten bestimmen keine Mechanik; insbesondere Rocket-Bewaffnung, Armor und Speed Rating sind Designentscheidungen. Audio dient der Rückmeldung: verschiedene Schüsse, Treffer, Pickup, Rolle und Landung. Die technische Loop-Aufbereitung verhindert abrupte Datensprünge; subjektive Lautheit und musikalische Passung bleiben Gegenstand des eigenen Hörtests.
 
 ### Offen bzw. nicht behauptet
 
@@ -158,7 +158,15 @@ Godot 4.7.2 Standard und passende Vorlagen wurden von den offiziellen Veröffent
 
 Der Webexport verwendet Compatibility/WebGL 2 und keine Threads. Lokaler HTTP-Start umgeht die Einschränkungen beim direkten Öffnen einer HTML-Datei. Audio benötigt Nutzerinteraktion; Gamepads und dauerhafte Speicherung unterliegen Browserbedingungen. Private Modi können Speicherung einschränken. Diese Bedingungen sind in der Startanleitung berücksichtigt. [Godot-Webexport](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html)
 
-Die Budgetkontrolle folgt dem genehmigten Limit und dem tatsächlich gemeldeten Accountsaldo. Es wurden 138 Credits verbraucht; alle fertigen Assets sind lokal. Prompts, Aufgaben-IDs und die verworfenen Entwürfe stehen in `assets/manifest.json`. Keine signierten Download-URLs werden versioniert. [Runway-Bildkosten](https://help.runwayml.com/hc/en-us/articles/37053594806419-Creating-with-Gen-4-Image), [Runway-Preise](https://docs.dev.runwayml.com/guides/pricing/)
+Die Budgetkontrolle folgt dem genehmigten Limit und dem tatsächlich gemeldeten Accountsaldo. Für 0.1 wurden 138 Credits verbraucht. Version 0.2 ergänzt 340 von höchstens 500 weiteren Credits für 16 Bilder; 160 bleiben ungenutzt. Alle fertigen Assets sind lokal. Prompts, Aufgaben-IDs und ursprüngliche verworfene Entwürfe stehen in `assets/manifest.json`, die neuen Aufgaben in `assets/revision02.json`. Keine signierten Download-URLs werden versioniert. [Runway-Bildkosten](https://help.runwayml.com/hc/en-us/articles/37053594806419-Creating-with-Gen-4-Image), [Runway-Preise](https://docs.dev.runwayml.com/guides/pricing/)
+
+### Ergänzung 0.2: Hellcat und technische Darstellung
+
+Die F6F ist als Trägerjäger ein plausibles Vorbild für Start und Landung. Das Smithsonian beschreibt die Entwicklung aus der F4F, den zentralen Sternmotor und die vergrößerten Trag- und Leitwerksflächen. Die Marine übernahm die ersten Serien-F6F-3 im Januar 1943; unser Titel ist deshalb eine fiktive Operation und keine historisch genaue Nachbildung des Jahres 1942. [Smithsonian: F6F-3K Hellcat](https://www.si.edu/object/grumman-f6f-3k-hellcat%3Anasm_A19610107000)
+
+Das Titelmotiv zeigt eine einmotorige Hellcat mit zentralem Frontpropeller, getrennten Hauptflügeln und Heckflächen. Im Spiel sind die Motorpositionen je Profil hinterlegt. Ki-10, Ki-43, Ki-44, Ki-30 und Ki-21 sind vom Nutzer festgelegte visuelle Vorbilder; die neuen Illustrationen sind keine vermessenen historischen Zeichnungen. Der separate B-99 ist ein erfundenes Bossflugzeug.
+
+Die Bildschirmzeichnung verwendet Canvas-Item-Shader im Compatibility-Renderer. Wasser- und Brandungsanimation hängen an der pausierbaren Missionszeit; die drei Inselmotive scrollen kontinuierlich mit 5,4 Pixel/s. Es gibt keine phasenabhängigen Landschaftseinblendungen. Hochauflösende Texturen werden mit linearer Filterung und Canvas-Skalierung gezeichnet. [Godot: Canvas-Item-Shader](https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/canvas_item_shader.html), [Godot: Auflösungsskalierung](https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html)
 
 ## 12. Quellenverzeichnis
 

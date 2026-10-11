@@ -3,6 +3,6 @@
 [resource]
 script = ExtResource("1")
 level = 3
-display_name = "Trippelschuss"
+display_name = "Triple Shot"
 angles = PackedFloat32Array(-0.16, 0.0, 0.16)
 offsets = PackedFloat32Array(-12.0, 0.0, 12.0)

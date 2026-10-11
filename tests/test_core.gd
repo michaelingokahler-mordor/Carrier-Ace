@@ -8,6 +8,7 @@ func _init() -> void:
 	_test_profiles()
 	_test_pickups()
 	_test_piercing()
+	_test_enemy_weapons()
 	_test_lives()
 	_test_rolls()
 	_test_landing_and_pause()
@@ -43,33 +44,53 @@ func _test_formations() -> void:
 
 func _test_profiles() -> void:
 	var model := MissionModel.new()
-	expect(model.aircraft.armor == 100 and model.aircraft.penetration == 2, "Aircraft profile matches approved values")
+	expect(model.aircraft.armor == 3 and model.aircraft.penetration == 0, "Hellcat armor and penetration match approved values")
+	expect(model.aircraft.speed_rating == 2 and model.current_speed() == 195, "Hellcat starts at fixed speed rating 2")
 	expect(model.waves.size() == 6, "Six wave resources exist")
 	var total := 0.0
 	for wave in model.waves: total += wave.duration
 	expect(is_equal_approx(total, 180), "Regular combat lasts 180 seconds")
-	expect(model.profiles.boss.armor == 300, "Boss starts with 300 armor")
-	for level in range(1, 4):
-		expect(model.weapons[level].angles.size() == level, "Weapon pattern has the correct shot count")
+	expect(model.profiles.boss.armor == 300, "Separate boss retains 300 armor")
+	var expected := [["biplane_1",1,1],["biplane_2",1,1],["biplane_ace",2,1],["fighter_1",1,2],["fighter_2",1,2],["fighter_ace",2,2],["bomber_1",2,1],["bomber_2",2,1],["bomber_ace",3,1]]
+	for row in expected:
+		var profile: EnemyProfile = model.profiles[row[0]]
+		expect(profile.armor == row[1] and profile.speed_rating == row[2], "Approved enemy values: " + row[0])
+		expect(profile.speed == (130 if row[2] == 1 else 195), "Enemy speed uses shared scale: " + row[0])
+	for level in range(1, 4): expect(model.weapons[level].angles.size() == level, "Weapon shot count")
 	var alternate := AircraftProfile.new()
-	alternate.penetration = 4
-	alternate.speed = 320
+	alternate.armor = 5
+	alternate.speed_rating = 1
+	alternate.penetration = 99
+	expect(alternate.penetration == 3, "Penetration clamps to its profile maximum")
+	alternate.penetration = -1
+	expect(alternate.penetration == 0, "Penetration clamps to zero")
+	var alternate_enemy := EnemyProfile.new()
+	alternate_enemy.penetration = 7
+	alternate_enemy.speed_rating = -1
+	expect(alternate_enemy.penetration == 3 and alternate_enemy.speed_rating == 1, "Enemy profile bounds clamp at runtime")
 	model.aircraft = alternate
-	expect(model.aircraft.penetration == 4 and model.current_speed() == 320, "Alternate aircraft profiles change damage and movement")
+	model.start_run()
+	expect(model.armor == 5 and model.current_speed() == 130, "Alternate profile supplies armor maximum and base speed")
 
 func _test_pickups() -> void:
 	var model := MissionModel.new()
 	model.start_run()
-	model.armor = 60
+	model.armor = 1
 	model.apply_pickup("repair")
-	expect(model.armor == 90, "Repair adds 30 armor")
+	expect(model.armor == 2, "Repair restores one armor point")
 	model.apply_pickup("repair")
-	expect(model.armor == 100, "Repair does not exceed maximum")
+	expect(model.armor == 3, "Repair reaches the profile maximum")
 	model.apply_pickup("triple")
 	model.apply_pickup("double")
 	expect(model.weapon == 3, "Double pickup cannot downgrade triple fire")
-	for i in range(5): model.apply_pickup("speed")
-	expect(model.speed_level == 2 and is_equal_approx(model.current_speed(), 338), "Speed caps at 130 percent")
+	model.apply_pickup("repair")
+	expect(model.armor == 3, "Repair cannot overfill armor")
+	for expected_speed in [214.5, 234.0, 253.5, 260.0]:
+		model.apply_pickup("speed")
+		expect(is_equal_approx(model.current_speed(), expected_speed), "Additive ten-percent base-speed bonus")
+	model.apply_pickup("speed")
+	expect(model.speed_level == 4 and model.current_speed() == 260, "Further pickups cannot exceed speed cap")
+	expect(model.aircraft.speed_rating == 2 and model.aircraft.speed == 195, "Upgrades never mutate the base aircraft")
 	model.pickups.append({"pos": Vector2(100, 100), "kind": "double", "age": 11.99, "dead": false})
 	model._update_pickups(0.02)
 	expect(model.pickups.is_empty(), "Uncollected pickup expires after 12 seconds")
@@ -78,46 +99,87 @@ func _test_pickups() -> void:
 	expect(model.pickups.is_empty(), "Collected pickup is removed once")
 
 func _test_piercing() -> void:
+	for penetration in range(4):
+		var model := MissionModel.new()
+		model.aircraft = model.aircraft.duplicate()
+		model.aircraft.penetration = penetration
+		model.phase = MissionModel.Phase.WAVES
+		var targets: Array[Dictionary] = []
+		for i in range(5): targets.append(model._spawn_enemy("bomber_ace", Vector2(480,340-i*45),"line"))
+		var bullet := model._spawn_bullet(Vector2(480,400), Vector2(0,-1200),true)
+		model._update_bullets(0.25)
+		for i in range(5): expect(targets[i].hp == (2 if i <= penetration else 3), "Penetration %d hits exactly the allowed distinct targets" % penetration)
+		expect(bullet.hits.size() == penetration+1 and model.bullets.is_empty(), "Projectile expires after its final permitted target")
 	var model := MissionModel.new()
+	model.aircraft = model.aircraft.duplicate()
+	model.aircraft.penetration = 3
 	model.phase = MissionModel.Phase.WAVES
-	var first := model._spawn_enemy("armored", Vector2(480, 300), "line")
-	var second := model._spawn_enemy("armored", Vector2(480, 260), "line")
-	var third := model._spawn_enemy("armored", Vector2(480, 220), "line")
-	model._spawn_bullet(Vector2(480, 350), Vector2(0, -600), true)
-	model._update_bullets(0.25)
-	expect(first.hp == 10 and second.hp == 10, "Swept projectile hits two successive targets")
-	expect(third.hp == 12, "Projectile stops after the second target")
-	expect(model.bullets.is_empty(), "Exhausted projectile is removed")
-	model.enemies.clear()
-	first = model._spawn_enemy("armored", Vector2(480, 300), "line")
-	model._spawn_bullet(Vector2(480, 310), Vector2(0, -1), true)
+	var target := model._spawn_enemy("bomber_ace",Vector2(480,300),"line")
+	model._spawn_bullet(Vector2(480,310),Vector2(0,-1),true)
 	model._update_bullets(0.01)
 	model._update_bullets(0.01)
-	expect(first.hp == 10, "Overlapping projectile cannot damage the same enemy twice")
+	expect(target.hp == 2, "Overlapping projectile never hits the same enemy twice")
 	model.bullets.clear()
-	model._spawn_bullet(model.player + Vector2(0, -50), Vector2(0, 600), false)
+	model._spawn_bullet(model.player+Vector2(0,-50),Vector2(0,600),false)
 	model._update_bullets(0.15)
-	expect(model.armor == 90, "Swept hostile projectile cannot tunnel through the player")
+	expect(model.armor == 2, "Swept ordinary enemy shot causes one damage")
+	model.invulnerable = 0
+	model._spawn_bullet(model.player+Vector2(0,-50),Vector2(0,600),false,2,"rocket")
+	model._update_bullets(0.15)
+	expect(model.armor == 0 and model.phase == MissionModel.Phase.DOWNED, "Rocket causes two damage through real swept collision")
+
+func _test_enemy_weapons() -> void:
+	var model := MissionModel.new()
+	model.start_run()
+	model.phase = MissionModel.Phase.WAVES
+	var ace := model._spawn_enemy("fighter_ace",Vector2(300,150),"line")
+	ace.shoot = 0
+	model._update_enemies(0.01)
+	expect(model.bullets.size() == 2, "Fighter ace fires two projectiles")
+	model.enemies.clear()
+	model.bullets.clear()
+	ace = model._spawn_enemy("bomber_ace",Vector2(480,150),"line")
+	ace.shoot = 0
+	model._update_enemies(0.01)
+	expect(ace.warning > 0 and model.bullets.is_empty(), "Rocket volley is announced before firing")
+	var aim: Vector2 = ace.aim
+	model.player.x = 800
+	model._update_enemies(0.3)
+	expect(model.bullets.is_empty(), "Rocket warning lasts the announced interval")
+	model._update_enemies(0.31)
+	expect(model.bullets.size() == 1 and model.bullets[0].kind == "rocket" and model.bullets[0].damage == 2, "Bomber ace fires the configured rocket")
+	var velocity: Vector2 = model.bullets[0].velocity
+	expect(velocity.normalized().is_equal_approx(aim), "Rocket aim stays locked during warning")
+	model.player.x = 100
+	model._update_bullets(0.1)
+	expect(model.bullets[0].velocity == velocity, "Rocket does not home after launch")
+	model.enemies.clear()
+	model.bullets.clear()
+	model.player = Vector2(480,440)
+	model.invulnerable = 0
+	model._spawn_enemy("biplane_1",model.player,"line")
+	model.tick(0.001)
+	expect(model.armor == 2, "Aircraft collision causes one armor damage")
 
 func _test_lives() -> void:
 	var model := MissionModel.new()
 	model.start_run()
 	for remaining in [2, 1, 0]:
 		model.phase = MissionModel.Phase.WAVES
-		model.armor = 10
+		model.armor = 1
 		model.invulnerable = 0
 		model.weapon = 3
 		model.speed_level = 2
 		model.rolls = 0
 		model.score = 999
-		model._spawn_enemy("fighter", Vector2(50, 100), "line")
-		model.damage_player(10)
+		model._spawn_enemy("fighter_1", Vector2(50, 100), "line")
+		model.damage_player(1)
 		expect(model.lives == remaining, "A fatal hit consumes exactly one life")
 		expect(model.phase == MissionModel.Phase.DOWNED, "Fatal hit enters the loss interlude")
 		model.tick(2.4)
 		if remaining > 0:
 			expect(model.phase == MissionModel.Phase.TAKEOFF, "Replacement plane restarts on the carrier")
-			expect(model.armor == 100 and model.weapon == 1 and model.speed_level == 0 and model.rolls == 3, "Restart restores all baseline values")
+			expect(model.armor == 3 and model.weapon == 1 and model.speed_level == 0 and model.rolls == 3, "Restart restores all baseline values")
 			expect(model.enemies.is_empty() and model.bullets.is_empty() and model.pickups.is_empty(), "Restart clears all entities")
 			expect(model.formations.groups.is_empty() and model.score == 0 and model.combat_time == 0, "Restart clears score, formations and mission clock")
 		else:
@@ -130,15 +192,15 @@ func _test_rolls() -> void:
 	for i in range(3):
 		model.tick(0.01, Vector2.ZERO, false, true)
 		expect(model.rolls == 2 - i, "Roll consumes one charge")
-		model.damage_player(10)
-		expect(model.armor == 100, "Roll prevents damage")
+		model.damage_player(1)
+		expect(model.armor == 3, "Roll prevents damage")
 		model.tick(1.01)
 	model.tick(0.01, Vector2.ZERO, false, true)
 	expect(model.rolls == 0 and model.roll_time == 0, "A fourth roll cannot be used")
-	model.damage_player(10)
-	expect(model.armor == 90, "Damage resumes after roll protection expires")
-	model.damage_player(10)
-	expect(model.armor == 90, "Post-hit protection prevents immediate repeated damage")
+	model.damage_player(1)
+	expect(model.armor == 2, "Damage resumes after roll protection expires")
+	model.damage_player(1)
+	expect(model.armor == 2, "Post-hit protection prevents immediate repeated damage")
 
 func _test_landing_and_pause() -> void:
 	var model := MissionModel.new()
@@ -184,7 +246,7 @@ func _test_full_mission() -> void:
 	var model := MissionModel.new()
 	var bot := PilotBot.new()
 	model.start_run()
-	for frame in range(60 * 500):
+	for frame in range(60 * 1000):
 		var command := bot.command(model)
 		model.tick(1.0 / 60.0, command.move, command.fire, command.roll)
 		if model.phase in [MissionModel.Phase.VICTORY, MissionModel.Phase.GAME_OVER]: break

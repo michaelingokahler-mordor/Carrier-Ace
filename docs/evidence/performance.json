@@ -1,0 +1,28 @@
+{
+  "windows": {
+    "verification": "PASS",
+    "simulation_speed": 1,
+    "mission_seconds": 247.25,
+    "samples": 247,
+    "startup_fps": 2.0,
+    "after_startup_min": 28.0,
+    "after_startup_median": 60.0,
+    "after_startup_max": 61.0,
+    "samples_below_59_after_startup": 5,
+    "resolution": "1920x1080",
+    "note": "One-second Engine FPS samples; export tests capture screenshots, their performance impact was not measured separately. No per-frame latency guarantee."
+  },
+  "web": {
+    "verification": "PASS",
+    "simulation_speed": 1,
+    "mission_seconds": 247.25,
+    "samples": 247,
+    "startup_fps": 2.0,
+    "after_startup_min": 59.0,
+    "after_startup_median": 60.0,
+    "after_startup_max": 62.0,
+    "samples_below_59_after_startup": 0,
+    "resolution": "744x918 initially; 1920x1080 from wave 6",
+    "note": "One-second Engine FPS samples; export tests capture screenshots, their performance impact was not measured separately. No per-frame latency guarantee."
+  }
+}

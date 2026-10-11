@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bw4hxedewcix3"
-path="res://.godot/imported/fighter.png-0c31bbbefd0d7f146605068022349cdd.ctex"
+uid="uid://qne8wfsoc57b"
+path="res://.godot/imported/fighter_2.png-1052d3007ef3e1f3cb80a2183295e275.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/fighter.png"
-dest_files=["res://.godot/imported/fighter.png-0c31bbbefd0d7f146605068022349cdd.ctex"]
+source_file="res://assets/art/fighter_2.png"
+dest_files=["res://.godot/imported/fighter_2.png-1052d3007ef3e1f3cb80a2183295e275.ctex"]
 
 [params]
 

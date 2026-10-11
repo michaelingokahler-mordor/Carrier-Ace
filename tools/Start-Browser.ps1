@@ -7,10 +7,10 @@ if (-not (Test-Path -LiteralPath (Join-Path $webRoot 'index.html'))) {
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://localhost:$Port/")
 try { $listener.Start() } catch {
-    Write-Host "Port $Port kann nicht geoeffnet werden. Bitte -Port 1943 versuchen."
+    Write-Host "Port $Port cannot be opened. Try -Port 1943."
     throw
 }
-Write-Host "Carrier Ace: http://localhost:$Port/  |  Beenden mit Strg+C"
+Write-Host "Carrier Ace: http://localhost:$Port/  |  Stop with Ctrl+C"
 if (-not $NoBrowser) { Start-Process "http://localhost:$Port/" }
 $mime = @{'.html'='text/html; charset=utf-8';'.js'='text/javascript';'.wasm'='application/wasm';'.pck'='application/octet-stream';'.png'='image/png';'.svg'='image/svg+xml';'.ogg'='audio/ogg';'.ico'='image/x-icon'}
 try {

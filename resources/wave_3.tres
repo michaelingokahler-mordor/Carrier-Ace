@@ -2,9 +2,9 @@
 [ext_resource type="Script" path="res://scripts/wave_profile.gd" id="1"]
 [resource]
 script = ExtResource("1")
-title = "Kreuzfeuer"
+title = "Crossfire"
 duration = 30.0
 pattern = "cross"
-enemy_ids = PackedStringArray("fighter", "interceptor")
+enemy_ids = PackedStringArray("fighter_1", "fighter_2")
 pickup = "speed"
 density = 4

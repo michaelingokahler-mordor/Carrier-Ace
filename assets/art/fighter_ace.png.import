@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bmq2oxp812bb1"
-path="res://.godot/imported/ocean.png-4dabcebfcc7abb56aa0f49b02fd301e1.ctex"
+uid="uid://clip8x2y61bln"
+path="res://.godot/imported/fighter_ace.png-b6b97b389bb25e54ff21f1e783570721.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/ocean.png"
-dest_files=["res://.godot/imported/ocean.png-4dabcebfcc7abb56aa0f49b02fd301e1.ctex"]
+source_file="res://assets/art/fighter_ace.png"
+dest_files=["res://.godot/imported/fighter_ace.png-b6b97b389bb25e54ff21f1e783570721.ctex"]
 
 [params]
 

@@ -17,6 +17,36 @@ func _run() -> void:
 	game.set_physics_process(false)
 	expect(game.menu == "title", "Scene opens at title")
 	expect(root.gui_get_focus_owner() is Button, "Title has a keyboard/gamepad focus target")
+	game._show_aircraft("title")
+	expect(game.aircraft_entries.size() == 11, "Aircraft menu contains player, nine enemies and boss")
+	expect(root.gui_get_focus_owner() is ItemList, "Aircraft list receives keyboard/gamepad focus")
+	var down := InputEventKey.new()
+	down.keycode = KEY_DOWN
+	down.physical_keycode = KEY_DOWN
+	down.pressed = true
+	root.push_input(down)
+	await process_frame
+	expect(game.aircraft_list.get_selected_items()[0] == 1, "Keyboard Down navigates aircraft and updates detail")
+	down.pressed = false
+	root.push_input(down)
+	var pad_down := InputEventJoypadButton.new()
+	pad_down.button_index = JOY_BUTTON_DPAD_DOWN
+	pad_down.pressed = true
+	root.push_input(pad_down)
+	await process_frame
+	expect(game.aircraft_list.get_selected_items()[0] == 2, "Simulated gamepad D-pad navigates aircraft")
+	pad_down.pressed = false
+	root.push_input(pad_down)
+	game.aircraft_list.select(0)
+	game._update_aircraft_detail(0)
+	game._step_aircraft(1)
+	expect(game.aircraft_list.get_selected_items()[0] == 1, "Next aircraft changes selected detail")
+	game._step_aircraft(-1)
+	expect(game.aircraft_list.get_selected_items()[0] == 0, "Previous aircraft returns to player")
+	for index in game.aircraft_entries.size():
+		game._update_aircraft_detail(index)
+		expect(game.aircraft_entries[index].profile != null, "Aircraft detail uses a live profile resource")
+	game._title_again()
 	game._show_controls("title")
 	expect(game.menu == "controls_title", "Title controls open")
 	game._show_sound("title")
@@ -43,6 +73,36 @@ func _run() -> void:
 		game._on_joy_connection_changed(0, false)
 		expect(game.model.paused and game.menu == "pause", "Gamepad disconnect pauses flight phase %d" % phase)
 		game._resume()
+	game.model.paused = true
+	game._show_pause()
+	game._show_aircraft("pause")
+	var snapshot: Dictionary = game.model.status()
+	game.model.tick(5, Vector2.ONE, true, true)
+	expect(game.model.status() == snapshot and game.model.paused, "Viewing aircraft from pause never advances the mission")
+	var cancel := InputEventKey.new()
+	cancel.keycode = KEY_ESCAPE
+	cancel.physical_keycode = KEY_ESCAPE
+	cancel.pressed = true
+	game._unhandled_input(cancel)
+	expect(game.menu == "pause" and game.model.paused, "Esc exits aircraft to pause without resuming")
+	var background: OceanBackground = game.view.background
+	game.model.mission_time = 90
+	background.update_route()
+	var offset := background.scroll_offset
+	for phase in [MissionModel.Phase.WAVES, MissionModel.Phase.BOSS, MissionModel.Phase.APPROACH, MissionModel.Phase.LANDING]:
+		game.model.phase = phase
+		background.update_route()
+		expect(background.scroll_offset == offset and background.visible, "Mission transitions preserve continuous background coordinates")
+	game.model.tick(20)
+	background.update_route()
+	expect(background.scroll_offset == offset, "Pause freezes water and island route")
+	game.model.start_run()
+	background.update_route()
+	expect(background.scroll_offset == 0, "Restart resets the background to route origin")
+	game.model.mission_time = 300
+	background.update_route()
+	expect(not background.islands[0].visible, "Island is culled only after completely leaving the bottom")
+	game.model.phase = MissionModel.Phase.WAVES
 	game.model.paused = true
 	game._show_pause()
 	game._show_sound("pause")

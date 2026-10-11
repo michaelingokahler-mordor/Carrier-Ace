@@ -1,0 +1,157 @@
+{
+  "starting_balance": 1241,
+  "cap": 500,
+  "reserve": 100,
+  "spent": 340,
+  "orders": [
+    {
+      "name": "island_1",
+      "taskId": "befa32dc-0572-4ec1-a550-e58523bb4470",
+      "prompt": "One isolated tropical crescent island for a high-detail 2D overhead naval arcade game. Strict orthographic top-down view, no horizon or perspective. An irregular curved sandy beach encloses dense palm canopy, rocky headland and pale sandbars. Fine painted natural detail, clean contours, realistic scale, rich emerald foliage and warm cream sand, sunlight from upper left. Entire island centered with generous border. The island occupies 70% of the image. NO ocean, NO blue water, NO cast shadow, NO lettering, NO UI. Everything outside the land silhouette is a completely flat pure magenta #FF00FF background for clean transparency extraction. Polished hand-painted illustration, not pixel art, not a photograph.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "island_2",
+      "taskId": "814137e0-a5bc-4a5a-9bdb-335485f7572d",
+      "prompt": "One isolated elongated tropical volcanic island for a high-detail 2D overhead naval arcade game. Match the detailed painted natural textures and upper-left lighting of @style. Strict orthographic top-down view. Narrow jagged charcoal cliffs, sandy beaches along its east side, lush palm groves surrounding a small rocky ridge, several pale sandbars attached to the coast. Entire complete island centered with a generous clear margin. Land only, NO water or ocean. Everything outside the irregular land silhouette is flat pure magenta #FF00FF. Clean contours, fine illustrative detail, no pixels, no lettering, no cast shadow. One single island, not a map.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "island_3",
+      "taskId": "52873cff-fcb7-4fa1-92c6-5f149833695d",
+      "prompt": "One isolated small lush tropical oval atoll island for a high-detail 2D overhead naval arcade game. Match the clean painted natural detail and upper-left lighting of @style. Strict orthographic top-down view. Dense emerald canopy with tiny palm crowns, a small cream sand cove cut into the southwest edge, weathered gray rocks at the northern tip and irregular golden beach perimeter. Solid land only, no lagoon hole and NO water. Whole island centered, generous clear border. Everything beyond land is pure flat magenta #FF00FF. One island, no horizon, no lettering, no cast shadow, not pixel art.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "player",
+      "taskId": "f43d6f3f-beed-43fa-8425-886dc1c81901",
+      "prompt": "One single Grumman F6F Hellcat naval fighter, high-detail clean painted 2D game aircraft asset. STRICT orthographic overhead plan view, camera exactly 90 degrees above. Nose points straight UP. Historically coherent Hellcat airframe: ONE radial engine in the central thick forward fuselage, ONE three-blade front propeller at the very nose, broad symmetrical straight tapered main wings attached to the middle fuselage, ONE central rear fuselage with separate horizontal tailplanes and ONE fin at the tail. NO wing-mounted engines, NO twin booms, NO second propeller, NO extra wings. Foldable wings are fully extended flat in flight. Dark navy-blue upper surfaces, small weathered metal highlights, wing panel lines, canopy glazing, cream naval wing insignia. Fine illustrative detail, realistic proportions, lighting from upper left; no pixels, no cast shadow. Entire aircraft centered with 15% empty margin and pure flat magenta #FF00FF background. This is one isolated complete aircraft, no scene, no diagram, no text.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "biplane_1",
+      "taskId": "490ab8cb-c914-4639-b161-140af9e1660a",
+      "prompt": "Kawasaki Ki-10 biplane fighter. Exactly ONE slim central inline-engine fuselage and ONE front propeller. Two straight main wings stacked vertically, with visible stagger revealing both upper and lower wings, realistic interplane struts; separate small tailplane and rear fin. Olive green metal upper wing and cream lower wing, red circular wing insignia. High-detail clean painted 2D game sprite; match @finish only for illustrative finish, fine panel lines, upper-left lighting and crisp contour, NOT for airframe geometry. STRICT orthographic overhead plan view, nose straight UP, aircraft fully centered with generous empty border. Historically coherent airframe and natural proportions. No perspective, no cast shadow, no text, no pixels. Pure flat magenta #FF00FF everywhere outside the complete silhouette.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "fighter_1",
+      "taskId": "95e95408-2f53-4fe7-88f6-e9ff74c28522",
+      "prompt": "Nakajima Ki-43 Hayabusa single-engine fighter. Exactly ONE radial engine and ONE nose propeller, slim fuselage, broad smoothly tapered elliptical wingtips, clear compact canopy behind the wing root, single rear fin and separate tailplanes. Army olive green with weathered cream metal edges and red circular wing insignia. High-detail clean painted 2D game sprite; match @finish only for illustrative finish, fine panel lines, upper-left lighting and crisp contour, NOT for airframe geometry. STRICT orthographic overhead plan view, nose straight UP, aircraft fully centered with generous empty border. Historically coherent airframe and natural proportions. No perspective, no cast shadow, no text, no pixels. Pure flat magenta #FF00FF everywhere outside the complete silhouette.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "fighter_ace",
+      "taskId": "79961074-8365-4254-b26b-1bf2d64c9c59",
+      "prompt": "Nakajima Ki-44 Shoki single-engine fighter. Exactly ONE large radial nose engine and ONE nose propeller, short broad thick fuselage, compact straight tapered wings with clipped tips, framed rear canopy, normal rear tailplanes and one fin. Burnt red and dark olive ace livery, narrow gold wing stripes, red circular wing markings. High-detail clean painted 2D game sprite; match @finish only for illustrative finish, fine panel lines, upper-left lighting and crisp contour, NOT for airframe geometry. STRICT orthographic overhead plan view, nose straight UP, aircraft fully centered with generous empty border. Historically coherent airframe and natural proportions. No perspective, no cast shadow, no text, no pixels. Pure flat magenta #FF00FF everywhere outside the complete silhouette.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "bomber_1",
+      "taskId": "0a2971f3-46b8-4fbf-95a8-ea540c838abc",
+      "prompt": "Mitsubishi Ki-30 light bomber. Exactly ONE radial engine and ONE front propeller, a long central fuselage with a long multi-section glass crew canopy, broad straight tapered wings, fixed landing gear fairings subtly visible, conventional rear tailplanes and fin. Olive and sandy tan upper surfaces, red circular wing insignia. Clearly a larger longer crewed aircraft than a fighter. High-detail clean painted 2D game sprite; match @finish only for illustrative finish, fine panel lines, upper-left lighting and crisp contour, NOT for airframe geometry. STRICT orthographic overhead plan view, nose straight UP, aircraft fully centered with generous empty border. Historically coherent airframe and natural proportions. No perspective, no cast shadow, no text, no pixels. Pure flat magenta #FF00FF everywhere outside the complete silhouette.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "bomber_ace",
+      "taskId": "5eabb420-cda6-4a4f-936d-74aafa54cbcc",
+      "prompt": "Mitsubishi Ki-21 twin-engine medium bomber. Exactly ONE long central fuselage with glazed nose and cockpit, exactly TWO wing-mounted radial engine nacelles with one propeller each at their forward ends. Large symmetrical straight tapered main wings, one rear vertical fin and conventional tailplane. Dark olive and cream finish with bold gold ace stripes and red circular wing markings. No extra engines, no twin booms. High-detail clean painted 2D game sprite; match @finish only for illustrative finish, fine panel lines, upper-left lighting and crisp contour, NOT for airframe geometry. STRICT orthographic overhead plan view, nose straight UP, aircraft fully centered with generous empty border. Historically coherent airframe and natural proportions. No perspective, no cast shadow, no text, no pixels. Pure flat magenta #FF00FF everywhere outside the complete silhouette.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "boss",
+      "taskId": "81457939-9b89-4fb5-8260-ef88854cdaa0",
+      "prompt": "One original fictional B-99 Behemoth heavy twin-engine propeller bomber. Exactly ONE wide central fuselage with glazed nose and cockpit, exactly TWO large wing-mounted engine nacelles, each with ONE propeller at its forward end. Very broad thick straight main wings, armored panels, rear conventional tailplane and single fin. Charcoal, bronze and olive heavy bomber finish with restrained gold stripes and intimidating readable shape. No extra engines, no twin booms. High-detail clean painted 2D game sprite; match @finish only for illustrative finish, fine panel lines, upper-left lighting and crisp contour, NOT for airframe geometry. STRICT orthographic overhead plan view, nose straight UP, aircraft fully centered with generous empty border. Historically coherent airframe and natural proportions. No perspective, no cast shadow, no text, no pixels. Pure flat magenta #FF00FF everywhere outside the complete silhouette.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "carrier",
+      "taskId": "f1fcc1ca-3c55-42bf-ae02-95820b5ffbbf",
+      "prompt": "One isolated WWII aircraft carrier for an overhead naval arcade game. STRICT orthographic top-down plan view. Bow pointing straight UP. Whole elongated gray-blue hull and broad wooden flight deck visible, with a tapered bow and square stern. Realistic flight-deck landing stripes, elevator seams, arresting cables, small starboard island superstructure, tiny parked WWII propeller fighters along the deck edges. This is an AIRCRAFT CARRIER, not a battleship: flight deck covers most of the vessel, no giant turret batteries. Fine clean painted detail, lighting upper left, no ocean, no wake, no text, no perspective, no cast shadow. Entire vessel centered with empty margin, pure flat magenta #FF00FF background.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "biplane_2",
+      "taskId": "3e6670ff-d07b-4bc0-8809-a46bdbbb1618",
+      "prompt": "Keep @aircraft exactly the same Kawasaki Ki-10 biplane geometry, complete orthographic nose-UP view and flat magenta background. Change only the livery to pale silver upper surfaces with olive wingtip patches, cream lower wing, red circular wing insignia and a narrow mustard-yellow nose band. Preserve the fine painted panel detail. No text, no cast shadow.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "biplane_ace",
+      "taskId": "72879c8f-9e7b-4c3d-81e9-50d50983ce5b",
+      "prompt": "Keep @aircraft exactly the same Kawasaki Ki-10 biplane geometry, complete orthographic nose-UP view and flat magenta background. Change only the livery to dark crimson upper wing, warm cream lower wing, dark olive fuselage, striking gold wingtip stripes and a gold rear fuselage band identifying an ace. Preserve the red circular wing insignia and detailed painted finish. No text, no cast shadow.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "fighter_2",
+      "taskId": "f0fd3f6b-8707-45c3-9d40-e25a19c01503",
+      "prompt": "Keep @aircraft exactly the same Nakajima Ki-43 fighter geometry, complete orthographic nose-UP view and flat magenta background. Change only the livery to worn pale gray bare-metal wings, olive-green nose and spine, cream tailplanes and a yellow nose identification band. Red circular wing insignia stay. Preserve fine panel seams and canopy detail. One engine, one propeller, no text, no cast shadow.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "bomber_2",
+      "taskId": "b1b0cdeb-979a-4ae6-9956-b8f9eb9d8742",
+      "prompt": "Keep @aircraft exactly the same Mitsubishi Ki-30 single-engine light bomber geometry, complete orthographic nose-UP view and flat magenta background. Change only the livery to deep olive-green wings and fuselage, sandy tan mottling across the main wings, broad cream tail band and mustard wingtip stripes. Red circular wing insignia remain. Preserve the long glass crew canopy and fixed landing-gear fairings. NO extra engines, no text, no cast shadow.",
+      "estimatedCredits": 20,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 20
+    },
+    {
+      "name": "title",
+      "taskId": "91f84ff2-5c10-4541-a1d6-4dac566670c5",
+      "prompt": "One polished high-resolution wide 16:9 painted naval aviation title-screen illustration, no lettering or UI anywhere. Reference @hellcat for the EXACT airframe design, navy-blue livery and markings of the single-engine Grumman F6F Hellcat, and @carrier for the aircraft carrier's broad wooden flight deck and starboard island. Warm early-morning light over a deep turquoise Pacific ocean, distant small islands and cream sunlit clouds. The Hellcat is a large hero on the UPPER RIGHT, banking gently with nose facing left toward the viewer, with anatomically correct perspective, ONE engine in the central nose and ONE front propeller, ONE symmetrical pair of main wings and distinct smaller rear tailplanes. NO wing-mounted engines or extra propellers. The carrier is on the LOWER RIGHT, with an unmistakable long flat flight deck, heading toward the horizon with a white foamy wake. LEFT 43% is a naturally dark quiet expanse of navy sea and muted sky reserved for menu typography, no aircraft or busy objects there, no artificial dark panels, no vertical bands, no gray bars. Rich refined 2D illustration, fine details and clean coherent forms, NOT chunky pixels, NOT a photograph. Ship and airplane remain complete inside the frame.",
+      "estimatedCredits": 40,
+      "status": "SUCCEEDED",
+      "used": true,
+      "credits": 40
+    }
+  ],
+  "ending_balance": 901,
+  "unspent": 160,
+  "pricing_source": "https://docs.dev.runwayml.com/guides/pricing/",
+  "local_postprocessing_credits": 0,
+  "note": "Additional 0.2 artwork budget; original 138 credits remain separately in manifest.json. Local keying and resizing incur no generation cost."
+}

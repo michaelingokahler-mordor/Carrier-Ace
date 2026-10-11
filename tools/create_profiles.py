@@ -1,47 +1,47 @@
-"""Write the reviewed, editable Godot balancing resources."""
+"""Write the approved Carrier Ace 0.2 balancing resources."""
 from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-
-def resource(name, cls, script, fields):
-    text = f'[gd_resource type="Resource" script_class="{cls}" load_steps=2 format=3]\n'
-    text += f'[ext_resource type="Script" path="res://scripts/{script}.gd" id="1"]\n[resource]\nscript = ExtResource("1")\n'
-    text += ''.join(f'{key} = {value}\n' for key, value in fields.items())
-    (ROOT / 'resources' / f'{name}.tres').write_text(text, encoding='utf-8')
-
-for ident, title, hp, speed, radius, points, interval in [
-    ('fighter', 'M-11 Falke', 2, 93, 17, 100, 4.2),
-    ('interceptor', 'R-07 Sturmvogel', 6, 115, 19, 100, 3.8),
-    ('armored', 'B-04 Büffel', 12, 72, 24, 300, 3.5),
-    ('boss', 'B-99 Behemoth', 300, 0, 62, 3000, 2.0),
-]:
-    resource(f'enemy_{ident}', 'EnemyProfile', 'enemy_profile', {
-        'id': f'"{ident}"', 'display_name': f'"{title}"', 'armor': hp,
-        'speed': float(speed), 'radius': float(radius), 'points': points,
-        'shoot_interval': interval, 'texture_id': f'"{ident}"',
-    })
-
-for level, name, angles, offsets in [
-    (1, 'Einzelschuss', '0.0', '0.0'),
-    (2, 'Doppelschuss', '0.0, 0.0', '-10.0, 10.0'),
-    (3, 'Trippelschuss', '-0.16, 0.0, 0.16', '-12.0, 0.0, 12.0'),
-]:
-    resource(f'weapon_{level}', 'WeaponProfile', 'weapon_profile', {
-        'level': level, 'display_name': f'"{name}"',
-        'angles': f'PackedFloat32Array({angles})', 'offsets': f'PackedFloat32Array({offsets})',
-    })
-
-for index, (name, pattern, enemies, pickup, density) in enumerate([
-    ('Erster Kontakt', 'line', ['fighter'], 'double', 3),
-    ('Über den Inseln', 'arc', ['fighter', 'interceptor'], 'repair', 3),
-    ('Kreuzfeuer', 'cross', ['fighter', 'interceptor'], 'speed', 4),
-    ('Schwere Eskorte', 'line', ['fighter', 'armored'], 'double', 4),
-    ('Sturmfront', 'arc', ['interceptor', 'fighter', 'armored'], 'triple', 4),
-    ('Letzte Verteidigung', 'cross', ['armored', 'interceptor', 'fighter'], 'repair', 5),
-], start=1):
-    kinds = ', '.join(f'"{kind}"' for kind in enemies)
-    resource(f'wave_{index}', 'WaveProfile', 'wave_profile', {
-        'title': f'"{name}"', 'duration': 30.0, 'pattern': f'"{pattern}"',
-        'enemy_ids': f'PackedStringArray({kinds})', 'pickup': f'"{pickup}"', 'density': density,
-    })
-print('Wrote 13 balancing resources.')
+import json
+ROOT=Path(__file__).resolve().parents[1]
+def resource(name,cls,script,fields):
+    text=f'[gd_resource type="Resource" script_class="{cls}" load_steps=2 format=3]\n'
+    text+=f'[ext_resource type="Script" path="res://scripts/{script}.gd" id="1"]\n[resource]\nscript = ExtResource("1")\n'
+    text+=''.join(f'{k} = {v}\n' for k,v in fields.items())
+    (ROOT/'resources'/f'{name}.tres').write_text(text,encoding='utf-8')
+resource('player','AircraftProfile','aircraft_profile',{
+ 'display_name':'"F6F Hellcat"','model_name':'"Grumman F6F Hellcat"','role':'"Carrier fighter"',
+ 'armor':3,'penetration':0,'speed_rating':2,'projectile_damage':1,'shot_interval':0.145,
+ 'texture_id':'"player"','initial_weapon':1,'sprite_size':'Vector2(72, 72)',
+ 'propeller_positions':'PackedVector2Array(0, -24)'})
+for ident,model,hp,rating,weapon,style,size,radius in [
+ ('biplane_1','Kawasaki Ki-10',1,1,'Single Shot','inherit',(58,48),15),
+ ('biplane_2','Kawasaki Ki-10',1,1,'Single Shot','arc',(58,48),15),
+ ('biplane_ace','Kawasaki Ki-10',2,1,'Double Shot','cross',(62,52),17),
+ ('fighter_1','Nakajima Ki-43',1,2,'Single Shot','inherit',(66,56),17),
+ ('fighter_2','Nakajima Ki-43',1,2,'Single Shot','cross',(66,56),17),
+ ('fighter_ace','Nakajima Ki-44',2,2,'Double Shot','arc',(68,64),19),
+ ('bomber_1','Mitsubishi Ki-30',2,1,'Single Shot','inherit',(90,72),24),
+ ('bomber_2','Mitsubishi Ki-30',2,1,'Single Shot','arc',(90,72),24),
+ ('bomber_ace','Mitsubishi Ki-21',3,1,'Rockets','inherit',(126,98),30),
+ ('boss','B-99 Behemoth',300,1,'Fan Fire','boss',(168,138),62)]:
+    title=ident.replace('_',' ').title() if ident!='boss' else model
+    props='PackedVector2Array(-15, 31, 15, 31)' if ident=='bomber_ace' else 'PackedVector2Array(-29, 47, 29, 47)' if ident=='boss' else f'PackedVector2Array(0, {size[1]*0.40})'
+    resource('enemy_'+ident,'EnemyProfile','enemy_profile',{
+     'id':json.dumps(ident),'display_name':json.dumps(title),'model_name':json.dumps(model),
+     'role':json.dumps('Heavy bomber boss' if ident=='boss' else 'Elite '+ident.split('_')[0] if 'ace' in ident else ident.split('_')[0].title()),
+     'armor':hp,'speed_rating':rating,'projectile_damage':2 if weapon=='Rockets' else 1,
+     'penetration':0,'weapon_name':json.dumps(weapon),'flight_style':json.dumps(style),
+     'sprite_size':f'Vector2({size[0]}, {size[0]})','propeller_positions':props,
+     'radius':float(radius),'points':3000 if ident=='boss' else 300 if 'ace' in ident or 'bomber' in ident else 100,
+     'shoot_interval':2.0 if ident=='boss' else 3.2 if weapon=='Rockets' else 2.8,
+     'texture_id':json.dumps(ident)})
+for level,name,angles,offsets in [(1,'Single Shot','0.0','0.0'),(2,'Double Shot','0.0, 0.0','-10.0, 10.0'),(3,'Triple Shot','-0.16, 0.0, 0.16','-12.0, 0.0, 12.0')]:
+    resource(f'weapon_{level}','WeaponProfile','weapon_profile',{'level':level,'display_name':json.dumps(name),'angles':f'PackedFloat32Array({angles})','offsets':f'PackedFloat32Array({offsets})'})
+for index,(name,pattern,enemies,pickup,density) in enumerate([
+ ('First Contact','line',['biplane_1','biplane_2'],'double',3),
+ ('Island Patrol','arc',['biplane_1','biplane_2','biplane_ace'],'repair',3),
+ ('Crossfire','cross',['fighter_1','fighter_2'],'speed',4),
+ ('Heavy Escort','line',['fighter_1','fighter_ace','bomber_1'],'double',4),
+ ('Storm Front','arc',['bomber_1','bomber_2','fighter_ace'],'triple',4),
+ ('Final Defense','cross',['bomber_ace','fighter_ace','biplane_ace','bomber_2','fighter_2'],'repair',5)],1):
+    resource(f'wave_{index}','WaveProfile','wave_profile',{'title':json.dumps(name),'duration':30.0,'pattern':json.dumps(pattern),'enemy_ids':'PackedStringArray('+', '.join(json.dumps(x) for x in enemies)+')','pickup':json.dumps(pickup),'density':density})
+print('Wrote 20 balancing resources for Carrier Ace 0.2.')

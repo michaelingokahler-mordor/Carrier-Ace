@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-11",
+  "platform": "Web",
+  "method": "Actual exported canvas UI, Codex Chromium browser, keyboard and mouse",
+  "viewports": [
+    "1280x720",
+    "1920x1080"
+  ],
+  "checks": {
+    "english_title": true,
+    "keyboard_aircraft_list": true,
+    "mouse_bomber_ace_detail": true,
+    "english_controls": true,
+    "sound_setting_reload_persistence": true,
+    "sound_setting_restored": true,
+    "aircraft_from_pause_remains_paused": true,
+    "escape_returns_to_pause": true,
+    "resume_advances_to_wave_1": true,
+    "full_flight_final_export": "PASS",
+    "console_warnings_or_errors": 0
+  },
+  "music_volume": {
+    "initial": 0.45,
+    "test": 0.3,
+    "after_reload": 0.3,
+    "restored": 0.45
+  },
+  "physical_gamepad_tested": false,
+  "human_audio_approval": false
+}
