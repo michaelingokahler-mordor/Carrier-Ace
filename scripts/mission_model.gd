@@ -3,7 +3,7 @@ class_name MissionModel
 
 signal event(kind: String, data: Dictionary)
 
-enum Phase { TITLE, TAKEOFF, WAVES, BOSS, APPROACH, LANDING, VICTORY, DOWNED, GAME_OVER }
+enum Phase { TITLE, TAKEOFF, WAVES, BOSS, APPROACH, LANDING, VICTORY, DOWNED, GAME_OVER, MISSION_FAILED }
 const WIDTH := 960.0
 const HEIGHT := 540.0
 const CARRIER_RETURN_TIME := 14.0
@@ -13,6 +13,9 @@ var profiles: Dictionary = {}
 var weapons: Dictionary = {}
 var waves: Array[WaveProfile] = []
 var mission_id := 1
+var surface := SurfaceEncounter.new()
+var regular_finished := false
+var failure_reason := ""
 var formations := FormationTracker.new()
 var phase: Phase = Phase.TITLE
 var paused := false
@@ -78,7 +81,7 @@ func _init() -> void:
 	waves = MissionCatalog.waves(1)
 
 func select_mission(id: int) -> void:
-	mission_id = clampi(id, 1, 2)
+	mission_id = clampi(id, 1, 4)
 	waves = MissionCatalog.waves(mission_id)
 
 func start_run() -> void:
@@ -87,6 +90,9 @@ func start_run() -> void:
 	_reset_attempt()
 
 func _reset_attempt() -> void:
+	surface.setup(mission_id)
+	regular_finished=false
+	failure_reason=""
 	survivor_reserve.clear()
 	counter_queue.clear()
 	counterattack = false
@@ -171,7 +177,7 @@ func flight_bounds() -> Rect2:
 	return Rect2(Vector2(0, 67) + aircraft.sprite_size / 2, Vector2(WIDTH, HEIGHT - 67) - aircraft.sprite_size)
 
 func tick(delta: float, movement: Vector2 = Vector2.ZERO, firing: bool = false, rolling: bool = false) -> void:
-	if paused or phase in [Phase.TITLE, Phase.VICTORY, Phase.GAME_OVER]:
+	if paused or phase in [Phase.TITLE, Phase.VICTORY, Phase.GAME_OVER, Phase.MISSION_FAILED]:
 		return
 	state_time += delta
 	mission_time += delta
@@ -225,6 +231,8 @@ func tick(delta: float, movement: Vector2 = Vector2.ZERO, firing: bool = false, 
 	if firing and fire_timer <= 0:
 		if _fire_player(): fire_timer = aircraft.shot_interval
 	if phase == Phase.WAVES:
+		surface.update(self,delta)
+		if phase == Phase.MISSION_FAILED: return
 		if not counterattack: combat_time += delta
 		else: counter_time += delta
 		_update_waves()
@@ -233,6 +241,11 @@ func tick(delta: float, movement: Vector2 = Vector2.ZERO, firing: bool = false, 
 	if phase in [Phase.DOWNED, Phase.APPROACH]:
 		return
 	_update_pickups(delta)
+	if mission_id>=3 and regular_finished and surface.objectives()>=2 and enemies.is_empty() and surface.queue.is_empty() and surface.reinforcement_group<0:
+		bullets.clear()
+		pickups.clear()
+		_set_phase(Phase.APPROACH)
+		return
 	for enemy in enemies:
 		if not enemy.dead and CollisionGeometry.sweep_shapes(player_collision_shape(), enemy.shape, previous_player - enemy.previous, player - enemy.pos) != INF:
 			damage_player(1)
@@ -240,6 +253,7 @@ func tick(delta: float, movement: Vector2 = Vector2.ZERO, firing: bool = false, 
 				return
 
 func _update_waves() -> void:
+	if regular_finished: return
 	if counterattack:
 		_update_counterattack()
 		return
@@ -265,6 +279,9 @@ func _update_waves() -> void:
 			break
 		cumulative += waves[i].duration
 	if index < 0:
+		if mission_id>=3:
+			regular_finished=true
+			return
 		for enemy in enemies:
 			_resolve_enemy(enemy, false)
 		enemies.clear()
@@ -529,12 +546,17 @@ func _update_bullets(delta: float) -> void:
 				if not visible_bounds.intersects(Rect2(0, 0, WIDTH, HEIGHT)): continue
 				var time := projectile_time(bullet, enemy.previous, enemy.pos, enemy.shape)
 				if time != INF: candidates.append({"enemy": enemy, "time": time})
+			for target in surface.targets:
+				if target.dead or target.escaped or bullet.hits.has(target.id) or not surface.visible(target): continue
+				var time := projectile_time(bullet,target.previous,target.pos,target.shape)
+				if time != INF: candidates.append({"enemy":target,"time":time})
 			candidates.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.time < b.time)
 			for candidate in candidates:
 				if bullet.dead: break
 				var enemy: Dictionary = candidate.enemy
 				bullet.hits[enemy.id] = true
-				damage_enemy(enemy, bullet.damage)
+				if enemy.get("surface",false): surface.damage(self,enemy,bullet.damage)
+				else: damage_enemy(enemy, bullet.damage)
 				bullet.dead = bullet.hits.size() >= bullet.limit
 				if phase == Phase.APPROACH: return
 		else:
@@ -612,6 +634,17 @@ func damage_player(amount: int) -> void:
 		_set_phase(Phase.DOWNED)
 		event.emit("sound", {"name": "explosion_big"})
 
+func fail_mission(reason: String) -> void:
+	if phase!=Phase.WAVES: return
+	failure_reason=reason
+	last_attempt_score=score
+	last_bonus=bonus_pending
+	bonus_pending=0
+	bonus_settled=true
+	bullets.clear()
+	_set_phase(Phase.MISSION_FAILED)
+	event.emit("attempt_finished",{"score":score,"success":false,"destroyed":false,"bonus":0,"lost":last_bonus,"run_serial":run_serial})
+
 func apply_pickup(kind: String) -> void:
 	var useful := false
 	match kind:
@@ -658,7 +691,7 @@ func _update_particles(delta: float) -> void:
 	particles = particles.filter(func(particle: Dictionary) -> bool: return particle.age < particle.duration)
 
 func status() -> Dictionary:
-	return {"phase": Phase.keys()[phase], "mission":mission_id, "landing_weather":CarrierLanding.WEATHER[landing.weather], "landing_attempts":landing.attempts, "wire_caught":landing.caught, "wave": wave_index + 1, "armor": armor,
+	return {"phase": Phase.keys()[phase], "mission":mission_id, "surface_objectives":surface.objectives(),"radar_alarms":surface.alarm_count,"failure_reason":failure_reason,"landing_weather":CarrierLanding.WEATHER[landing.weather], "landing_attempts":landing.attempts, "wire_caught":landing.caught, "wave": wave_index + 1, "armor": armor,
 		"counterattack": counterattack, "counter_round": counter_round, "counter_completed": counter_completed, "reserve": survivor_reserve.size(),
 		"weapon": weapon, "rolls": rolls, "active_bullets": active_bullets(), "bullet_capacity": current_capacity(), "penetration": current_penetration(), "bonus_pending": bonus_pending, "last_bonus": last_bonus, "score": score, "kills": kills, "spawned": spawned,
 		"seconds": snappedf(mission_time, 0.01), "enemies": enemies.size(), "bullets": bullets.size(),

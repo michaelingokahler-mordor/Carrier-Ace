@@ -22,11 +22,15 @@ func _ready() -> void:
 	add_child(background)
 	player_visual.model = model
 	add_child(player_visual)
-	for id in ["player", "wildcat", "carrier", "title"] + AircraftCatalog.ENEMY_IDS:
+	for id in ["player", "wildcat", "carrier", "title","twin_mg","radar_antenna"] + AircraftCatalog.ENEMY_IDS + SurfaceCatalog.IDS:
 		var path := "res://assets/art/%s.png" % id
 		if not ResourceLoader.exists(path): path = "res://assets/art/%s.svg" % id
 		if ResourceLoader.exists(path):
 			textures[id] = load(path)
+	for id in SurfaceCatalog.IDS:
+		for suffix in ["_damaged","_wreck"]:
+			var path: String="res://assets/art/%s%s.png" % [id,suffix]
+			if ResourceLoader.exists(path): textures[id+suffix]=load(path)
 
 func _process(delta: float) -> void:
 	if model == null or not model.paused:
@@ -53,6 +57,7 @@ func _draw() -> void:
 		var wire := model.landing.wire_at_catch
 		var hook := model.player+Vector2(0,model.aircraft.sprite_size.y*0.28).rotated(model.landing.heading)
 		draw_polyline(PackedVector2Array([wire+Vector2(-42,0),hook,wire+Vector2(42,0)]),GOLD,2,true)
+	_draw_surface()
 	for pickup in model.pickups:
 		_draw_pickup(pickup)
 	for enemy in model.enemies:
@@ -102,6 +107,47 @@ func _debug_shape(shape: Dictionary, position: Vector2, color: Color) -> void:
 		points.append(points[0])
 		draw_polyline(points, color, 1, true)
 
+func _draw_surface() -> void:
+	if model.phase not in [MissionModel.Phase.WAVES,MissionModel.Phase.MISSION_FAILED]: return
+	for target in model.surface.targets:
+		if not model.surface.visible(target): continue
+		var profile: SurfaceProfile=target.profile
+		if not target.dead and profile.radar:
+			draw_circle(target.pos,220,Color(0.3,0.8,0.95,0.025))
+			draw_arc(target.pos,220,0,TAU,80,Color(0.45,0.85,0.9,0.30),1.2,true)
+			var sweep:=Vector2.from_angle(model.mission_time*1.2)*220
+			draw_line(target.pos,target.pos+sweep,Color(0.4,1,0.85,0.20),1,true)
+			if target.lock>0 and not target.alarm:
+				draw_arc(target.pos,45,-PI/2,-PI/2+TAU*minf(1,target.lock/1.5),48,Color("ffad75"),3,true)
+		if profile.domain=="sea":
+			var wake: Vector2=-Vector2.UP.rotated(target.heading)
+			for side in [-1,1]:
+				var start: Vector2=target.pos+wake*profile.sprite_size.y*0.35
+				var end: Vector2=start+wake*35+wake.orthogonal()*side*9
+				draw_line(start,end,Color(0.7,0.93,0.95,0.2),5,true)
+		draw_set_transform(target.pos,target.heading)
+		var id: String=profile.id+("_wreck" if target.dead else "_damaged" if target.hp<profile.armor else "")
+		if textures.has(id): _sprite(id,Vector2.ZERO,profile.sprite_size)
+		else: _sprite(profile.id,Vector2.ZERO,profile.sprite_size,Color(0.45,0.47,0.43) if target.dead else Color.WHITE)
+		draw_set_transform(Vector2.ZERO)
+		if target.dead: continue
+		if profile.radar:
+			draw_set_transform(target.pos,model.mission_time*0.5)
+			if textures.has("radar_antenna"): draw_texture_rect(textures.radar_antenna,Rect2(-22,-22,44,44),false)
+			draw_set_transform(Vector2.ZERO)
+			if target.alarm: _text(target.pos+Vector2(-20,-40),"ALERT",11,Color("ffad75"))
+		else:
+			var mount: Vector2=target.pos+profile.gun_mount.rotated(target.heading)
+			draw_set_transform(mount,target.turret_angle)
+			if textures.has("twin_mg"): draw_texture_rect(textures.twin_mg,Rect2(-16,-16,32,32),false)
+			if target.muzzle>0:
+				for side in [-1,1]: draw_circle(Vector2(side*4,-15),3,Color("ffeeb0"))
+			draw_set_transform(Vector2.ZERO)
+			if target.warning>0: draw_line(mount,mount+target.aim*100,Color(1,0.6,0.3,0.5),2,true)
+		for index in profile.armor:
+			draw_rect(Rect2(target.pos+Vector2((index-(profile.armor-1)*0.5)*8-3,profile.sprite_size.y*0.5+5),Vector2(6,3)),GOLD if index<target.hp else Color("37525b"))
+		if model.debug_collisions: _debug_shape(target.shape,target.pos,Color("e4c47f"))
+
 func _draw_title() -> void:
 	if textures.has("title"):
 		draw_texture_rect(textures.title, Rect2(0, 0, 960, 540), false)
@@ -109,7 +155,7 @@ func _draw_title() -> void:
 	_text(Vector2(58, 99), "OPERATION BLUE HORIZON", 14, Color("183a4a"))
 	_text(Vector2(55, 175), "CARRIER", 64, Color("f2e6cd"))
 	_text(Vector2(55, 237), "ACE", 64, GOLD)
-	_text(Vector2(60, 511), "ARCADE FLIGHT MISSION  /  0.7", 12, Color("a3b8bc"))
+	_text(Vector2(60, 511), "ARCADE FLIGHT MISSION  /  0.8", 12, Color("a3b8bc"))
 	_text(Vector2(450, 511), "(C)2026 by Sabnock Works", 12, GOLD)
 	_text(Vector2(710, 511), "HIGH SCORE  %06d" % high_score, 13, GOLD)
 
@@ -217,6 +263,7 @@ func _draw_pickup(pickup: Dictionary) -> void:
 func _draw_explosion(particle: Dictionary) -> void:
 	var progress: float = particle.age / particle.duration
 	var radius := (62.0 if particle.big else 30.0) * sin(progress * PI)
+	if particle.get("impact",false): radius *= 0.3
 	for index in range(9):
 		var angle := index * TAU / 9 + progress * 0.6
 		var center: Vector2 = particle.pos + Vector2.from_angle(angle) * radius * 0.55
@@ -254,6 +301,7 @@ func _draw_hud() -> void:
 		MissionModel.Phase.BOSS: phase_text = "BEHEMOTH"
 		MissionModel.Phase.APPROACH, MissionModel.Phase.LANDING: phase_text = "RETURN"
 		MissionModel.Phase.VICTORY: phase_text = "COMPLETE"
+		MissionModel.Phase.MISSION_FAILED: phase_text = "FAILED"
 		MissionModel.Phase.DOWNED, MissionModel.Phase.GAME_OVER: phase_text = "PLANE LOST"
 	_text(Vector2(673, 24), "MISSION", 11, Color("92bdc5"))
 	_text(Vector2(673, 46), phase_text, 16, Color("f0e3c5"))
@@ -265,6 +313,8 @@ func _draw_hud() -> void:
 		draw_rect(Rect2(left - 20, 83, text_width + 40, 37), Color(0.02, 0.10, 0.14, 0.91))
 		_text(Vector2(left, 108), message, 18, GOLD)
 	_text(Vector2(22, 524), "BONUS POINTS  %06d" % model.bonus_pending, 12, GOLD)
+	if model.mission_id>=3:
+		_text(Vector2(290,524),("SHIPS" if model.mission_id==3 else "RADAR")+" %d/2" % mini(2,model.surface.objectives()),14,CYAN)
 
 func _text(position: Vector2, text: String, size: int, color: Color) -> void:
 	draw_string(font, position, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)

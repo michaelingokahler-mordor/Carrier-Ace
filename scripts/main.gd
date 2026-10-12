@@ -59,6 +59,7 @@ func _ready() -> void:
 	get_window().focus_entered.connect(func() -> void: audio.backgrounded = false)
 	_show_title()
 	for argument in OS.get_cmdline_user_args():
+		if argument == "--verify-radar-alarms": bot.wait_for_radar=true
 		if argument == "--verify": verify = true
 		if argument == "--verify-wildcat":
 			verify = true
@@ -67,6 +68,12 @@ func _ready() -> void:
 			verify = true
 			fleet.mission = 2
 			fleet.select("hellcat")
+		if argument.begins_with("--verify-mission="):
+			var requested := clampi(int(argument.trim_prefix("--verify-mission=")),1,4)
+			if requested<=fleet.completed+1:
+				verify=true
+				fleet.mission=requested
+				fleet.select("hellcat")
 		if argument == "--collisions": model.debug_collisions = true
 		if argument == "--verify-real-time":
 			verify = true
@@ -79,11 +86,16 @@ func _ready() -> void:
 	if OS.has_feature("web"):
 		model.debug_collisions = bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('collisions') === '1'"))
 	if OS.has_feature("web") and verify:
+		bot.wait_for_radar=bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('radar') === '1'"))
 		verification_speed = 1 if bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('realtime') === '1'")) else 12
 		if bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('aircraft') === 'wildcat'")): fleet.select("wildcat")
 		if fleet.completed >= 1 and bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('mission') === '2'")):
 			fleet.mission = 2
 			fleet.select("hellcat")
+	if OS.has_feature("web") and verify:
+		var requested := clampi(int(JavaScriptBridge.eval("Number(new URLSearchParams(location.search).get('mission') || 1)")),1,4)
+		if requested<=fleet.completed+1:
+			fleet.mission=requested
 	if verify:
 		silent = true
 		model.loot_rng.seed = 1943
@@ -105,7 +117,7 @@ func _physics_process(delta: float) -> void:
 	if int(model.phase) != state_seen:
 		state_seen = model.phase
 		_handle_phase()
-	if verify and model.phase in [MissionModel.Phase.VICTORY, MissionModel.Phase.GAME_OVER] and not verification_complete:
+	if verify and model.phase in [MissionModel.Phase.VICTORY, MissionModel.Phase.GAME_OVER, MissionModel.Phase.MISSION_FAILED] and not verification_complete:
 		verification_complete = true
 		_write_verification()
 	var active := model.phase in [MissionModel.Phase.TAKEOFF, MissionModel.Phase.WAVES, MissionModel.Phase.BOSS, MissionModel.Phase.APPROACH, MissionModel.Phase.LANDING]
@@ -155,7 +167,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_show_pause()
 		elif menu in ["controls_title", "sound_title", "aircraft_title", "credits_title", "options_title", "highscores_title"]:
 			_show_title()
-		elif model.phase not in [MissionModel.Phase.TITLE, MissionModel.Phase.VICTORY, MissionModel.Phase.GAME_OVER, MissionModel.Phase.DOWNED]:
+		elif model.phase not in [MissionModel.Phase.TITLE, MissionModel.Phase.VICTORY, MissionModel.Phase.GAME_OVER, MissionModel.Phase.DOWNED, MissionModel.Phase.MISSION_FAILED]:
 			if model.paused:
 				_resume()
 			else:
@@ -203,9 +215,14 @@ func _on_model_event(kind: String, data: Dictionary) -> void:
 			if data.success and data.run_serial == model.run_serial and settled_run != data.run_serial:
 				settled_run = data.run_serial
 				bonus_bank += data.bonus
-			fleet.finish(data.success, model.armor, model.mission_id)
+			if data.get("destroyed",true): fleet.finish(data.success, model.armor, model.mission_id)
+			else: fleet.abort(model.armor)
 			view.bonus_bank = bonus_bank
 			if not verify: _save_preferences()
+		"radar_alarm": view.announce("RADAR ALERT · FIGHTER REINFORCEMENTS INBOUND",3)
+		"surface_hit":
+			if not silent: audio.sound("hit")
+		"surface_destroyed": view.announce("MG NEST DESTROYED" if data.kind=="mg_nest" else ("RADAR DESTROYED" if data.kind=="radar_station" else "SHIP DESTROYED")+" · %d/2" % mini(2,data.count),2)
 		"restart": view.announce(model.aircraft.display_name.to_upper() + " · CLEARED FOR TAKEOFF", 4)
 		"boss_maneuver": view.announce("BOMBER TURNING · PASS %d / 3" % data.pass, 3)
 
@@ -229,10 +246,19 @@ func _handle_phase() -> void:
 			view.announce("AIRCRAFT LOST · GAME OVER", 0.8)
 		MissionModel.Phase.VICTORY:
 			_show_result(true)
+		MissionModel.Phase.MISSION_FAILED:
+			_show_result(false)
 		MissionModel.Phase.GAME_OVER:
 			_show_result(false)
 
 func _start_run() -> void:
+	if verify:
+		verification_complete=false
+		focused_seconds=0
+		frame_count=0
+		performance_elapsed=0
+		fps_samples.clear()
+		screenshot_requests.clear()
 	if fleet.active != "": fleet.abort(model.armor)
 	var receipt := fleet.launch()
 	if receipt.is_empty():
@@ -273,6 +299,7 @@ func _title_again() -> void:
 	model.enemies.clear()
 	model.bullets.clear()
 	model.pickups.clear()
+	model.surface.setup(1)
 	_show_title()
 	audio.music("title_music")
 
@@ -366,11 +393,12 @@ func _show_hangar() -> void:
 	audio.end_flight()
 	menu = "hangar"
 	var panel := _panel("Hangar · Bank %06d" % bonus_bank, Vector2(920, 520))
-	for number in [1,2]:
-		var mission_button := _button(panel,"Mission %d" % number,Vector2(620+(number-1)*140,27),Vector2(130,34),func() -> void:
+	for number in [1,2,3,4]:
+		var mission_button := _button(panel,"Mission %d" % number,Vector2(438+(number-1)*113,27),Vector2(105,34),func() -> void:
 			fleet.mission=number
 			_show_hangar(),fleet.mission==number)
-		mission_button.disabled=number==2 and fleet.completed<1
+		mission_button.add_theme_font_size_override("font_size",13)
+		mission_button.disabled=number>fleet.completed+1
 	for index in HangarState.IDS.size():
 		var id: String = HangarState.IDS[index]
 		var card := _button(panel, HangarState.SPECS[id][0] + ("" if fleet.available(id) else "\nLocked"), Vector2(20 + index * 148, 72), Vector2(140, 64), func() -> void:
@@ -479,7 +507,7 @@ func _show_highscores(back: String) -> void:
 		var y := 116 + index * 28
 		_label(panel, str(index + 1), Vector2(28, y), Vector2(60, 26), 17)
 		_label(panel, row.name, Vector2(100, y), Vector2(310, 26), 17)
-		_label(panel, "%06d  ·  %s" % [row.score, "RECORD" if row.get("legacy", false) else "LANDED" if row.success else "LOST"], Vector2(426, y), Vector2(226, 26), 17)
+		_label(panel, "%06d  ·  %s" % [row.score, "RECORD" if row.get("legacy", false) else "LANDED" if row.success else "FAILED" if row.get("outcome", "lost")=="failed" else "LOST"], Vector2(426, y), Vector2(226, 26), 17)
 	_label(panel, "Top 10 · saved locally on this device", Vector2(28, 407), Vector2(624, 25), 14)
 	var first := _button(panel, "Back", Vector2(28, 443), Vector2(624, 32), func() -> void:
 		if back == "result": _show_result(result_success)
@@ -487,10 +515,10 @@ func _show_highscores(back: String) -> void:
 	first.grab_focus()
 
 func _record_highscore(name: String) -> bool:
-	if model.phase not in [MissionModel.Phase.GAME_OVER, MissionModel.Phase.VICTORY] or submitted_run == model.run_serial:
+	if model.phase not in [MissionModel.Phase.GAME_OVER, MissionModel.Phase.VICTORY, MissionModel.Phase.MISSION_FAILED] or submitted_run == model.run_serial:
 		return false
 	player_name = _clean_pilot_name(name)
-	high_scores.append({"name": player_name, "score": model.last_attempt_score, "success": model.phase == MissionModel.Phase.VICTORY})
+	high_scores.append({"name": player_name, "score": model.last_attempt_score, "success": model.phase == MissionModel.Phase.VICTORY,"outcome":"landed" if model.phase==MissionModel.Phase.VICTORY else "failed" if model.phase==MissionModel.Phase.MISSION_FAILED else "lost"})
 	_sort_highscores()
 	submitted_run = model.run_serial
 	_save_preferences()
@@ -652,9 +680,9 @@ func _show_result(success: bool) -> void:
 	audio.end_flight()
 	result_success = success
 	menu = "result"
-	var panel := _panel("Welcome Aboard" if success else "Game Over", Vector2(660, 490))
-	var subtitle := "Carrier reached. Your aircraft has landed safely." if success else "Your aircraft was lost. Start a new mission."
-	_label(panel, subtitle, Vector2(28, 79), Vector2(454, 36), 16)
+	var panel := _panel("Welcome Aboard" if success else "Mission Failed" if model.phase==MissionModel.Phase.MISSION_FAILED else "Game Over", Vector2(660, 490))
+	var subtitle := "Carrier reached. Your aircraft has landed safely." if success else "Required target escaped. Your aircraft and upgrades are retained." if model.phase==MissionModel.Phase.MISSION_FAILED else "Your aircraft was lost. Start a new mission."
+	_label(panel, subtitle, Vector2(28, 79), Vector2(604, 36), 16)
 	var ratio := float(model.kills) / maxi(1, model.spawned) * 100
 	_label(panel, "SCORE  %06d       HIGH SCORE  %06d\nKILLS  %d / %d   ·   RATE  %.0f%%\nFLIGHT TIME  %02d:%02d" % [model.last_attempt_score, high_score, model.kills, model.spawned, ratio, int(model.mission_time) / 60, int(model.mission_time) % 60], Vector2(28, 130), Vector2(454, 90), 18, Color("e4c47f"))
 	_label(panel, ("BONUS DEPOSITED  %06d" if success else "BONUS LOST  %06d") % model.last_bonus + "\nBONUS BANK  %06d" % bonus_bank, Vector2(28, 229), Vector2(454, 55), 18, Color("78dedb"))
@@ -695,7 +723,7 @@ func _read_preferences() -> void:
 	if stored is Array:
 		for entry in stored:
 			if entry is Dictionary and entry.get("score") is int and entry.score >= 0:
-				high_scores.append({"name": _clean_pilot_name(str(entry.get("name", "Pilot"))), "score": entry.score, "success": bool(entry.get("success", false)), "legacy": bool(entry.get("legacy", false))})
+				high_scores.append({"name": _clean_pilot_name(str(entry.get("name", "Pilot"))), "score": entry.score, "success": bool(entry.get("success", false)), "legacy": bool(entry.get("legacy", false)), "outcome":"failed" if entry.get("outcome","")=="failed" else "landed" if entry.get("success",false) else "lost"})
 	if not file.has_section_key("game", "high_scores") and high_score > 0:
 		high_scores.append({"name": "Previous record", "score": high_score, "success": false, "legacy": true})
 	_sort_highscores()
@@ -744,6 +772,10 @@ func _capture_verification() -> void:
 	var name := ""
 	if model.phase == MissionModel.Phase.WAVES and model.combat_time > 16: name = "combat"
 	if model.phase == MissionModel.Phase.BOSS and model.state_time > 2.5: name = "boss"
+	if model.phase == MissionModel.Phase.WAVES and model.mission_id >= 3:
+		for target in model.surface.targets:
+			if model.surface.visible(target) and not target.dead and target.pos.y > 210: name = "surface_%d" % target.id
+			if target.alarm: name = "radar_alarm"
 	if model.phase == MissionModel.Phase.APPROACH and model.state_time > MissionModel.CARRIER_RETURN_TIME: name = "approach"
 	if model.phase == MissionModel.Phase.VICTORY: name = "victory"
 	if name != "" and not screenshot_requests.has(name):

@@ -131,9 +131,8 @@ func finish(success: bool, armor: int, mission_id: int = 1) -> void:
   var new_hellcat: bool = not unlocked.get("hellcat",false)
   unlocked["hellcat"] = true
   completed = maxi(completed, mission_id)
-  if mission_id == 1 and completed == 1:
-   mission = 2
-   if new_hellcat: selected = "hellcat"
+  if mission_id == completed: mission = mini(4,completed+1)
+  if new_hellcat: selected = "hellcat"
  else:
   machines[id] = fresh(id)
  active = ""
@@ -185,8 +184,8 @@ func restore(data: Dictionary, legacy: bool = false) -> void:
     machines[id].pending = {"bullets":clampi(int(pending.get("bullets",0)),0,(18-capacity(id))/2),"speed":clampi(int(pending.get("speed",0)),0,20-speed_quarters(id)),"weapon":clampi(int(pending.get("weapon",1)),1,3),"penetration":clampi(int(pending.get("penetration",0)),0,3-penetration(id))}
  var desired: String = str(data.get("selected",selected))
  if available(desired): selected = desired
- completed = clampi(int(data.get("completed",1 if unlocked.get("hellcat",false) else 0)),0,2)
- mission = clampi(int(data.get("mission",1)),1,2 if completed >= 1 else 1)
+ completed = clampi(int(data.get("completed",1 if unlocked.get("hellcat",false) else 0)),0,4)
+ mission = clampi(int(data.get("mission",1)),1,mini(4,completed+1))
  # A lost process is an aborted flight; reserved purchases were already consumed.
  # A zero-armor interrupted death must still lose the destroyed airframe.
  for id in IDS:

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SurfaceProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/surface_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "aux_minesweeper"
+armor = 2
+patrol_speed = 22.0
+points = 400
+sprite_size = Vector2(80, 112)
+gun_mount = Vector2(0, -25)
+hit_polygons = Array[PackedVector2Array]([PackedVector2Array(-0.00625, -0.4241071, 0.00625, -0.4241071, 0.05625, -0.3526786, 0.10625, -0.2366071, 0.125, -0.1473214, 0.1375, 0.0223214, 0.125, 0.2321429, 0.09375, 0.4330357, 0.0875, 0.4419643, 0.06875, 0.4464286, 0.00625, 0.4508929, -0.0875, 0.4419643, -0.09375, 0.4285714, -0.11875, 0.28125, -0.1375, 0.0535714, -0.13125, -0.0848214, -0.1125, -0.2142857, -0.06875, -0.3303571)])

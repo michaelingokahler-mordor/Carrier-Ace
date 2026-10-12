@@ -1,6 +1,6 @@
-# Carrier Ace 0.5.0 – Hangar und Maschinenzustand
+# Carrier Ace 0.8.0 – Hangar und Maschinenzustand
 
-Stand: 12.10.2026. Oberfläche Englisch. Die vier weiteren Modelle sind gesperrte Vorschauen; Spezialmunition und weitere Missionen folgen später.
+Stand: 12.10.2026. Oberfläche Englisch. Die vier weiteren Modelle sind gesperrte Vorschauen; Spezialmunition folgt später. Vier Missionen sind verfügbar und werden nacheinander durch erfolgreiche Landungen freigeschaltet.
 
 ## Ablauf
 

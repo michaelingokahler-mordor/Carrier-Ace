@@ -1,0 +1,113 @@
+{
+  "version": "0.8.0",
+  "budget": 160,
+  "spent": 156,
+  "remaining": 4,
+  "workspace_before": 3043,
+  "workspace_after": 2887,
+  "pricing": "https://docs.dev.runwayml.com/guides/pricing/",
+  "generations": [
+    {
+      "asset": "minesweeper",
+      "task_id": "821fce5e-3956-4f9a-8c9e-cc8ad1bc8e14",
+      "model": "gen4_image",
+      "credits": 8,
+      "accepted": true,
+      "prompt": "One isolated WWII Japanese coastal minesweeper hull for a detailed painted 2D naval arcade game. Strict orthographic top-down camera, bow pointing straight up. Slender grey steel hull, weathered teak deck, small bridge, lifeboat and aft minesweeping machinery, clearly separated readable details. Leave a small empty circular gun mounting on foredeck: the game adds a rotating twin MG separately. Entire ship centered with generous margins. Upper-left lighting, muted blue-grey and warm wood, polished illustrative detail, no pixel art. No water, no wake, no ground shadows, no text. Outside the ship is pure flat magenta #FF00FF for transparency keying."
+    },
+    {
+      "asset": "aux_minesweeper",
+      "task_id": "df070ece-5fa8-4e81-941e-a5958590f1d4",
+      "prompt": "Exactly ONE small Japanese WWII auxiliary minesweeper, isolated on flat pure magenta background #FF00FF. TRUE ORTHOGRAPHIC PLAN VIEW directly from vertically overhead, showing roof tops and decks only, NEVER showing hull sides. Bow precisely points to the TOP of image, stern to bottom. NO second vessel. Complete long narrow hull, weathered steel and wooden deck, tiny bridge, rear winch, EMPTY small round gun mount on foredeck. No weapon barrels, shadows, wake or ocean. Entire vessel inside frame with clear margins. Detailed finely painted game sprite with subtle light from upper left, restrained outlines and realistic material texture.",
+      "model": "nano-banana-pro",
+      "credits": 20,
+      "accepted": true
+    },
+    {
+      "asset": "aux_minesweeper",
+      "task_id": "68db20e9-0662-4c82-81c9-6d5b04b87ddf",
+      "prompt": "One isolated small WWII Japanese auxiliary minesweeper fishing trawler converted for coastal patrol. Strict orthographic top-down camera, bow UP. Short broad steel and wooden hull, tiny bridge, lifeboat, aft winch. Empty circular mounting on forward deck for a separate rotating twin MG. Detailed realistic painted 2D arcade sprite, fine shading and panel detail, no heavy black outlines, upper-left light. Entire hull centered with generous margins. No water, no wake, no shadows, no text. Outside hull pure flat magenta #FF00FF.",
+      "model": "gen4_image",
+      "credits": 8,
+      "accepted": false,
+      "reason": "wrong perspective, geometry or background"
+    },
+    {
+      "asset": "radar_station",
+      "task_id": "47e3d185-1dbe-42f1-9844-400e9ea7b773",
+      "prompt": "Exactly ONE tiny WWII coastal radar station BASE on pure flat magenta #FF00FF. TRUE ORTHOGRAPHIC PLAN VIEW, camera looks vertically straight DOWN showing roofs and horizontal surfaces only. NO isometric perspective, NO building sides. Rectangular concrete platform, one small grey utility shed, a central circular mast socket viewed from above. No tower, mast, antenna or dish: moving mast and dipole array will be added by the game. Isolated complete base with generous margins. Fine painted high detail arcade illustration, realistic steel and concrete, upper-left lighting, no heavy outlines, no cast shadow, no ground.",
+      "model": "nano-banana-pro",
+      "credits": 20,
+      "accepted": true
+    },
+    {
+      "asset": "radar_station",
+      "task_id": "63287d25-67b9-4122-9503-3a98c31b87ea",
+      "prompt": "One isolated WWII Japanese Type 11 coastal early-warning radar installation BASE WITHOUT ANTENNA for an overhead 2D military arcade game. Strict orthographic top-down. Concrete square platform, small utility hut with grey steel roof, central mast bearing with bolts and cables. No modern dish and NO antenna, the antenna is animated separately. Realistic detailed painted illustration, fine material shading, upper-left light, no heavy black outlines. Entire object centered, generous margins. No terrain, no cast shadows, no text. Background pure flat magenta #FF00FF.",
+      "model": "gen4_image",
+      "credits": 8,
+      "accepted": false,
+      "reason": "wrong perspective, geometry or background"
+    },
+    {
+      "asset": "mg_nest",
+      "task_id": "d41c20f6-146e-4a78-86c2-b960b6405765",
+      "prompt": "Exactly ONE circular sandbag anti-aircraft emplacement BASE on pure flat magenta #FF00FF. TRUE ORTHOGRAPHIC PLAN VIEW vertically straight down, only sandbag tops and floor visible. NO isometric view and NO wall sides. Empty central circular swivel mounting and a few ammunition crates. Absolutely NO gun, NO weapon barrels, NO crew. Entire circle isolated centered with generous margins. Detailed finely painted WWII game illustration, muted sand and olive palette, upper-left lighting, no heavy outlines, no cast shadows, no surrounding terrain.",
+      "model": "nano-banana-pro",
+      "credits": 20,
+      "accepted": true
+    },
+    {
+      "asset": "mg_nest",
+      "task_id": "2b47a9b4-8b38-4988-9e41-8bb0ce66c183",
+      "prompt": "One isolated WWII coastal anti-aircraft machine gun nest BASE WITHOUT GUN for an overhead 2D arcade game. Strict orthographic top-down. Circular sandbag emplacement, ammunition boxes, camouflage net folded aside, empty central pivot mounting for a separate rotating twin MG. Realistic finely painted illustration, subtle material shading, upper-left light, no heavy black outlines. Entire object centered, generous margins. No surrounding terrain, no gun barrels, no cast shadows, no text. Background pure flat magenta #FF00FF.",
+      "model": "gen4_image",
+      "credits": 8,
+      "accepted": false,
+      "reason": "wrong perspective, geometry or background"
+    },
+    {
+      "asset": "island_coast",
+      "task_id": "e05dfd0f-c641-4c5c-8943-69fa8cdd3011",
+      "prompt": "One isolated tropical coastal island for a detailed painted overhead naval arcade game. Strict orthographic top-down. Irregular crescent coastline with safe open water outside, pale sandy coves, palms, charcoal rocky outcrops and reef shelves. Entire land silhouette centered with generous margins, occupies 75 percent of frame. Rich realistic natural detail, emerald foliage and cream beaches, upper-left light, no outlines. LAND ONLY, no ocean, no waves, no blue water, no shadows, no text. Outside land pure flat magenta #FF00FF.",
+      "model": "gen4_image",
+      "credits": 8,
+      "accepted": false
+    },
+    {
+      "asset": "island_mountain",
+      "task_id": "52ef959e-0dbd-412b-9e0f-483bb17a6867",
+      "prompt": "Exactly ONE complete irregular tropical volcanic island on pure flat magenta #FF00FF. TRUE ORTHOGRAPHIC MAP PLAN VIEW from vertically straight overhead. Terrain like a highly detailed game map, never a scenic landscape. NO horizon, NO sky, NO side-on mountain. Central rocky ridge rendered with top-down elevation shading, dense emerald palm forest, small empty clearing at CENTER for radar, pale irregular beach. Entire island inside frame with generous margins. No water, no ocean, no blue pixels, no structures, no labels or cast shadow. Fine natural painterly texture, upper-left lighting.",
+      "model": "nano-banana-pro",
+      "credits": 20,
+      "accepted": true
+    },
+    {
+      "asset": "island_mountain",
+      "task_id": "658b5f3f-e8dd-41fb-8a4d-e85366302576",
+      "prompt": "One isolated small tropical volcanic mountain island for a detailed painted overhead naval arcade game. Strict orthographic top-down, no horizon. A rocky summit in the center with a small flat empty installation clearing, dense palm forest, irregular cream beaches and natural headlands. Entire land centered with generous margins. Rich detailed realistic painted natural textures, upper-left lighting, no heavy outlines. LAND ONLY, no water, no buildings, no ocean, no shadows, no text. Outside the land pure flat magenta #FF00FF.",
+      "model": "gen4_image",
+      "credits": 8,
+      "accepted": false,
+      "reason": "wrong perspective, geometry or background"
+    },
+    {
+      "asset": "island_fortress",
+      "task_id": "7b60b640-723c-46c9-a89a-b8d0f472bb6b",
+      "prompt": "Exactly ONE complete broad tropical island on pure flat magenta #FF00FF. TRUE ORTHOGRAPHIC MAP PLAN VIEW from vertically straight overhead; never perspective, never a scenic landscape. Two elevated rocky hill ridges seen from above with top-down shaded rock textures, palm valley, empty clearings near center-left and southeast coast for game structures. Irregular cream beaches and dark cliffs. No second island, no ocean, no blue water, no horizon, no sky, no buildings, no shadows, no text. Entire island centered with generous margins, fine natural painterly texture, upper-left lighting.",
+      "model": "nano-banana-pro",
+      "credits": 20,
+      "accepted": true
+    },
+    {
+      "asset": "island_fortress",
+      "task_id": "46bcb201-5b10-4756-ba98-70d356d27d43",
+      "prompt": "One isolated broad tropical volcanic island for a detailed painted overhead naval arcade game. Strict orthographic top-down, no horizon. Two rocky elevated ridges, empty flat installation clearings near center and southeast coast, dense palm valleys, irregular sandy bays, dark rock cliffs. Entire complete island centered with generous border. Rich fine realistic painted textures, upper-left lighting, no heavy outlines. LAND ONLY, no buildings, no water, no ocean, no shadows, no text. Outside land pure flat magenta #FF00FF.",
+      "model": "gen4_image",
+      "credits": 8,
+      "accepted": false,
+      "reason": "wrong perspective, geometry or background"
+    }
+  ],
+  "processing": "Original PNGs downloaded through the browser. Magenta matte removed locally; final sprites, damage and wreck variants, independent SVG turret and antenna, shoreline masks and convex contours prepared locally. Coast motif derived from existing approved island_1. Raw drafts excluded from repository."
+}

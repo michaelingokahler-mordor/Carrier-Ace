@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SurfaceProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/surface_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "radar_station"
+domain = "ground"
+patrol_speed = 0.0
+sprite_size = Vector2(64, 64)
+gun_mount = Vector2(0, 0)
+radar = true
+hit_polygons = Array[PackedVector2Array]([PackedVector2Array(0.421875, -0.3046875, 0.421875, -0.03125, 0.3359375, -0.0390625, -0.421875, -0.3046875), PackedVector2Array(-0.421875, 0.3046875, -0.421875, -0.3046875, 0.3359375, -0.0390625, 0.3359375, 0.0390625, -0.046875, 0.21875), PackedVector2Array(0.421875, 0.0390625, 0.421875, 0.296875, 0.046875, 0.3046875, 0.046875, 0.21875, 0.3359375, 0.0390625), PackedVector2Array(-0.046875, 0.21875, -0.046875, 0.3046875, -0.421875, 0.3046875), PackedVector2Array(-0.046875, 0.21875, 0.3359375, 0.0390625, 0.046875, 0.21875)])

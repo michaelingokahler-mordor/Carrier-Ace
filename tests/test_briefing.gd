@@ -44,7 +44,7 @@ func run() -> void:
  check(game.fleet.completed==1 and game.fleet.available("hellcat"),"second mission loss keeps access")
  game._start_run()
  game.fleet.finish(true,2,2)
- check(game.fleet.completed==2 and game.fleet.mission==2,"campaign ends without nonexistent third mission")
+ check(game.fleet.completed==2 and game.fleet.mission==3,"mission two unlocks coastal interdiction")
  var original: WaveProfile=load("res://resources/wave_1.tres")
  check(original.density==3 and not original.enemy_ids.has("fighter_1"),"mission one resource unchanged")
  game.audio.shutdown()

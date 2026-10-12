@@ -1,12 +1,12 @@
-# Carrier Ace 0.7.0 – Operation Blue Horizon
+# Carrier Ace 0.8.0 – Operation Blue Horizon
 
-Ein Arcade-Flugspiel mit F4F Wildcat und freischaltbarer F6F Hellcat, sechs Gegnerwellen, zwei Counterattacks, neun regulären Gegnerprofilen, separatem B-99-Boss und Trägerlandung. Die Spieloberfläche ist Englisch; diese Dokumentation bleibt Deutsch. Ein erfolgreicher Prüfflug dauert rund fünf Minuten.
+Ein Arcade-Flugspiel mit F4F Wildcat und freischaltbarer F6F Hellcat. Vier Missionen bieten sechs Luftwellen, zwei Counterattacks und eine Trägerlandung. Mission 1/2 behalten den B-99-Boss. Mission 3/4 führen Küstenschiffe und Radarstationen ein. Die Spieloberfläche ist Englisch, die Dokumentation Deutsch. Ein erfolgreicher Flug dauert ungefähr vier bis fünf Minuten.
 
 ## Spielen
 
-Windows: `CarrierAce-0.7.0-Windows-x64.zip` entpacken und `CarrierAce.exe` starten. Es ist keine Installation erforderlich.
+Windows: `CarrierAce-0.8.0-Windows-x64.zip` entpacken und `CarrierAce.exe` starten. Es ist keine Installation erforderlich.
 
-Browser: `CarrierAce-0.7.0-Web.zip` entpacken und `Start-Browser.cmd` starten. Der mitgelieferte Server stellt das Spiel unter `http://127.0.0.1:1942/` bereit; Strg+C beendet ihn. Bei belegtem Port: `CarrierServer.exe --port=1943`. Der Server benötigt das in Windows enthaltene .NET Framework 4.x. Alternativ im Webordner `python -m http.server 1942 --bind 127.0.0.1` ausführen.
+Browser: `CarrierAce-0.8.0-Web.zip` entpacken und `Start-Browser.cmd` starten. Der mitgelieferte Server stellt das Spiel unter `http://127.0.0.1:1942/` bereit; Strg+C beendet ihn. Bei belegtem Port: `CarrierServer.exe --port=1943`. Der Server benötigt das in Windows enthaltene .NET Framework 4.x. Alternativ im Webordner `python -m http.server 1942 --bind 127.0.0.1` ausführen.
 
 `index.html` über HTTP öffnen. Der Browser benötigt WebGL 2. Die erste Eingabe schaltet Audio frei. Alle Laufzeitdateien liegen lokal; das Spiel ruft keine externen Generierungsdienste auf.
 
@@ -31,11 +31,13 @@ Nach Welle 3 und 6 kehren entkommene Mitglieder der bisherigen Formationen in ei
 
 Alle Flugzeuge besitzen Konturflächen für Rumpf, Flügel und Leitwerk. Schatten und Propellerunschärfe zählen nicht. Die Prüfung berücksichtigt bewegte Ziele und Geschossbreite.
 
-Nach dem Boss beginnt ein Landeminispiel mit zufälligem Wetter und Seitenwind. Im angezeigten Korridor gegensteuern; Auf/Ab regelt das Anflugtempo. Der Heckhaken muss die Fangleine mit passender Ausrichtung, geringer Seitendrift und Tempo 20–44 erreichen. Ein misslungener Anflug führt ohne Armor-Verlust zu einem neuen Versuch. Die Flugzeugübersicht unter **Aircraft** zeigt nur Grundwerte. Sie lässt sich auch während der Pause öffnen.
+Nach erfülltem Auftrag beginnt ein Landeminispiel mit zufälligem Wetter und Seitenwind. Im angezeigten Korridor gegensteuern; Auf/Ab regelt das Anflugtempo. Der Heckhaken muss die Fangleine mit passender Ausrichtung, geringer Seitendrift und Tempo 20–44 erreichen. Ein misslungener Anflug führt ohne Armor-Verlust zu einem neuen Versuch. Die Flugzeugübersicht unter **Aircraft** zeigt nur Grundwerte. Sie lässt sich auch während der Pause öffnen.
 
-Eine lokale Top-10-Liste ist über **Highscore** erreichbar. Nach Game Over oder Landung einen Namen (maximal 16 Zeichen) eingeben und **Save Score** wählen; pro Flug ist ein Eintrag möglich. Nicht gespeicherte Einträge verfallen beim Verlassen des Ergebnisses. Der bisherige Rekord wird als Previous record übernommen. **Options** bündelt Controls, Sound & Music und Graphics; Graphics bietet Vollbild.
+Eine lokale Top-10-Liste ist über **Highscore** erreichbar. Nach Game Over, Missionsfehlschlag oder Landung einen Namen (maximal 16 Zeichen) eingeben und **Save Score** wählen; pro Flug ist ein Eintrag möglich. Nicht gespeicherte Einträge verfallen beim Verlassen des Ergebnisses. Der bisherige Rekord wird als Previous record übernommen. **Options** bündelt Controls, Sound & Music und Graphics; Graphics bietet Vollbild.
 
 Highscore-Liste, Bonusbestand und Toneinstellungen werden lokal gespeichert: Windows unter `%APPDATA%\Godot\app_userdata\Carrier Ace\carrier_ace.cfg`, im Browser in dessen lokalem Speicher. Privates Browsen kann dauerhafte Speicherung verhindern.
+
+Mission 3 verlangt zwei von drei zerstörten Küstenschiffen. Mission 4 verlangt beide Radarstationen. Schiffe und MG-Nest kündigen Doppel-MG-Salven an. Radar kann nach 1,5 Sekunden Erfassung zusätzliche Jäger rufen. Pflichtziele dürfen nicht vollständig unten entkommen. **Mission Failed** erhält die Maschine und gesicherte Punkte; Flugboni und ungesicherte Punkte verfallen. Missionen werden durch erfolgreiche Landungen nacheinander freigeschaltet. Einzelheiten stehen in `docs/COASTAL_MISSIONS.md`.
 
 ## Projekt und Builds
 
@@ -50,6 +52,8 @@ python tools/run_godot.py --headless --script tests/test_ui.gd
 python tools/run_godot.py --headless --script tests/test_mission04.gd
 python tools/run_godot.py --headless --script tests/test_hangar.gd
 python tools/run_godot.py --headless --script tests/test_hangar_ui.gd
+python tools/run_godot.py --headless --script tests/test_surface.gd
+python tools/run_godot.py --headless --script tests/test_surface_ui.gd
 python tools/run_godot.py --headless --script tests/test_flight.gd
 python tools/run_godot.py --headless --script tests/test_flight.gd -- --wildcat
 python tools/verify_windows.py
@@ -71,7 +75,8 @@ Fertige PNG- und OGG-Dateien sind versioniert. Die hochauflösende Grafikaufbere
 - `docs/DESIGN.md`: Regeln und Grafikablauf; neue Hangarregeln in `docs/HANGAR.md`.
 - `docs/VALIDATION.md`: tatsächliche Prüfungen, Belege und offene menschliche Abnahme.
 - `assets/manifest.json`: ursprüngliche Generierungen.
-- `assets/revision02.json`: neue Bilder, Aufgaben, Prompts und Budget.
+- `assets/revision02.json`: frühere Bildgenerierungen.
+- `assets/revision08.json`: Küstenassets, Aufgaben, Prompts und Budget.
 - `THIRD_PARTY_NOTICES.md`: Engine- und Asset-Hinweise.
 
 [GitHub-Repository](https://github.com/michaelingokahler-mordor/Carrier-Ace), Hauptbranch `main`. Engine, Builds, Importcache und private Rohentwürfe bleiben außerhalb des Repositorys.

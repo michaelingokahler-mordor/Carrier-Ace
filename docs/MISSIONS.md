@@ -1,4 +1,4 @@
-# Carrier Ace 0.6.0 – Missionsbriefings und zweite Mission
+# Carrier Ace 0.8.0 – Missionsbriefings und vier Missionen
 
 Vor jedem spielergesteuerten Start führt der Hangar über **Mission Briefing** zur Einsatzbesprechung. **Begin Sortie** startet den Flug; **Back to Hangar** und Esc kehren zur Vorbereitung zurück. Das Briefing zeigt Auftrag, ausgewähltes Flugzeug, Feindlage, Rückkehrziel und Belohnung. Es verbraucht keine reservierten Käufe und startet weder Missionszeit noch Kampfsounds.
 
@@ -19,7 +19,7 @@ Die frisch übergebene F6F schützt die Anflugwege des Trägers. Das Briefing er
 | Strike Group | Zickzack | Bomber Ace, Fighter 2, Bomber 2 | 5 |
 | Carrier Defense | Kreuzend | Bomber Ace, Fighter Ace, Bomber 2, Biplane Ace | 5 |
 
-Jede Welle dauert weiterhin 30 Sekunden. Versorgungsformationen, Loot, Schadenswerte, Counterattacks nach Welle 3 und 6 sowie Boss mit 300 Armor bleiben erhalten. Das bisherige Bossverhalten wird nicht verändert. Auch Mission 2 endet mit Anflug, Landung, Ergebnis und Hangar. Nach Abschluss existiert noch keine Mission 3; beide freigeschalteten Missionen sind wiederholbar.
+Jede Welle dauert weiterhin 30 Sekunden. Versorgungsformationen, Loot, Schadenswerte, Counterattacks nach Welle 3 und 6 sowie Boss mit 300 Armor bleiben erhalten. Das bisherige Bossverhalten wird nicht verändert. Auch Mission 2 endet mit Anflug, Landung, Ergebnis und Hangar. Die erfolgreiche Landung schaltet Mission 3 frei. Alle freigeschalteten Missionen sind wiederholbar. Mission 3/4 stehen in COASTAL_MISSIONS.md.
 
 ## Daten und Speicherung
 

@@ -4,17 +4,27 @@ class_name PilotBot
 # Verification pilot uses the same movement, weapons and collisions as a human.
 # No invulnerability, health writes, target kills or time skips are applied.
 var shots := 0
+var wait_for_radar := false
 
 func command(model: MissionModel) -> Dictionary:
 	var desired := Vector2(480, 448)
+	var waiting := false
 	if model.phase == MissionModel.Phase.APPROACH:
 		var correction := (model.landing.wire().x-model.player.x)*1.8-model.landing.wind
 		return {"move":Vector2(clampf(correction/95,-1,1),0),"fire":false,"roll":false}
 	elif model.phase in [MissionModel.Phase.WAVES, MissionModel.Phase.BOSS]:
 		var target: Dictionary = {}
 		var priority := -INF
+		for coastal in model.surface.targets:
+			if coastal.dead or coastal.escaped or not model.surface.visible(coastal): continue
+			if model.mission_id==4 and not coastal.profile.radar: continue
+			if model.mission_id==3 and model.surface.objectives()>=2: continue
+			var value: float=coastal.pos.y+1000
+			if value>priority:
+				priority=value
+				target=coastal
 		for pickup in model.pickups:
-			if pickup.pos.y > 40 and pickup.pos.y < 510:
+			if priority<1000 and pickup.pos.y > 40 and pickup.pos.y < 510:
 				desired = pickup.pos + Vector2(0, 4)
 				priority = INF
 		if priority != INF:
@@ -29,7 +39,12 @@ func command(model: MissionModel) -> Dictionary:
 					target = enemy
 			if not target.is_empty():
 				desired.x = target.pos.x
-				if target.pattern == "boss":
+				if target.get("surface",false):
+					desired.x+=sin(target.heading)*target.profile.patrol_speed*0.08
+					if wait_for_radar and target.profile.radar and not target.alarm:
+						desired.y=clampf(target.pos.y+130,100,448)
+						waiting=true
+				elif target.pattern == "boss":
 					desired.x += cos(target.age * 0.48) * 24
 		var dodge := Vector2.ZERO
 		for bullet in model.bullets:
@@ -47,7 +62,7 @@ func command(model: MissionModel) -> Dictionary:
 	if model.phase in [MissionModel.Phase.WAVES, MissionModel.Phase.BOSS]:
 		vector = safest_move(model, desired, vector.limit_length(1))
 	var danger := imminent_contact(model, vector, 0.15)
-	var fire_pressed := model.fire_timer <= 0 and model.active_bullets() + model.weapon <= model.current_capacity()
+	var fire_pressed := not waiting and model.fire_timer <= 0 and model.active_bullets() + model.weapon <= model.current_capacity()
 	return {"move": vector.limit_length(1.0), "fire": fire_pressed, "roll": danger and model.rolls > 0 and model.invulnerable <= 0}
 
 func future_enemy(enemy: Dictionary, seconds: float) -> Vector2:

@@ -1,8 +1,10 @@
-# Carrier Ace 0.7.0 – Mission und Hangar
+# Carrier Ace 0.8.0 – Mission und Hangar
 
 Die verbindlichen neuen Profil-, Speed-, Shop- und Verlustregeln stehen in [HANGAR.md](HANGAR.md).
 
 Stand: 12.10.2026. Die Spieloberfläche ist Englisch, Entwicklungsdokumentation Deutsch. Godot 4.7.2 Standard, Compatibility-Renderer, logische Welt 960×540 und hochauflösende Canvas-Skalierung bleiben erhalten.
+
+Küstenschiffe, Radaralarme und Pflichtziele der Missionen 3/4 stehen in [COASTAL_MISSIONS.md](COASTAL_MISSIONS.md). Missionsfehlschlag erhält die Maschine, ein Abschuss zerstört ihre Ausbauten.
 
 ## Ein Flug, Armor und Rollen
 

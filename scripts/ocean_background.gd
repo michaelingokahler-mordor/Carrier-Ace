@@ -14,6 +14,8 @@ var islands: Array[Node2D] = []
 var surf_materials: Array[ShaderMaterial] = []
 var island_extents: Array[Vector2] = []
 var scroll_offset := 0.0
+var route: Array=[]
+var route_mission := -1
 
 func _ready() -> void:
 	z_index = -10
@@ -35,13 +37,25 @@ func _ready() -> void:
 	water.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	water.material = water_material
 	add_child(water)
-	for item in ROUTE:
+	_rebuild_route()
+	update_route()
+
+func _rebuild_route() -> void:
+	for island in islands:
+		remove_child(island)
+		island.queue_free()
+	islands.clear()
+	surf_materials.clear()
+	island_extents.clear()
+	route_mission=model.mission_id
+	route=SurfaceCatalog.ROUTES.get(route_mission,ROUTE)
+	for item in route:
 		var island := Node2D.new()
 		add_child(island)
 		islands.append(island)
 		var surf_material := ShaderMaterial.new()
 		surf_material.shader = preload("res://shaders/shore.gdshader")
-		surf_material.set_shader_parameter("noise_tex", noise_texture)
+		surf_material.set_shader_parameter("noise_tex", water_material.get_shader_parameter("noise_tex"))
 		surf_materials.append(surf_material)
 		var land_texture: Texture2D = load("res://assets/art/" + item.id + ".png")
 		var pixel_scale: Vector2 = item.size / Vector2(land_texture.get_size())
@@ -56,20 +70,20 @@ func _ready() -> void:
 				if suffix != "": sprite.material = surf_material
 				island.add_child(sprite)
 		island_extents.append(extent)
-	update_route()
 
 func _process(_delta: float) -> void:
 	update_route()
 
 func update_route() -> void:
 	if model == null or water_material == null: return
+	if route_mission!=model.mission_id: _rebuild_route()
 	visible = model.phase != MissionModel.Phase.TITLE
 	var seconds := model.mission_time
 	scroll_offset = seconds * SCROLL_SPEED
 	water_material.set_shader_parameter("mission_seconds", seconds)
 	water_material.set_shader_parameter("scroll_offset", scroll_offset)
 	for i in islands.size():
-		islands[i].position = ROUTE[i].origin + Vector2(0, scroll_offset)
+		islands[i].position = route[i].origin + Vector2(0, scroll_offset)
 		var half_size: Vector2 = island_extents[i]
 		islands[i].visible = islands[i].position.y + half_size.y >= 0 and islands[i].position.y - half_size.y <= 540
 		surf_materials[i].set_shader_parameter("mission_seconds", seconds)
