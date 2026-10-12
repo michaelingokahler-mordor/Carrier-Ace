@@ -108,4 +108,3 @@ func _init() -> void:
 	print("MISSION04_TESTS checks=%d failures=%d" % [checks, failures.size()])
 	for failure in failures: printerr("FAIL: "+failure)
 	quit(0 if failures.is_empty() else 1)
-
