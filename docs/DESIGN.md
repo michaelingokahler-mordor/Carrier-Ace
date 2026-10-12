@@ -1,18 +1,20 @@
-# Carrier Ace 0.4.0 – Counterattack, Options und Highscore
+# Carrier Ace 0.5.0 – Mission und Hangar
+
+Die verbindlichen neuen Profil-, Speed-, Shop- und Verlustregeln stehen in [HANGAR.md](HANGAR.md).
 
 Stand: 12.10.2026. Die Spieloberfläche ist Englisch, Entwicklungsdokumentation Deutsch. Godot 4.7.2 Standard, Compatibility-Renderer, logische Welt 960×540 und hochauflösende Canvas-Skalierung bleiben erhalten.
 
 ## Ein Flug, Armor und Rollen
 
-Die Hellcat beginnt mit Armor 3/3, Speed Rating 2, Penetration 0, Single Shot, sechs Kugelplätzen und drei Rollen. Leben und automatische Wiederholungen entfallen. Normale Gegnergeschosse und Flugzeugkontakte kosten einen Armor-Punkt, angekündigte Ki-21-Raketen zwei. Bei Armor null explodiert das Flugzeug; nach 0,8 s erscheint Game Over.
+Die Hellcat beginnt mit Armor 3/3, Speed Rating 3, Penetration 0, Single Shot, sechs Kugelplätzen und drei Rollen. Leben und automatische Wiederholungen entfallen. Normale Gegnergeschosse und Flugzeugkontakte kosten einen Armor-Punkt, angekündigte Ki-21-Raketen zwei. Bei Armor null explodiert das Flugzeug; nach 0,8 s erscheint Game Over.
 
 Armor 2 zeigt Einschuss- und Brandflecken, Armor 1 weitere Flecken und eine dezente Rauchfahne. Reparaturen ändern die Darstellung zurück. Trefferschutz dauert 0,6 s; eine Rolle schützt eine Sekunde und kostet eine Ladung. Rolls-Pickups füllen +1 bis maximal drei auf.
 
-Ein ausdrücklich neuer Flug setzt Armor, Rollen, Waffe, aktive Kugeln, Kugelkapazität, Speed, Penetration-Bonus, Gegner, Gruppen, Drops, Effekte, Zeit und Flugpunkte zurück. Der gespeicherte Bonusbestand sowie Highscore und Tonwerte bleiben erhalten.
+Ein neuer Flug übernimmt den gespeicherten Armor-Zustand und die installierten Werte der gewählten Maschine. Reservierte Boni gelten für diesen Flug, Rollen werden auf drei aufgefüllt. Gegner, Geschosse, Gruppen und Missionsfortschritt beginnen von vorn. Der gespeicherte Bonusbestand sowie Highscore und Tonwerte bleiben erhalten.
 
 ## Trefferkonturen und Bewegungsprüfung
 
-Elf Flugzeugprofile enthalten vorbereitete Vereinigungen konvexer Polygone. Die Konturen werden offline aus den fertigen PNGs ermittelt: feste Deckkraft ab 192/255, halbpixeliges logisches Raster, ungefähr zwei Pixel Einzug und Konturvereinfachung um höchstens einen halben Pixel. Sehr schmale Rumpfpartien erhalten einen Einzug von einem Pixel, damit der feste Rumpf nicht verschwindet. Godot zerlegt die Konturen in 14–31 konvexe Teilflächen je Profil.
+Zwölf Flugzeugprofile enthalten vorbereitete Vereinigungen konvexer Polygone. Die Konturen werden offline aus den fertigen PNGs ermittelt: feste Deckkraft ab 192/255, halbpixeliges logisches Raster, ungefähr zwei Pixel Einzug und Konturvereinfachung um höchstens einen halben Pixel. Sehr schmale Rumpfpartien erhalten einen Einzug von einem Pixel, damit der feste Rumpf nicht verschwindet. Godot zerlegt die Konturen in 14–31 konvexe Teilflächen je Profil.
 
 Rumpf, beide Flügel, Leitwerk und feste Motorgondeln zählen. Zwischenräume, transparente Ränder, gezeichneter Schatten, Propellerunschärfe und Rauch bleiben frei. Die Polygone sind relativ zur Texturmitte normalisiert und werden mit derselben Spritegröße wie die Grafik skaliert. Kurvenflug und Rolle teilen ihre Breitenfunktion mit der Kollisionsansicht.
 
@@ -34,7 +36,7 @@ Single Shot braucht einen, Double Shot zwei und Triple Shot drei freie Plätze. 
 
 Schaden bleibt ein Punkt pro Spielerkugel. Penetration zählt zusätzliche unterschiedliche Ziele: 0 = eins, 3 = vier. Profilgrundwerte bleiben unverändert; aktive Kapazitäts- und Penetration-Boni gehören zum Flug. Bereits fliegende Kugeln behalten die beim Abschuss festgelegte Penetration.
 
-Rating 1 = 130, Rating 2 = 195, Rating 3 = 260 Pixel/s. Jeder Speed-Pickup addiert 10 % Grundtempo bis 260. Hellcat: 195 → 214,5 → 234 → 253,5 → 260.
+Rating 1/2/3/4/5 entspricht 130/162,5/195/227,5/260 Pixel/s. Jeder Speed-Pickup addiert 0,25 Rating bis maximal 5. Die Hellcat startet mit Rating 3 und 195 Pixel/s.
 
 ## Gegner und Mission
 
@@ -42,8 +44,8 @@ Rating 1 = 130, Rating 2 = 195, Rating 3 = 260 Pixel/s. Jeder Speed-Pickup addie
 |---|---|---:|---:|---|---:|
 | Biplane 1/2 | Kawasaki Ki-10 | 1 | 1 | Single Shot | 100 |
 | Biplane Ace | Kawasaki Ki-10 | 2 | 1 | Double Shot | 300 |
-| Fighter 1/2 | Nakajima Ki-43 | 1 | 2 | Single Shot | 100 |
-| Fighter Ace | Nakajima Ki-44 | 2 | 2 | Double Shot | 300 |
+| Fighter 1/2 | Nakajima Ki-43 | 1 | 3 | Single Shot | 100 |
+| Fighter Ace | Nakajima Ki-44 | 2 | 3 | Double Shot | 300 |
 | Bomber 1/2 | Mitsubishi Ki-30 | 2 | 1 | Single Shot | 300 |
 | Bomber Ace | Mitsubishi Ki-21 | 3 | 1 | Rockets | 300 |
 | B-99 Behemoth | Eigenes Bossmodell | 300 | 1 | Fan Fire | 3.000 |
@@ -65,7 +67,7 @@ Beide Quellen verwenden die Loot-Ressource der Welle. Die Standardtabelle bleibt
 | Upgrade | Gewicht | Wirkung |
 |---|---:|---|
 | Bullets | 25 % | +2 Plätze, maximal 18 |
-| Speed | 15 % | +10 % Grundtempo, maximal 260 |
+| Speed | 15 % | +0,25 Rating, maximal 5,00 |
 | 2-Guns | 15 % | Mindestens Double Shot |
 | Rolls | 10 % | +1, maximal drei |
 | 3-Guns | 10 % | Triple Shot |
@@ -77,7 +79,7 @@ Ein beim Einsammeln nutzloses Upgrade gibt 25 Bonus-Points; Waffen werden nicht 
 
 Jede vollständige reguläre Anfluggruppe verdient 25 Bonus-Points je Mitglied, einschließlich Versorgungsgruppen. Diese Punkte sind vom normalen Score getrennt. Erfolgreiche Landung überträgt ungesicherte Flugpunkte einmalig in den lokal gespeicherten Bonusbestand. Game Over, Abbruch oder ein neuer Flug verwerfen nur ungesicherte Punkte. Der Ergebnisbildschirm zeigt gutgeschriebene bzw. verlorene Punkte und den Bankbestand.
 
-Alte Einstellungen erhalten Bonusbestand null; Highscore, Tonwerte und unbekannte Konfigurationsschlüssel bleiben erhalten. Ein Shop ist noch nicht vorhanden.
+Alte Einstellungen behalten ihren Bonusbestand; Highscores, Tonwerte und unbekannte Konfigurationsschlüssel bleiben erhalten. F4F und F6F werden bei Migration freigeschaltet. Shop und Maschinenzustand sind in HANGAR.md beschrieben.
 
 ## Meer, Oberfläche und Erweiterungen
 
@@ -85,9 +87,9 @@ Die drei festen Inselmotive scrollen mit 5,4 Pixel/s und denselben Anfangspositi
 
 Die Brandungsmasken haben 96 Texturpixel Rand je Seite, insgesamt 1216×960 statt 1024×768. Ihr Texturpixelmaßstab und Mittelpunkt stimmen mit dem Land überein. Culling berücksichtigt die gesamte Brandung. Alle Maskenaußenränder sind null; gerade abgeschnittene Schaumflächen entfallen.
 
-Das HUD zeigt Armor, Bullets, Rolls, Weapon, Speed, Penetration, Mission, Score und ungesicherte Bonus-Points. Tastenbelegung steht im Controls-Menü. Aircraft enthält elf Profile und zeigt nur Grundwerte, einschließlich Spieler-Kugelkapazität. Öffnen aus der Pause setzt den Flug nicht fort.
+Das HUD zeigt Armor, Bullets, Rolls, Weapon, Speed, Penetration, Mission, Score und ungesicherte Bonus-Points. Tastenbelegung steht im Controls-Menü. Aircraft enthält zwölf Profile und zeigt nur Grundwerte, einschließlich Spieler-Kugelkapazität. Öffnen aus der Pause setzt den Flug nicht fort.
 
-Fokusverlust und Gamepad-Trennung pausieren; Fortsetzung ist bewusst. Audio aus 0.1 und Grafik aus 0.2 bleiben erhalten. Konturen, Brandungsrand und Schadensdarstellung wurden lokal aus bestehenden Daten ergänzt; 0.3 benötigt keine neuen Generierungscredits. Kampagne, weiterer Flugzeugausbau, Shop und Spieler-Raketen folgen später.
+Fokusverlust und Gamepad-Trennung pausieren; Fortsetzung ist bewusst. Audio aus 0.1 und Grafik aus 0.2 bleiben erhalten. Konturen, Brandungsrand und Schadensdarstellung wurden lokal aus bestehenden Daten ergänzt; 0.3 benötigt keine neuen Generierungscredits. Kampagne, weitere spielbare Flugzeuge und Spezialmunition folgen später. Hangar und Ausbauten sind in 0.5 umgesetzt.
 
 ## Counterattack und Flugrichtung (0.4)
 

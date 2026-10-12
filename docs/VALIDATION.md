@@ -1,60 +1,42 @@
-# Carrier Ace 0.4.0 – Prüfbericht
+# Carrier Ace 0.5.0 – Prüfbericht
 
-Stand: 12.10.2026. Godot 4.7.2 Standard, Compatibility, Windows x64 und Chromium/WebGL 2.
+Stand: 12.10.2026. Godot 4.7.2 Standard, Compatibility, Windows x64 und Web ohne Threads. Frühere Abnahmen stehen in VALIDATION_0.3.md und VALIDATION_0.4.md.
 
-## Ergebnis
+## Regeln und Integration
 
-**414 automatisierte Prüfungen bestanden:** 215 Grundregeln und Geometrie, 95 Gegenangriff/Flugbahn/Waffen-/Bossprüfungen und 104 UI-, Speicher- und Audioprüfungen. Rohprotokolle: evidence/rules.json.
+Die fünf Suiten umfassen 505 Prüfungen: Core 219, Mission04 95, UI 105, Hangar 75 und Hangar-UI 11. Sie prüfen die bisherigen Konturen, Geschosse, Loot, Gruppen, Counterattacks, Boss und Audio sowie die neue Maschinenverwaltung.
 
-Der finale normale headless Flug und beide fertig exportierten Prüfflüge enden erfolgreich. Windows und Web wurden nach der Boss- und Audiokorrektur vollständig mit zwölf Simulationsschritten je Physikframe geprüft. Finale Missionswerte: 287.13 s, Counterattack 1 und 2 abgeschlossen, 94 Abschüsse bei 106 Anflügen, Score 20.100, Armor 1/3, Triple Shot, Penetration 1, Kapazität 6, keine verbleibende Rolle und 1.975 Bonus-Points. Der Pilot setzt keine Armor, überspringt keine Wellen und benutzt normale Schussimpulse.
+Zusätzliche Prüfungen: Viertelschritte bis Rating 5; installierte individuelle Grenzen; temporäre globale Grenzen; ausreichendes Guthaben; Preissteigerungen; leere Armor-Erweiterungen und Reparatur pro fehlendem Punkt; keine Waffenherabstufung; reservierte Käufe nach Speichern/Laden; Verbrauch beim Start; Rollenauffüllung; Verlust von Ausbauten und Farben; Erhalt anderer Maschinen und Freischaltungen; kostenloser Ersatz; Abbruch mit gespeichertem Restzustand; Quit während einer tödlichen Explosion; Migration auf F4F und F6F; einmalige Landegutschrift; Ergebnis und Rückkehr zum Hangar.
 
-Vor der letzten Boss-/Audiokorrektur bestanden bereits vollständige normale Windows- und Webflüge. Diese früheren Belege stehen getrennt in evidence/windows04-before-boss.json und evidence/web04-before-boss.json. Sie sind keine erneute normale Exportprüfung der letzten Änderung.
+Die Wildcat wird zusätzlich auf Treffer in Rumpf, beiden Flügeln und Leitwerk sowie freie Zwischenräume getestet. Lackierung verändert die Geometrie nicht. Ganze +2-Käufe enden bei ungerader Grundkapazität bei 17 statt 18; die globale Grenze wird nicht überschritten.
 
-## Geprüfte Regeln
+## Vollständige Flüge
 
-- Reserve enthält ausschließlich lebende, entkommene Mitglieder ursprünglicher Gruppen, ohne doppelte Aufnahme. Typ und Rest-Armor bleiben erhalten.
-- Counterattacks nach Welle 3 und 6 stoppen die reguläre Wellenzeit. Laufende Formationen beenden ihre Bewegung; danach erscheinen neue Gruppen. Aus der Gegenwelle entkommene Gegner werden nicht endlos wiederverwendet.
-- Neue Gruppen verwenden neue IDs, normale Bewaffnung und die bestehende Loot-/Bonuslogik. Neustart löscht alle Gegenangriffsdaten.
-- Zickzack, vollständige Schleife, aufwärts gerichteter Teil und temporärer Seitenflug außerhalb des Bildes. Reguläre Waffen folgen der Flugzeugnase; bereits abgefeuerte Geschosse und Raketen verändern ihre Richtung nicht.
-- Gedrehte Konturabmessungen und Winkelbewegung. Bisherige Bewegungs-, Penetration-, Armor- und Kapazitätsprüfungen bleiben bestanden.
-- Boss behält ausdrücklich ursprüngliches seitliches Pendeln, Ausrichtung, Fächer- und gezielte Doppel-Salven sowie Rückzüge bei 200/100 Armor; keine Schleifen.
-- Options/Controls/Sound/Graphics und Zurückwege, Namenseintrag nach Game Over und Landung, ein Eintrag je Flug, Top-10-Sortierung, Namensgrenze und Legacy-Rekord ohne erfundenes Ergebnis.
-- ConfigFile-Persistenz sowie Erhalt von Highscore, Bonusbestand, Toneinstellungen und unbekannten Schlüsseln.
+Der deterministische Pilot verwendet dieselben Bewegungs-, Waffen- und Kollisionsregeln wie Spieler. Loot-Seed 1943, keine Gesundheitskorrekturen oder Sonderrechte. Alle Prüfflüge sind stumm.
 
-## Audio nach Spielende
+| Quellprojekt, normale Simulationsschritte | Ergebnis | Flugzeit | Armor | Score | Gesicherte Flugpunkte |
+|---|---|---:|---:|---:|---:|
+| F4F Wildcat | Landung | 299,13 s | 2/2 | 19.900 | 1.375 |
+| F6F Hellcat | Landung | 289,05 s | 2/3 | 20.000 | 1.800 |
 
-Beim Abschuss stoppen Musik, Motor und MG sofort. Das Ergebnis stoppt alle Audioplayer, mutet den Master-Bus und sperrt spätere Playback-Anforderungen. Titel-Rückkehr und neue Mission heben diese Sperre bewusst auf. Quit bleibt dauerhaft stumm.
+Beide Flüge enthalten sechs Wellen, zwei abgeschlossene Counterattacks, alle neun Gegnerprofile, Boss und Landung. Die erste Mission war mit den neuen F4F-Grundwerten ohne zusätzliche Gegnerabschwächung durchspielbar. Das Bossverhalten bleibt unverändert.
 
-Die UI-Prüfung startet Musik, Motor und Schusseffekte, beendet den Flug und prüft Stoppen, Master-Mute, Abweisung späterer Anfragen und bewusste Wiederfreigabe. Beide finalen Exporte melden tatsächlich master_muted=true, music_playing=false, engine_playing=false, active_effects=0 unter audio_end. Prüfpiloten sind grundsätzlich stumm; eine vorherige parallele Browserprüfung war als zusätzliche Soundquelle möglich. Die Ursache des vom Nutzer gehörten Sounds wurde akustisch nicht separat aufgenommen.
+Exportbelege und Leistungsmessung werden in `verification05-*.json` festgehalten. Beschleunigte Exporte verarbeiten zwölf normale Physikschritte pro dargestelltem Frame. Ihre FPS sind kein Beleg für durchgehend 60 FPS im normalen Spieltempo.
 
-## Oberfläche und Bilder
+Der Windows-Export bestand außerdem den F4F-Flug in normalem Tempo mit 299,13 s Missionszeit, Armor 2/2 und 1.375 gesicherten Punkten. Nach den ersten zwei Messwerten lagen die einsekündigen FPS-Stichproben im Mittel bei 59,89, mindestens 27 und höchstens 62. Eine durchgehend stabile Mindestleistung von 60 FPS ist damit nicht bestätigt. Nach dieser Messung wurde die Darstellungsreihenfolge korrigiert, damit Flugzeug, Schäden und Diagnosekontur oberhalb des Trägerdecks liegen; die Kampfregeln blieben gleich. Die finalen Exporte werden erneut vollständig beschleunigt geprüft.
 
-Titel, Options, Graphics, Liste und runde Upgrade-Icons wurden bei 1280×720 und 1920×1080 im gerenderten Projekt kontrolliert. Der Webexport zeigt die Namenseingabe; einzelne Tastendrücke für ace, Enter und die Highscore-Liste sind tatsächlich geprüft. Prüfpilot-Einträge bleiben im Speicher und verändern keine persönliche Liste; tatsächliche Speicherung wurde separat mit ConfigFile getestet.
+## Visuelle und Menüprüfung
 
-Vollbild über Graphics vergrößerte die Webdarstellung sichtbar auf die Bildschirmfläche mit Randbereichen für das Seitenverhältnis. Esc stellte die ursprüngliche Größe wieder her. Die DOM-Inspektion allein stellte den Vollbildstatus in diesem Host nicht dar. Native Vollbildbedienung, physische Gamepads und persönliche Spielgefühl-/Hörabnahme bleiben getrennte offene Prüfungen.
+Native Aufnahmen bei 1280×720 und 1920×1080: Repair, Paint und Upgrade, Wildcat-Kontur, weiße/rote/Tarnlackierung, HUD mit 55 % Deckkraft. Die anfänglich überlappende Shop-Beschriftung wurde korrigiert; Karten erhalten kleine Bilder für F4F/F6F. Quellaufnahmen liegen lokal in `output/preview05/`.
 
-Die Icon-Übersicht ist eine bewusst angeordnete Vorschau aller sieben Pickups; sie belegt keinen natürlichen Drop dieser sieben Items in einer Reihe.
+Web-Prüfung über den mitgelieferten HTTP-Server: vollständige Landung, Ergebnis mit Highscore-Eingabe, Continue to Hangar, Rest-Armor, freigeschaltete Hellcat, Reparatur −150 Punkte, deaktivierte Reparatur bei voller Armor. Der Web-Endbericht bestätigt Master-Mute, keine laufende Musik, keinen laufenden Motor und null aktive Effektstimmen.
 
-## Leistung und Grenzen
+Die finalen Windows- und Webexporte bestehen den F4F-Prüfflug mit identischem Ergebnis: 299,13 s, Armor 2/2, Score 19.900, 1.375 Bonus-Points und zwei abgeschlossene Counterattacks. Im finalen Web-Hangar wurde zusätzlich ein Speed-Flugbonus gekauft: −200 Punkte, Reservierung +0,25, unveränderter installierter Grundwert 1,00. Die vier gesperrten Vorschauen bleiben gesperrt; Hellcat ist nach der Landung auswählbar.
 
-Die normalen Läufe vor der letzten Boss-/Audiokorrektur lagen bei Windows im Median 60 und Web 60 FPS. Finale beschleunigte Läufe: Windows Median 60, Web 58 FPS. Die zwölfmal belastete Simulation ersetzt keinen normalen Benchmark der finalen Fassung. Einsekündige Stichproben, Hardware/Parallelbetrieb und Einbrüche stehen in evidence/performance.json; keine Garantie jeder Frame-Latenz oder schwächerer Hardware.
+Bestehende automatisierte UI-Prüfungen decken einzelne Feuerimpulse, Menüeingaben, Pause, Fokusverlust, Gamepad-Trennung, Options, Highscores und Audio-Endschutz weiterhin ab. Speicherung wird mit gesicherter Originalkonfiguration geprüft und anschließend zurückgesetzt; Prüfkäufe verändern keine echten Spielstände.
 
-Die bekannten Godot-Cleanup-Warnungen beim Web-Quit aus 0.3 wurden nicht als behoben ausgegeben. Browser außerhalb des getesteten Hosts und akustische Aufnahme wurden nicht gesondert geprüft.
+## Grenzen der Abnahme
 
-## Lieferung und Wiederholung
+Eine physische Gamepad-Prüfung und längere menschliche Spielgefühlabnahme wurden nicht durchgeführt. Die vier Spezialflugzeuge bleiben Vorschauen; Raketen, Bomben, Torpedos und passende Missionen sind noch nicht spielbar. Die neue F4F ist eine lokale Vektorillustration, keine neue Runway-Generierung. Keine zusätzlichen Credits verbraucht.
 
-Windows-, Web- und Quell-ZIP tragen 0.4.0. Prüfsummen: builds/SHA256SUMS.json. Builds, Engine, Importcache und Rohentwürfe bleiben außerhalb des Git-Repositorys. Keine neuen Generierungscredits.
-
-Prüfskripte: tests/test_core.gd, tests/test_mission04.gd, tests/test_ui.gd und tests/test_flight.gd; jeweils mit python tools/run_godot.py --headless --script starten. Exporte: python tools/build.py. Normaler Windows-Prüfflug: python tools/verify_windows.py.
-
-Normaler Exportpilot: --verify-real-time bzw. ?verify=1&realtime=1; beschleunigt: --verify bzw. ?verify=1. Absolute beschreibbare Bericht-/Capture-Pfade verwenden. Zum Spielen Testparameter entfernen. Vorheriger Bericht: VALIDATION_0.3.md.
-
-![Runde Upgrade-Icons, Vorschau](images/upgrade-icons04.png)
-
-![Boss mit ursprünglichem Verhalten](images/boss04.png)
-
-![Finales Windows-Ergebnis](images/victory04.png)
-
-![Tatsächliche Highscore-Eingabe im Web-Prüfflug](images/highscores-web04.jpg)
-
-![Vollbild über Graphics](images/fullscreen-web04.jpg)
+Windows-, Web- und Quell-ZIP liegen außerhalb von Git unter `builds/`; SHA256SUMS.json enthält ihre Prüfsummen. Engine, Importcache und Builds bleiben ausgeschlossen.

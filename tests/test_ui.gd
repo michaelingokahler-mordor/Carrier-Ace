@@ -40,7 +40,7 @@ func _run() -> void:
 	game._unhandled_input(credits_escape)
 	expect(game.menu == "title", "Esc from Options returns to title")
 	game._show_aircraft("title")
-	expect(game.aircraft_entries.size() == 11, "Aircraft menu contains player, nine enemies and boss")
+	expect(game.aircraft_entries.size() == 12, "Aircraft menu contains player, nine enemies and boss")
 	expect(root.gui_get_focus_owner() is ItemList, "Aircraft list receives keyboard/gamepad focus")
 	var down := InputEventKey.new()
 	down.keycode = KEY_DOWN

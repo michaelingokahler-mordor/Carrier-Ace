@@ -2,7 +2,7 @@
 from pathlib import Path
 import os, subprocess, sys
 root=Path(__file__).resolve().parents[1]
-destination=root/'output/windows04'
+destination=root/'output/windows05'
 destination.mkdir(parents=True,exist_ok=True)
 env=dict(os.environ,APPDATA=str(root/'.tools/export-runtime-profile'))
 args=[str(root/'builds/windows/CarrierAce.exe'),'--resolution','1920x1080','--','--verify-real-time',

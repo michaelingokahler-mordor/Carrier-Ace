@@ -1,4 +1,4 @@
-"""Write the approved Carrier Ace 0.4 balancing resources."""
+"""Write the approved Carrier Ace 0.5 balancing resources."""
 from pathlib import Path
 import json
 ROOT=Path(__file__).resolve().parents[1]
@@ -14,7 +14,7 @@ def resource(name,cls,script,fields):
     (ROOT/'resources'/f'{name}.tres').write_text(text,encoding='utf-8')
 resource('player','AircraftProfile','aircraft_profile',{
  'display_name':'"F6F Hellcat"','model_name':'"Grumman F6F Hellcat"','role':'"Carrier fighter"',
- 'armor':3,'penetration':0,'speed_rating':2,'projectile_damage':1,'shot_interval':0.145,
+ 'armor':3,'penetration':0,'speed_rating':3,'projectile_damage':1,'shot_interval':0.145,
  'texture_id':'"player"','initial_weapon':1,'bullet_capacity':6,'sprite_size':'Vector2(72, 72)',
  'propeller_positions':'PackedVector2Array(0, -24)'})
 for ident,model,hp,rating,weapon,style,size in [
@@ -29,11 +29,11 @@ for ident,model,hp,rating,weapon,style,size in [
  ('bomber_ace','Mitsubishi Ki-21',3,1,'Rockets','inherit',(126,98)),
  ('boss','B-99 Behemoth',300,1,'Fan Fire','boss',(168,138))]:
     title=ident.replace('_',' ').title() if ident!='boss' else model
-    props='PackedVector2Array(-15, 31, 15, 31)' if ident=='bomber_ace' else 'PackedVector2Array(-29, 47, 29, 47)' if ident=='boss' else f'PackedVector2Array(0, {size[1]*0.40})'
+    props='PackedVector2Array(-15, 31, 15, 31)' if ident=='bomber_ace' else 'PackedVector2Array(-29, 47, 29, 47)' if ident=='boss' else f'PackedVector2Array(0, {size[1]*0.50})'
     resource('enemy_'+ident,'EnemyProfile','enemy_profile',{
      'id':json.dumps(ident),'display_name':json.dumps(title),'model_name':json.dumps(model),
      'role':json.dumps('Heavy bomber boss' if ident=='boss' else 'Elite '+ident.split('_')[0] if 'ace' in ident else ident.split('_')[0].title()),
-     'armor':hp,'speed_rating':rating,'projectile_damage':2 if weapon=='Rockets' else 1,
+     'armor':hp,'speed_rating':1+(rating-1)*2,'projectile_damage':2 if weapon=='Rockets' else 1,
      'penetration':0,'weapon_name':json.dumps(weapon),'flight_style':json.dumps(style),
      'sprite_size':f'Vector2({size[0]}, {size[0]})','propeller_positions':props,
      'points':3000 if ident=='boss' else 300 if 'ace' in ident or 'bomber' in ident else 100,
@@ -49,4 +49,4 @@ for index,(name,pattern,enemies,density) in enumerate([
  ('Storm Front','loop',['bomber_1','bomber_2','fighter_ace'],4),
  ('Final Defense','cross',['bomber_ace','fighter_ace','biplane_ace','bomber_2','fighter_2'],5)],1):
     resource(f'wave_{index}','WaveProfile','wave_profile',{'title':json.dumps(name),'duration':30.0,'pattern':json.dumps(pattern),'enemy_ids':'PackedStringArray('+', '.join(json.dumps(x) for x in enemies)+')','density':density})
-print('Wrote 20 balancing resources for Carrier Ace 0.4.')
+print('Wrote 20 balancing resources for Carrier Ace 0.5.')

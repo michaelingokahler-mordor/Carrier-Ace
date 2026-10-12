@@ -6,8 +6,8 @@ class_name EnemyProfile
 @export var model_name: String = "Nakajima Ki-43"
 @export var role: String = "Enemy fighter"
 @export var armor: int = 1
-@export_range(1, 3, 1) var speed_rating: int = 2:
-	set(value): speed_rating = clampi(value, 1, 3)
+@export_range(1, 5, 1) var speed_rating: int = 3:
+	set(value): speed_rating = clampi(value, 1, 5)
 var speed: float:
 	get: return AircraftProfile.speed_for_rating(speed_rating)
 @export var projectile_damage: int = 1

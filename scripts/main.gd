@@ -7,7 +7,11 @@ var audio := GameAudio.new()
 var ui_layer := CanvasLayer.new()
 var ui_root := Control.new()
 var high_score := 0
-var bonus_bank := 0
+var fleet := HangarState.new()
+var bonus_bank: int:
+	get: return fleet.bank
+	set(value): fleet.bank = value
+var hangar_tab := "Repair"
 var high_scores: Array[Dictionary] = []
 var player_name := "Pilot"
 var submitted_run := -1
@@ -56,6 +60,9 @@ func _ready() -> void:
 	_show_title()
 	for argument in OS.get_cmdline_user_args():
 		if argument == "--verify": verify = true
+		if argument == "--verify-wildcat":
+			verify = true
+			fleet.select("wildcat")
 		if argument == "--collisions": model.debug_collisions = true
 		if argument == "--verify-real-time":
 			verify = true
@@ -69,6 +76,7 @@ func _ready() -> void:
 		model.debug_collisions = bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('collisions') === '1'"))
 	if OS.has_feature("web") and verify:
 		verification_speed = 1 if bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('realtime') === '1'")) else 12
+		if bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('aircraft') === 'wildcat'")): fleet.select("wildcat")
 	if verify:
 		silent = true
 		model.loot_rng.seed = 1943
@@ -125,7 +133,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		_toggle_fullscreen()
 		get_viewport().set_input_as_handled()
 	if event.is_action_pressed("pause_game"):
-		if menu in ["controls_options", "sound_options", "graphics_options"]:
+		if menu == "hangar":
+			_title_again()
+		elif menu == "aircraft_hangar":
+			_show_hangar()
+		elif menu in ["controls_options", "sound_options", "graphics_options"]:
 			_show_options()
 		elif menu == "highscores_result":
 			_show_result(result_success)
@@ -160,7 +172,10 @@ func _on_model_event(kind: String, data: Dictionary) -> void:
 	match kind:
 		"sound":
 			if not silent: audio.sound(data.name)
-			if data.name == "hit": view.flash = 0.12
+			if data.name == "hit":
+				view.flash = 0.12
+				fleet.track_armor(model.armor)
+				_save_preferences()
 		"wave": view.announce("WAVE %d · %s" % [data.index + 1, data.title.to_upper()], 3.0)
 		"counterattack":
 			view.announce("COUNTERATTACK %d · ENEMY REGROUPING" % data.round if data.regrouping else "COUNTERATTACK %d · %d SURVIVORS RETURNING" % [data.round, data.count], 4)
@@ -168,17 +183,20 @@ func _on_model_event(kind: String, data: Dictionary) -> void:
 		"weapon_blocked": view.announce("BULLET CAPACITY FULL · wait for a complete salvo", 0.8)
 		"bonus": view.announce("FORMATION COMPLETE · +%d BONUS POINTS" % data.amount, 1.5)
 		"pickup":
-			var names := {"double": "DOUBLE SHOT", "triple": "TRIPLE SHOT", "repair": "ARMOR REPAIRED", "speed": "SPEED +10% BASE", "bullets": "BULLETS +2", "rolls": "ROLL +1", "penetration": "PENETRATION +1"}
+			var names := {"double": "DOUBLE SHOT", "triple": "TRIPLE SHOT", "repair": "ARMOR REPAIRED", "speed": "SPEED +0.25", "bullets": "BULLETS +2", "rolls": "ROLL +1", "penetration": "PENETRATION +1"}
 			view.announce("+25 BONUS POINTS · upgrade already at limit" if data.converted else names.get(data.kind, "UPGRADE"), 2)
+			fleet.track_armor(model.armor)
+			_save_preferences()
 		"attempt_finished":
 			high_score = maxi(high_score, data.score)
 			view.high_score = high_score
 			if data.success and data.run_serial == model.run_serial and settled_run != data.run_serial:
 				settled_run = data.run_serial
 				bonus_bank += data.bonus
+			fleet.finish(data.success, model.armor)
 			view.bonus_bank = bonus_bank
 			if not verify: _save_preferences()
-		"restart": view.announce("F6F HELLCAT · CLEARED FOR TAKEOFF", 4)
+		"restart": view.announce(model.aircraft.display_name.to_upper() + " · CLEARED FOR TAKEOFF", 4)
 		"boss_maneuver": view.announce("BOMBER TURNING · PASS %d / 3" % data.pass, 3)
 
 func _handle_phase() -> void:
@@ -205,12 +223,25 @@ func _handle_phase() -> void:
 			_show_result(false)
 
 func _start_run() -> void:
+	if fleet.active != "": fleet.abort(model.armor)
+	var receipt := fleet.launch()
+	if receipt.is_empty():
+		_show_hangar()
+		return
+	model.aircraft = receipt.profile
 	pending_fire = false
 	audio.begin_playback()
 	if not silent: audio.unlock()
 	_clear_ui()
 	menu = "flight"
 	model.start_run()
+	model.armor = receipt.armor
+	model.paint_id = receipt.paint
+	model.bullet_level = receipt.pending.bullets
+	model.speed_level = receipt.pending.speed
+	model.weapon = receipt.pending.weapon
+	model.penetration_level = receipt.pending.penetration
+	_save_preferences()
 	state_seen = -1
 
 func _resume() -> void:
@@ -221,6 +252,8 @@ func _resume() -> void:
 	menu = "flight"
 
 func _title_again() -> void:
+	if fleet.active != "": fleet.abort(model.armor)
+	_save_preferences()
 	pending_fire = false
 	model.paused = false
 	model.phase = MissionModel.Phase.TITLE
@@ -297,7 +330,7 @@ func _show_title() -> void:
 	_clear_ui()
 	audio.begin_playback()
 	menu = "title"
-	var first := _button(ui_root, "Start Mission", Vector2(60, 264), Vector2(300, 43), _start_run, true)
+	var first := _button(ui_root, "Start Mission", Vector2(60, 264), Vector2(300, 43), _show_hangar, true)
 	_button(ui_root, "Aircraft", Vector2(60, 312), Vector2(300, 34), func() -> void: _show_aircraft("title"))
 	_button(ui_root, "Options", Vector2(60, 350), Vector2(300, 34), _show_options)
 	_button(ui_root, "Highscore", Vector2(60, 388), Vector2(300, 34), func() -> void: _show_highscores("title"))
@@ -309,7 +342,75 @@ func _show_title() -> void:
 func _return_menu(back: String) -> void:
 	if back == "pause": _show_pause()
 	elif back == "options": _show_options()
+	elif back == "hangar": _show_hangar()
 	else: _show_title()
+
+func _show_hangar() -> void:
+	if fleet.active != "": fleet.abort(model.armor)
+	_save_preferences()
+	model.phase = MissionModel.Phase.TITLE
+	model.paused = false
+	model.bonus_pending = 0
+	pending_fire = false
+	audio.end_flight()
+	menu = "hangar"
+	var panel := _panel("Hangar · Bonus Points %06d" % bonus_bank, Vector2(920, 520))
+	for index in HangarState.IDS.size():
+		var id: String = HangarState.IDS[index]
+		var card := _button(panel, HangarState.SPECS[id][0] + ("" if fleet.available(id) else "\nLocked"), Vector2(20 + index * 148, 72), Vector2(140, 64), func() -> void:
+			fleet.select(id)
+			_show_hangar(), id == fleet.selected)
+		card.add_theme_font_size_override("font_size", 15)
+		card.disabled = not fleet.available(id)
+		card.tooltip_text = "%s\nArmor %d → %d · Speed %.2f → %.2f\nBullets %d → %d · Penetration %d → %d\nFuture payload: %d rockets / %d torpedoes / %d bombs" % [HangarState.SPECS[id][2], HangarState.SPECS[id][3], HangarState.SPECS[id][4], HangarState.SPECS[id][5]/4.0, HangarState.SPECS[id][6]/4.0, HangarState.SPECS[id][7], HangarState.SPECS[id][8], HangarState.SPECS[id][9], HangarState.SPECS[id][10], HangarState.SPECS[id][11], HangarState.SPECS[id][12], HangarState.SPECS[id][13]]
+		if id in ["wildcat", "hellcat"]:
+			card.icon = load("res://assets/art/wildcat.svg" if id == "wildcat" else "res://assets/art/player.png")
+			card.expand_icon = true
+			card.add_theme_constant_override("icon_max_width", 30)
+			card.add_theme_font_size_override("font_size", 13)
+	var id := fleet.selected
+	var machine: Dictionary = fleet.machines[id]
+	_label(panel, HangarState.SPECS[id][0], Vector2(24, 148), Vector2(330, 32), 24, Color("e4c47f"))
+	var picture := TextureRect.new()
+	picture.position = Vector2(24, 185)
+	picture.size = Vector2(185, 170)
+	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	picture.texture = load("res://assets/art/wildcat.svg" if id == "wildcat" else "res://assets/art/player.png")
+	var paint_material := ShaderMaterial.new()
+	paint_material.shader = preload("res://shaders/aircraft_paint.gdshader")
+	paint_material.set_shader_parameter("paint_mode", ["standard","white","red","camouflage"].find(machine.paint))
+	picture.material = paint_material
+	panel.add_child(picture)
+	_label(panel, "ARMOR %d/%d\nSPEED %.2f\nBULLETS %d\nPENETRATION %d\nPAINT %s" % [machine.armor, fleet.maximum(id), fleet.speed_quarters(id)/4.0, fleet.capacity(id), fleet.penetration(id), machine.paint.to_upper()], Vector2(220, 185), Vector2(170, 165), 16)
+	_label(panel, "Next flight: +%d bullets · +%.2f speed\n%d guns · +%d penetration\nRolls refill to 3 automatically." % [machine.pending.bullets*2, machine.pending.speed/4.0, machine.pending.weapon, machine.pending.penetration], Vector2(24, 366), Vector2(375, 70), 14)
+	for index in 3:
+		var tab: String = ["Repair", "Paint", "Upgrade"][index]
+		_button(panel, tab, Vector2(410 + index*158, 148), Vector2(150, 34), func() -> void:
+			hangar_tab = tab
+			_show_hangar(), hangar_tab == tab)
+	var offers: Array = []
+	if hangar_tab == "Repair": offers = [["repair","Repair +1 Armor"],["repair_all","Repair all Armor"]]
+	elif hangar_tab == "Paint":
+		for paint in HangarState.PAINT_PRICES: offers.append(["paint_"+paint, paint.capitalize()])
+	else:
+		offers = [["temp_bullets","Flight: Bullets +2"],["temp_speed","Flight: Speed +0.25"],["temp_double","Flight: 2-Guns"],["temp_triple","Flight: 3-Guns"],["temp_penetration","Flight: Penetration +1"],["armor","Install Armor +1"],["speed","Install Speed +0.25"],["bullets","Install Bullets +2"],["penetration","Install Penetration +1"]]
+	for index in offers.size():
+		var offer: Array = offers[index]
+		var key: String = offer[0]
+		var x := 410 + (index % 2)*240
+		var y := 195 + (index / 2)*43
+		var buy := _button(panel, "%s · %d" % [offer[1], fleet.cost(key)], Vector2(x,y), Vector2(232,36), func() -> void:
+			fleet.buy(key)
+			_show_hangar())
+		buy.add_theme_font_size_override("font_size", 13)
+		buy.disabled = not fleet.can_buy(key)
+	_label(panel, "Installed upgrades and bought paints survive until this aircraft is destroyed.\nNext-flight purchases expire after flying. Armor extensions need repair.", Vector2(410, 416), Vector2(478, 52), 13, Color("e4c47f"), true)
+	var launch := _button(panel, "Launch Mission", Vector2(24, 467), Vector2(270, 34), _start_run, true)
+	launch.disabled = machine.armor <= 0
+	_button(panel, "Main Menu", Vector2(310, 467), Vector2(270, 34), _title_again)
+	_button(panel, "Aircraft", Vector2(596, 467), Vector2(292, 34), func() -> void: _show_aircraft("hangar"))
+	launch.grab_focus()
 
 func _show_options() -> void:
 	menu = "options_title"
@@ -374,6 +475,8 @@ func _sort_highscores() -> void:
 	if high_scores.size() > 10: high_scores.resize(10)
 
 func _quit_game() -> void:
+	if fleet.active != "": fleet.abort(model.armor)
+	_save_preferences()
 	pending_fire = false
 	set_physics_process(false)
 	audio.shutdown()
@@ -410,7 +513,7 @@ func _show_pause() -> void:
 	_button(panel, "Aircraft", Vector2(26, 137), Vector2(408, 40), func() -> void: _show_aircraft("pause"))
 	_button(panel, "Controls", Vector2(26, 189), Vector2(408, 40), func() -> void: _show_controls("pause"))
 	_button(panel, "Sound & Music", Vector2(26, 241), Vector2(408, 40), func() -> void: _show_sound("pause"))
-	_button(panel, "Restart Mission", Vector2(26, 293), Vector2(408, 40), _start_run)
+	_button(panel, "Return to Hangar", Vector2(26, 293), Vector2(408, 40), _show_hangar)
 	_button(panel, "Main Menu", Vector2(26, 345), Vector2(408, 40), _title_again)
 	first.grab_focus()
 
@@ -418,6 +521,8 @@ func _show_aircraft(back: String) -> void:
 	menu = "aircraft_" + back
 	var panel := _panel("Aircraft", Vector2(900, 490))
 	aircraft_entries = AircraftCatalog.entries(model.aircraft, model.profiles)
+	aircraft_entries[0].profile = fleet.player_profiles.hellcat
+	aircraft_entries.insert(0, {"profile":fleet.player_profiles.wildcat,"team":"Player","weapon":"Single Shot / Double / Triple Shot"})
 	aircraft_list = ItemList.new()
 	aircraft_list.position = Vector2(24, 82)
 	aircraft_list.size = Vector2(238, 332)
@@ -432,8 +537,7 @@ func _show_aircraft(back: String) -> void:
 	panel.add_child(aircraft_detail)
 	aircraft_list.item_selected.connect(_update_aircraft_detail)
 	_button(panel, "Back", Vector2(24, 432), Vector2(238, 38), func() -> void:
-		if back == "pause": _show_pause()
-		else: _show_title())
+		_return_menu(back))
 	_button(panel, "Previous", Vector2(284, 432), Vector2(180, 38), func() -> void: _step_aircraft(-1))
 	_button(panel, "Next", Vector2(477, 432), Vector2(180, 38), func() -> void: _step_aircraft(1))
 	_label(panel, "Base aircraft values · Speed bonuses are shown in flight", Vector2(284, 399), Vector2(590, 25), 13)
@@ -462,10 +566,11 @@ func _update_aircraft_detail(index: int) -> void:
 	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	var path: String = "res://assets/art/%s.png" % profile.texture_id
+	if not ResourceLoader.exists(path): path = "res://assets/art/%s.svg" % profile.texture_id
 	if ResourceLoader.exists(path): picture.texture = load(path)
 	aircraft_detail.add_child(picture)
 	_label(aircraft_detail, entry.team + " · " + profile.role, Vector2(289, 77), Vector2(303, 26), 15, Color("78dedb"))
-	var values := "Armor  %d\nSpeed Rating  %d (%d%%)\nPenetration  %d\nProjectile Damage  %d" % [profile.armor, profile.speed_rating, roundi(profile.speed / 260.0 * 100), profile.penetration, profile.projectile_damage]
+	var values := "Armor  %d\nSpeed Rating  %.2f (%d%%)\nPenetration  %d" % [profile.armor, profile.speed_rating, roundi(profile.speed / 260.0 * 100), profile.penetration]
 	if profile is AircraftProfile: values += "\nBullet Capacity  %d" % profile.bullet_capacity
 	_label(aircraft_detail, values, Vector2(289, 115), Vector2(303, 130), 15)
 	_label(aircraft_detail, "Weapon\n" + entry.weapon, Vector2(289, 255), Vector2(303, 54), 15, Color("e4c47f"), true)
@@ -475,7 +580,7 @@ func _show_controls(back: String) -> void:
 	var panel := _panel("Flight Controls", Vector2(730, 490))
 	_label(panel, "WASD / Arrows\nSpace / Z\nShift / X\nEsc / P\nF11", Vector2(28, 89), Vector2(190, 170), 18, Color("e4c47f"))
 	_label(panel, "Move · Stick / D-pad\nFire one salvo · Main button (A)\nRoll · Second button (B)\nPause · Start\nToggle Fullscreen", Vector2(224, 89), Vector2(478, 170), 18)
-	_label(panel, "Armor 0 means Game Over. Press Fire for each complete salvo.\nBullets = active shots / capacity (starts at 6, maximum 18).\nRolls: 1 second protection · repairs restore 1 armor.\nGold formations drop upgrades; ordinary enemies have a 3% chance.\nComplete groups earn Bonus Points. Land to bank them.\nPenetration counts additional targets (0–3). Align to land.", Vector2(28, 260), Vector2(674, 157), 15)
+	_label(panel, "Armor 0 means Game Over and loss of this machine's upgrades and paints.\nPress Fire for each complete salvo. Bullets: active / capacity (maximum 18).\nRolls refill to 3 before takeoff. Speed pickups add 0.25 (maximum 5.00).\nGold formations drop upgrades; ordinary enemies have a 3% chance.\nComplete groups earn Bonus Points. Land to bank them and enter the Hangar.\nPenetration counts additional targets (0–3). Align to land.", Vector2(28, 260), Vector2(674, 157), 15)
 	var first := _button(panel, "Back", Vector2(28, 438), Vector2(674, 36), func() -> void:
 		_return_menu(back), true)
 	first.grab_focus()
@@ -515,7 +620,7 @@ func _show_result(success: bool) -> void:
 	result_success = success
 	menu = "result"
 	var panel := _panel("Welcome Aboard" if success else "Game Over", Vector2(660, 490))
-	var subtitle := "Carrier reached. Your Hellcat has landed safely." if success else "Your aircraft was lost. Start a new mission."
+	var subtitle := "Carrier reached. Your aircraft has landed safely." if success else "Your aircraft was lost. Start a new mission."
 	_label(panel, subtitle, Vector2(28, 79), Vector2(454, 36), 16)
 	var ratio := float(model.kills) / maxi(1, model.spawned) * 100
 	_label(panel, "SCORE  %06d       HIGH SCORE  %06d\nKILLS  %d / %d   ·   RATE  %.0f%%\nFLIGHT TIME  %02d:%02d" % [model.last_attempt_score, high_score, model.kills, model.spawned, ratio, int(model.mission_time) / 60, int(model.mission_time) % 60], Vector2(28, 130), Vector2(454, 90), 18, Color("e4c47f"))
@@ -536,7 +641,7 @@ func _show_result(success: bool) -> void:
 		if _record_highscore(name): _show_result(success))
 	_label(panel, "Save before leaving · one entry per flight", Vector2(28, 333), Vector2(604, 24), 14)
 	_button(panel, "Highscore", Vector2(28, 371), Vector2(604, 36), func() -> void: _show_highscores("result"))
-	var first := _button(panel, "Fly Again", Vector2(28, 428), Vector2(288, 40), _start_run, true)
+	var first := _button(panel, "Continue to Hangar", Vector2(28, 428), Vector2(288, 40), _show_hangar, true)
 	_button(panel, "Main Menu", Vector2(330, 428), Vector2(302, 40), _title_again)
 	first.grab_focus()
 	if not save.disabled: score_name_input.grab_focus()
@@ -545,6 +650,8 @@ func _read_preferences() -> void:
 	var file := ConfigFile.new()
 	if file.load(PREFS) != OK:
 		return
+	var saved_fleet = file.get_value("hangar", "state", {})
+	fleet.restore(saved_fleet if saved_fleet is Dictionary else {}, not file.has_section_key("hangar", "state"))
 	high_score = maxi(0, int(file.get_value("game", "high_score", 0)))
 	bonus_bank = maxi(0, int(file.get_value("game", "bonus_bank", 0)))
 	music_volume = clampf(float(file.get_value("audio", "music", 0.6)), 0, 1)
@@ -565,6 +672,7 @@ func _save_preferences() -> void:
 		return
 	var file := ConfigFile.new()
 	file.load(PREFS)
+	file.set_value("hangar", "state", fleet.serialize())
 	file.set_value("game", "high_score", high_score)
 	file.set_value("game", "bonus_bank", bonus_bank)
 	file.set_value("game", "high_scores", high_scores)

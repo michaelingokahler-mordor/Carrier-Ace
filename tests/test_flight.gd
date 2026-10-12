@@ -2,6 +2,7 @@ extends SceneTree
 
 func _init() -> void:
 	var model := MissionModel.new()
+	if "--wildcat" in OS.get_cmdline_user_args(): model.aircraft = load("res://resources/player_wildcat.tres")
 	model.loot_rng.seed = 1943
 	model.start_run()
 	var pilot := PilotBot.new()

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AircraftProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/aircraft_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+display_name = "F4F Wildcat"
+model_name = "Grumman F4F Wildcat"
+role = "Starter fighter"
+armor = 2
+speed_rating = 1.0
+bullet_capacity = 5
+texture_id = "wildcat"
+sprite_size = Vector2(64, 64)
+propeller_positions = PackedVector2Array(0, -21)
+hit_polygons = Array[PackedVector2Array]([PackedVector2Array(-0.025,-0.3,0.025,-0.3,0.045,-0.13,0.018,0.32,-0.018,0.32,-0.045,-0.13), PackedVector2Array(-0.39,-0.068,-0.075,-0.11,-0.075,-0.045,-0.40,-0.025), PackedVector2Array(0.075,-0.11,0.39,-0.068,0.40,-0.025,0.075,-0.045), PackedVector2Array(-0.025,0.25,-0.17,0.29,-0.17,0.305,-0.025,0.285), PackedVector2Array(0.025,0.25,0.17,0.29,0.17,0.305,0.025,0.285)])

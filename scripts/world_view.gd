@@ -14,13 +14,17 @@ var high_score := 0
 var bonus_bank := 0
 var message := ""
 var message_time := 0.0
+var player_visual := PlayerVisual.new()
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	background.model = model
 	add_child(background)
-	for id in ["player", "carrier", "title"] + AircraftCatalog.ENEMY_IDS:
+	player_visual.model = model
+	add_child(player_visual)
+	for id in ["player", "wildcat", "carrier", "title"] + AircraftCatalog.ENEMY_IDS:
 		var path := "res://assets/art/%s.png" % id
+		if not ResourceLoader.exists(path): path = "res://assets/art/%s.svg" % id
 		if ResourceLoader.exists(path):
 			textures[id] = load(path)
 
@@ -83,18 +87,6 @@ func _draw() -> void:
 			else: draw_arc(bullet.pos, 2 if bullet.friendly else 3, 0, TAU, 16, Color.YELLOW, 1, true)
 	for particle in model.particles:
 		_draw_explosion(particle)
-	if model.phase not in [MissionModel.Phase.DOWNED, MissionModel.Phase.GAME_OVER]:
-		var visible := model.invulnerable <= 0 or model.roll_time > 0 or int(clock * 20) % 2 == 0
-		if visible:
-			var width := model.player_draw_width()
-			_sprite("player", model.player, Vector2(model.aircraft.sprite_size.x * width, model.aircraft.sprite_size.y))
-			_draw_damage(model.player, width)
-			_draw_propellers(model.player, width, model.aircraft)
-			if model.roll_time > 0:
-				draw_arc(model.player, 32, clock * 5, clock * 5 + PI * 1.5, 20, Color(0.6, 1, 1, 0.5), 2)
-	if model.debug_collisions and model.armor > 0:
-		_debug_shape(model.player_collision_shape(), model.player, Color(0.35, 1, 0.7, 0.9))
-		draw_line(model.previous_player, model.player, Color.GREEN, 1)
 	_draw_hud()
 	if flash > 0:
 		draw_rect(Rect2(0, 0, 960, 540), Color(1, 0.3, 0.15, flash * 1.5))
@@ -106,21 +98,6 @@ func _debug_shape(shape: Dictionary, position: Vector2, color: Color) -> void:
 		points.append(points[0])
 		draw_polyline(points, color, 1, true)
 
-func _draw_damage(position: Vector2, width: float) -> void:
-	if model.armor >= model.aircraft.armor: return
-	var marks := [Vector2(-18, -3), Vector2(3, 9)]
-	if model.armor <= 1: marks.append_array([Vector2(16, -5), Vector2(-2, -12), Vector2(-7, 17)])
-	for mark in marks:
-		var center: Vector2 = position + mark * Vector2(width, 1)
-		draw_circle(center, 3.7, Color(0.13, 0.08, 0.045, 0.6))
-		draw_circle(center, 1.5, Color(0.025, 0.035, 0.035, 0.95))
-		draw_line(center + Vector2(-1, 2), center + Vector2(2, 1), Color(0.75, 0.68, 0.48, 0.7), 1, true)
-	if model.armor <= 1:
-		for index in range(6):
-			var age := fmod(clock * 0.8 + index / 6.0, 1.0)
-			var center := position + Vector2(3 + sin(age * 8) * 4, 16 + age * 38)
-			draw_circle(center, 2 + age * 6, Color(0.15, 0.16, 0.15, (1 - age) * 0.26))
-
 func _draw_title() -> void:
 	if textures.has("title"):
 		draw_texture_rect(textures.title, Rect2(0, 0, 960, 540), false)
@@ -128,7 +105,7 @@ func _draw_title() -> void:
 	_text(Vector2(58, 99), "OPERATION BLUE HORIZON", 14, Color("183a4a"))
 	_text(Vector2(55, 175), "CARRIER", 64, Color("f2e6cd"))
 	_text(Vector2(55, 237), "ACE", 64, GOLD)
-	_text(Vector2(60, 511), "ARCADE FLIGHT MISSION  /  0.4", 12, Color("a3b8bc"))
+	_text(Vector2(60, 511), "ARCADE FLIGHT MISSION  /  0.5", 12, Color("a3b8bc"))
 	_text(Vector2(450, 511), "(C)2026 by Sabnock Works", 12, GOLD)
 	_text(Vector2(710, 511), "HIGH SCORE  %06d" % high_score, 13, GOLD)
 
@@ -237,7 +214,7 @@ func _draw_boss_bar(enemy: Dictionary) -> void:
 	draw_rect(Rect2(rect.position, Vector2(rect.size.x * float(enemy.hp) / enemy.profile.armor, 6)), Color("eab071"))
 
 func _draw_hud() -> void:
-	draw_rect(Rect2(0, 0, 960, 67), Color(0.015, 0.075, 0.11, 0.94))
+	draw_rect(Rect2(0, 0, 960, 67), Color(0.015, 0.075, 0.11, 0.55))
 	draw_line(Vector2(0, 66), Vector2(960, 66), Color("376b78"), 1)
 	_text(Vector2(22, 24), "ARMOR", 11, Color("92bdc5"))
 	_text(Vector2(22, 46), "%d/%d" % [model.armor, model.aircraft.armor], 22, Color("8dd7b5") if model.armor > 1 else Color("ff9c67"))
@@ -249,7 +226,7 @@ func _draw_hud() -> void:
 	_text(Vector2(310, 24), "WEAPON", 11, Color("92bdc5"))
 	_text(Vector2(310, 46), "%d×" % model.weapon, 20, CYAN)
 	_text(Vector2(414, 24), "SPEED", 11, Color("92bdc5"))
-	_text(Vector2(414, 46), "%d +%.0f%%" % [model.aircraft.speed_rating, model.current_speed_bonus()], 19, CYAN)
+	_text(Vector2(414, 46), "%.2f" % model.current_speed_rating(), 19, CYAN)
 	_text(Vector2(549, 24), "PENETRATION", 10, Color("92bdc5"))
 	_text(Vector2(549, 46), "%d" % model.current_penetration(), 20, CYAN)
 	var phase_text := "WAVE %d/6" % (model.wave_index + 1)

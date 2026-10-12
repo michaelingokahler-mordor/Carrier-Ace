@@ -18,6 +18,7 @@ var phase: Phase = Phase.TITLE
 var paused := false
 var player := Vector2(480, 440)
 var bank := 0.0
+var paint_id := "standard"
 var armor := 3
 var bullet_level := 0
 var penetration_level := 0
@@ -141,10 +142,13 @@ func carrier_position() -> Vector2:
 	return Vector2(480, 220)
 
 func current_speed() -> float:
-	return minf(260.0, aircraft.speed * (1.0 + 0.10 * speed_level))
+	return AircraftProfile.speed_for_rating(current_speed_rating())
+
+func current_speed_rating() -> float:
+	return mini(20, roundi(aircraft.speed_rating * 4) + speed_level) / 4.0
 
 func add_speed_upgrade() -> bool:
-	if current_speed() >= 260.0: return false
+	if current_speed_rating() >= 5.0: return false
 	speed_level += 1
 	return true
 

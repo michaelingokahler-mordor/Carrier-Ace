@@ -7,8 +7,8 @@ class_name AircraftProfile
 @export var armor: int = 3
 @export_range(0, 3, 1) var penetration: int = 0:
 	set(value): penetration = clampi(value, 0, 3)
-@export_range(1, 3, 1) var speed_rating: int = 2:
-	set(value): speed_rating = clampi(value, 1, 3)
+@export_range(1, 5, 0.25) var speed_rating: float = 3:
+	set(value): speed_rating = clampf(roundf(value * 4) / 4, 1, 5)
 @export var projectile_damage: int = 1
 var speed: float:
 	get: return speed_for_rating(speed_rating)
@@ -20,5 +20,5 @@ var speed: float:
 @export var sprite_size: Vector2 = Vector2(72, 72)
 @export var propeller_positions: PackedVector2Array = PackedVector2Array([Vector2(0, -24)])
 
-static func speed_for_rating(rating: int) -> float:
-	return 260.0 * [0.5, 0.75, 1.0][clampi(rating, 1, 3) - 1]
+static func speed_for_rating(rating: float) -> float:
+	return 130.0 + (clampf(rating, 1, 5) - 1.0) * 32.5

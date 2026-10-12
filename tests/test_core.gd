@@ -87,7 +87,7 @@ func _test_profiles() -> void:
 	expect(model.aircraft.armor == 3 and model.current_capacity() == 6 and model.current_penetration() == 0, "Hellcat baseline")
 	expect(model.current_speed() == 195 and model.waves.size() == 6, "Speed and six waves retained")
 	expect(model.profiles.boss.armor == 300, "Boss remains separate with 300 armor")
-	var expected := [["biplane_1",1,1],["biplane_2",1,1],["biplane_ace",2,1],["fighter_1",1,2],["fighter_2",1,2],["fighter_ace",2,2],["bomber_1",2,1],["bomber_2",2,1],["bomber_ace",3,1]]
+	var expected := [["biplane_1",1,1],["biplane_2",1,1],["biplane_ace",2,1],["fighter_1",1,3],["fighter_2",1,3],["fighter_ace",2,3],["bomber_1",2,1],["bomber_2",2,1],["bomber_ace",3,1]]
 	for row in expected:
 		var profile: EnemyProfile = model.profiles[row[0]]
 		expect(profile.armor == row[1] and profile.speed_rating == row[2], "Enemy profile " + row[0])
@@ -222,9 +222,9 @@ func _test_loot() -> void:
 		expect(model.current_penetration() == penetration, "Penetration upgrade")
 	model.apply_pickup("penetration")
 	expect(model.current_penetration() == 3 and model.aircraft.penetration == 0, "Penetration cap never mutates profile")
-	for speed in [214.5,234.0,253.5,260.0]:
+	for speed in [203.125,211.25,219.375,227.5,235.625,243.75,251.875,260.0]:
 		model.apply_pickup("speed")
-		expect(is_equal_approx(model.current_speed(),speed), "Speed upgrade retains existing scale")
+		expect(is_equal_approx(model.current_speed(),speed), "Speed upgrade adds an exact quarter")
 	model.apply_pickup("speed")
 	model.apply_pickup("rolls")
 	model.apply_pickup("repair")

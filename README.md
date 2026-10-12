@@ -1,12 +1,12 @@
-# Carrier Ace 0.4.0 – Operation Blue Horizon
+# Carrier Ace 0.5.0 – Operation Blue Horizon
 
-Ein Arcade-Flugspiel mit F6F Hellcat, sechs Gegnerwellen, zwei Counterattacks, neun regulären Gegnerprofilen, separatem B-99-Boss und Trägerlandung. Die Spieloberfläche ist Englisch; diese Dokumentation bleibt Deutsch. Ein erfolgreicher Prüfflug dauert rund fünf Minuten.
+Ein Arcade-Flugspiel mit F4F Wildcat und freischaltbarer F6F Hellcat, sechs Gegnerwellen, zwei Counterattacks, neun regulären Gegnerprofilen, separatem B-99-Boss und Trägerlandung. Die Spieloberfläche ist Englisch; diese Dokumentation bleibt Deutsch. Ein erfolgreicher Prüfflug dauert rund fünf Minuten.
 
 ## Spielen
 
-Windows: `CarrierAce-0.4.0-Windows-x64.zip` entpacken und `CarrierAce.exe` starten. Es ist keine Installation erforderlich.
+Windows: `CarrierAce-0.5.0-Windows-x64.zip` entpacken und `CarrierAce.exe` starten. Es ist keine Installation erforderlich.
 
-Browser: `CarrierAce-0.4.0-Web.zip` entpacken und `Start-Browser.cmd` starten. Der mitgelieferte Server stellt das Spiel unter `http://127.0.0.1:1942/` bereit; Strg+C beendet ihn. Bei belegtem Port: `CarrierServer.exe --port=1943`. Der Server benötigt das in Windows enthaltene .NET Framework 4.x. Alternativ im Webordner `python -m http.server 1942 --bind 127.0.0.1` ausführen.
+Browser: `CarrierAce-0.5.0-Web.zip` entpacken und `Start-Browser.cmd` starten. Der mitgelieferte Server stellt das Spiel unter `http://127.0.0.1:1942/` bereit; Strg+C beendet ihn. Bei belegtem Port: `CarrierServer.exe --port=1943`. Der Server benötigt das in Windows enthaltene .NET Framework 4.x. Alternativ im Webordner `python -m http.server 1942 --bind 127.0.0.1` ausführen.
 
 `index.html` über HTTP öffnen. Der Browser benötigt WebGL 2. Die erste Eingabe schaltet Audio frei. Alle Laufzeitdateien liegen lokal; das Spiel ruft keine externen Generierungsdienste auf.
 
@@ -19,13 +19,13 @@ Browser: `CarrierAce-0.4.0-Web.zip` entpacken und `Start-Browser.cmd` starten. D
 | Menü bedienen | Pfeile / Tab / Enter | Steuerkreuz / A |
 | Vollbild | F11 | — |
 
-Die Hellcat startet mit Armor 3/3, Penetration 0, Speed Rating 2 und Single Shot. Normale Treffer kosten einen Panzerungspunkt, angekündigte Ace-Raketen zwei. Drei Rollen geben jeweils eine Sekunde Schutz. Bei Armor null explodiert die Hellcat; nach 0,8 Sekunden erscheint Game Over. Ein neuer Flug startet nur auf ausdrückliche Eingabe.
+Die F4F beginnt mit Armor 2/2, Speed Rating 1 und fünf Kugelplätzen. Nach der ersten erfolgreichen Landung wird die F6F freigeschaltet. Die Hellcat startet mit Armor 3/3, Penetration 0, Speed Rating 3 und Single Shot. Normale Treffer kosten einen Panzerungspunkt, angekündigte Ace-Raketen zwei. Drei Rollen geben jeweils eine Sekunde Schutz. Bei Armor null explodiert die Hellcat; nach 0,8 Sekunden erscheint Game Over. Ein neuer Flug startet nur auf ausdrückliche Eingabe.
 
 Sechs gleichzeitig aktive Kugelplätze begrenzen die Bordkanone. Single/Double/Triple Shot brauchen jeweils 1/2/3 freie Plätze. Nur vollständige Salven sind möglich; Halten und Tastaturwiederholung feuern nicht. Bullets erhöht die Kapazität um zwei bis maximal 18. Ein Platz wird nach dem letzten zulässigen Treffer oder Verlassen des Spielfelds frei.
 
-Goldmarkierte Viererformationen vollständig abschießen: ein garantierter Drop aus der Loot-Tabelle. Reguläre Abschüsse außerhalb dieser Formationen haben 3 % Dropchance. Neben Armor, Waffen und Speed gibt es Bullets, Rolls (+1 bis maximal drei) und Penetration (+1 zusätzliches Ziel, maximal drei). Waffen werden durch schwächere Pickups nicht herabgestuft. Speed addiert je Pickup 10% des Grundtempos; die Hellcat erreicht 195 → 214,5 → 234 → 253,5 → 260 logische Pixel/s.
+Goldmarkierte Viererformationen vollständig abschießen: ein garantierter Drop aus der Loot-Tabelle. Reguläre Abschüsse außerhalb dieser Formationen haben 3 % Dropchance. Neben Armor, Waffen und Speed gibt es Bullets, Rolls (+1 bis maximal drei) und Penetration (+1 zusätzliches Ziel, maximal drei). Waffen werden durch schwächere Pickups nicht herabgestuft. Speed addiert je Pickup 0,25 Rating. Die neue Skala 1–5 entspricht 130–260 logischen Pixeln pro Sekunde.
 
-Vollständig abgeschossene Anfluggruppen bringen 25 Bonus-Points je Mitglied. Ein nutzloses eingesammeltes Upgrade bringt 25. Landung schreibt die Flugpunkte dauerhaft gut; Game Over oder Abbruch verlieren nur ungesicherte Punkte. Score und Bonusbestand sind getrennt. Der Shop folgt später.
+Vollständig abgeschossene Anfluggruppen bringen 25 Bonus-Points je Mitglied. Ein nutzloses eingesammeltes Upgrade bringt 25. Landung schreibt die Flugpunkte dauerhaft gut; Game Over oder Abbruch verlieren nur ungesicherte Punkte. Score und Bonusbestand sind getrennt. Im Hangar kann man reparieren, Lackierungen kaufen sowie Flugboni und installierte Ausbauten erwerben. Installierte Ausbauten und gekaufte Lackierungen bleiben bis zum Abschuss erhalten. Das Basismodell wird kostenlos ersetzt.
 
 Nach Welle 3 und 6 kehren entkommene Mitglieder der bisherigen Formationen in einer Counterattack zurück, mit ihrer verbleibenden Armor. Laufende Gruppen beenden zuerst ihren Anflug. Rückkehrer sammeln sich nicht erneut für weitere Angriffe. Reguläre Gegner fliegen auch Zickzack und eine vollständige Schleife; Grafik, Trefferflächen und feste Bordwaffen folgen der Flugrichtung. Der Boss behält seine ursprüngliche seitliche Bewegung und Schussmuster. Raketen verfolgen ihr Ziel nach dem Start nicht.
 
@@ -48,7 +48,10 @@ python tools/build.py
 python tools/run_godot.py --headless --script tests/test_core.gd
 python tools/run_godot.py --headless --script tests/test_ui.gd
 python tools/run_godot.py --headless --script tests/test_mission04.gd
+python tools/run_godot.py --headless --script tests/test_hangar.gd
+python tools/run_godot.py --headless --script tests/test_hangar_ui.gd
 python tools/run_godot.py --headless --script tests/test_flight.gd
+python tools/run_godot.py --headless --script tests/test_flight.gd -- --wildcat
 python tools/verify_windows.py
 ```
 
@@ -65,7 +68,7 @@ Fertige PNG- und OGG-Dateien sind versioniert. Die hochauflösende Grafikaufbere
 ## Dokumentation
 
 - `docs/RESEARCH_1942.md`: Recherche mit Versionsabgrenzung und Quellen.
-- `docs/DESIGN.md`: Regeln, Profile und Grafikablauf von 0.4.
+- `docs/DESIGN.md`: Regeln und Grafikablauf; neue Hangarregeln in `docs/HANGAR.md`.
 - `docs/VALIDATION.md`: tatsächliche Prüfungen, Belege und offene menschliche Abnahme.
 - `assets/manifest.json`: ursprüngliche Generierungen.
 - `assets/revision02.json`: neue Bilder, Aufgaben, Prompts und Budget.
@@ -76,3 +79,7 @@ Fertige PNG- und OGG-Dateien sind versioniert. Die hochauflösende Grafikaufbere
 Credits sind über das Hauptmenü erreichbar. Quit beendet auch den Browserexport; die Abschlussseite bietet einen Neustart. Ergebnisbildschirme stoppen sämtliche Spielsounds.
 
 Für --report und --capture-dir absolute, beschreibbare Pfade verwenden.
+
+Für einen gezielten F4F-Exportprüfflug: Windows `-- --verify-wildcat`, Web `?verify=1&aircraft=wildcat`. Die Auswahl benutzt das kostenlos freigeschaltete Basismodell; sie verändert keine Kampfregeln und schreibt keine Prüfdaten in den Spielstand.
+
+Start Mission führt zur Flugvorbereitung im Hangar. Rollen werden vor jedem Start auf drei aufgefüllt. Reparaturen kosten 150 pro fehlendem Armor-Punkt; ein Speed-Flugbonus kostet 200. Vollständige Preise, Ausbaugrenzen und Verlustregeln: [Hangar](docs/HANGAR.md). Die F4F-Grafik wurde lokal als SVG erstellt; neue Runway-Generierungen waren dafür nicht erforderlich.
