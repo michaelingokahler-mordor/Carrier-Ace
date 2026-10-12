@@ -23,6 +23,7 @@ $GODOT_HEAD_INCLUDE
 <script src="$GODOT_URL"></script>
 <script>
 const config=$GODOT_CONFIG;
+config.onExit=()=>{const screen=document.createElement('div');screen.id='status';const title=document.createElement('strong');title.textContent='FLIGHT ENDED';const text=document.createElement('div');text.textContent='The game and its audio have stopped.';const restart=document.createElement('button');restart.textContent='Return to Carrier Ace';restart.onclick=()=>location.reload();screen.append(title,text,restart);document.body.append(screen);restart.focus();};
 const engine=new Engine(config);
 const status=document.getElementById('status');
 const fail=error=>{document.getElementById('notice').textContent='The game could not start. Use a current browser with WebGL 2 and open the game through the included local server.\n'+String(error);console.error(error);};

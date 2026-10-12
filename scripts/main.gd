@@ -47,6 +47,7 @@ func _ready() -> void:
 	model.event.connect(_on_model_event)
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 	get_window().focus_exited.connect(_on_focus_exited)
+	get_window().focus_entered.connect(func() -> void: audio.backgrounded = false)
 	_show_title()
 	for argument in OS.get_cmdline_user_args():
 		if argument == "--verify": verify = true
@@ -121,7 +122,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause_game"):
 		if menu in ["controls_pause", "sound_pause", "aircraft_pause"]:
 			_show_pause()
-		elif menu in ["controls_title", "sound_title", "aircraft_title"]:
+		elif menu in ["controls_title", "sound_title", "aircraft_title", "credits_title"]:
 			_show_title()
 		elif model.phase not in [MissionModel.Phase.TITLE, MissionModel.Phase.VICTORY, MissionModel.Phase.GAME_OVER, MissionModel.Phase.DOWNED]:
 			if model.paused:
@@ -134,6 +135,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_focus_exited() -> void:
 	if verify:
 		return
+	audio.backgrounded = true
+	audio.pause_all(true)
 	if model.phase in [MissionModel.Phase.WAVES, MissionModel.Phase.BOSS, MissionModel.Phase.TAKEOFF, MissionModel.Phase.APPROACH, MissionModel.Phase.LANDING]:
 		model.paused = true
 		_show_pause()
@@ -199,6 +202,7 @@ func _start_run() -> void:
 
 func _resume() -> void:
 	pending_fire = false
+	audio.backgrounded = false
 	model.paused = false
 	_clear_ui()
 	menu = "flight"
@@ -280,13 +284,42 @@ func _show_title() -> void:
 	_clear_ui()
 	menu = "title"
 	var first := _button(ui_root, "Start Mission", Vector2(60, 264), Vector2(300, 43), _start_run, true)
-	_button(ui_root, "Aircraft", Vector2(60, 315), Vector2(300, 40), func() -> void: _show_aircraft("title"))
-	_button(ui_root, "Controls", Vector2(60, 363), Vector2(300, 40), func() -> void: _show_controls("title"))
-	_button(ui_root, "Sound & Music", Vector2(60, 411), Vector2(300, 40), func() -> void: _show_sound("title"))
-	if not OS.has_feature("web"):
-		_button(ui_root, "Quit", Vector2(60, 459), Vector2(300, 34), func() -> void: get_tree().quit())
+	_button(ui_root, "Aircraft", Vector2(60, 312), Vector2(300, 34), func() -> void: _show_aircraft("title"))
+	_button(ui_root, "Controls", Vector2(60, 350), Vector2(300, 34), func() -> void: _show_controls("title"))
+	_button(ui_root, "Sound & Music", Vector2(60, 388), Vector2(300, 34), func() -> void: _show_sound("title"))
+	_button(ui_root, "Credits", Vector2(60, 426), Vector2(300, 34), _show_credits)
+	_button(ui_root, "Quit", Vector2(60, 464), Vector2(300, 30), _quit_game)
 	first.grab_focus()
 	audio.music("title_music")
+
+func _quit_game() -> void:
+	pending_fire = false
+	set_physics_process(false)
+	audio.shutdown()
+	_clear_ui()
+	get_tree().quit.call_deferred()
+
+func _show_credits() -> void:
+	menu = "credits_title"
+	var panel := _panel("Credits for Carrier Ace", Vector2(780, 490))
+	var lines := [
+		["(C) 2025–2026 Sabnock Works Independent Game Studio by Michael Kahler", 79, 16],
+		["Original Idea: 1942 (Arcade, 1984)", 124, 16],
+		["Yoshiki Okamoto · Capcom", 148, 20],
+		["Game Studio", 192, 16],
+		["Sabnock Works · sabnockworks.com", 216, 20],
+		["Executive Producer and Developer: Carrier Ace", 260, 16],
+		["Michael Kahler", 284, 20],
+		["Programming Support", 326, 16],
+		["OpenAI ChatGPT", 350, 20],
+		["Game Sounds, Music & Assets", 390, 16],
+		["Runway AI", 414, 20]
+	]
+	for line in lines:
+		var label := _label(panel, line[0], Vector2(24, line[1]), Vector2(732, 27), line[2])
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var back := _button(panel, "Back", Vector2(270, 450), Vector2(240, 28), _show_title, true)
+	back.grab_focus()
 
 func _show_pause() -> void:
 	pending_fire = false
@@ -399,6 +432,7 @@ func _slider(parent: Control, position: Vector2, value: float, callback: Callabl
 	return slider
 
 func _show_result(success: bool) -> void:
+	audio.stop_all()
 	menu = "result"
 	var panel := _panel("Welcome Aboard" if success else "Game Over", Vector2(510, 425))
 	var subtitle := "Carrier reached. Your Hellcat has landed safely." if success else "Your aircraft was lost. Start a new mission."

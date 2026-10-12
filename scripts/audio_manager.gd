@@ -10,6 +10,8 @@ var voices: Array[AudioStreamPlayer] = []
 var sounds: Dictionary = {}
 var cooldowns: Dictionary = {}
 var current_music := ""
+var backgrounded := false
+var shutting_down := false
 
 func _ready() -> void:
 	# Long loops stream from Ogg instead of duplicating browser sample buffers.
@@ -34,7 +36,7 @@ func _process(delta: float) -> void:
 		cooldowns[id] = maxf(0, cooldowns[id] - delta)
 
 func unlock() -> void:
-	if enabled:
+	if enabled or shutting_down:
 		return
 	enabled = true
 	if current_music != "":
@@ -43,10 +45,24 @@ func unlock() -> void:
 		music(desired)
 
 func _exit_tree() -> void:
+	shutdown()
+	sounds.clear()
+
+func stop_all() -> void:
 	for player in [music_player, engine_player] + voices:
 		player.stop()
 		player.stream = null
-	sounds.clear()
+	current_music = ""
+	cooldowns.clear()
+
+func shutdown() -> void:
+	shutting_down = true
+	enabled = false
+	stop_all()
+
+func pause_all(paused: bool) -> void:
+	for player in [music_player, engine_player] + voices:
+		player.stream_paused = paused
 
 func set_volumes(music_value: float, effects_value: float) -> void:
 	music_volume = clampf(music_value, 0, 1)
@@ -68,6 +84,7 @@ func sound(id: String) -> void:
 			return
 
 func music(id: String) -> void:
+	if shutting_down: return
 	if id == current_music:
 		return
 	current_music = id
@@ -79,6 +96,8 @@ func music(id: String) -> void:
 		music_player.play()
 
 func flight(active: bool, moving: bool, paused: bool) -> void:
+	if shutting_down: return
+	paused = paused or backgrounded
 	if music_player.stream_paused != paused:
 		music_player.stream_paused = paused
 	for voice in voices:

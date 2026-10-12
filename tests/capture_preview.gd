@@ -20,6 +20,8 @@ func run() -> void:
 		var suffix: String = str(resolution.x)
 		game._title_again()
 		await capture("title_" + suffix)
+		game._show_credits()
+		await capture("credits_" + suffix)
 		game._show_controls("title")
 		await capture("controls_" + suffix)
 		game._show_aircraft("title")

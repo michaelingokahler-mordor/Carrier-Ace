@@ -4,7 +4,7 @@ Stand: 12.10.2026. Godot 4.7.2 Standard (`4.7.2.stable.official.ed1daf0bf`), Com
 
 ## Ergebnis
 
-**290 automatisierte Prüfungen bestanden:** 214 Regel- und Geometrieprüfungen, 76 Prüfungen von Oberfläche, Eingabe, Speicherung und Unterbrechungen. Zusätzlich besteht ein vollständiger headless Prüfflug mit normalem Testpiloten. Der Pilot benutzt echte Bewegung, einzelne Schussimpulse, Konturprognosen und Rollen; er verändert weder Armor noch Gegnerzustände und überspringt keine Missionsabschnitte.
+**297 automatisierte Prüfungen bestanden:** 214 Regel- und Geometrieprüfungen, 83 Prüfungen von Oberfläche, Eingabe, Speicherung und Unterbrechungen. Zusätzlich besteht ein vollständiger headless Prüfflug mit normalem Testpiloten. Der Pilot benutzt echte Bewegung, einzelne Schussimpulse, Konturprognosen und Rollen; er verändert weder Armor noch Gegnerzustände und überspringt keine Missionsabschnitte.
 
 Windows- und Webexport haben den vollständigen normalen Flug bestanden: 255,90 s, alle sechs Wellen, alle neun Gegnerarten und separater Boss, Trägeranflug und Landung. Beide Läufe enden mit 67 Abschüssen bei 94 Gegnern, Score 14.800, Armor 3/3, Kapazität 10, Double Shot, Penetration 1, einer verbleibenden Rolle und 775 gutgeschriebenen Bonus-Points.
 
@@ -89,3 +89,11 @@ Physisches Gamepad-Anschließen/-Trennen, eine menschliche Hörabnahme und pers�
 ![Tatsächlicher Windows-Flug](images/gameplay.png)
 
 ![Web-Landung](images/web-victory.jpg)
+
+## Nachtrag: Credits und Audio-Ende
+
+Das Hauptmenü enthält Credits und Quit auf Windows und Web. Credits nennen 1942 (1984), Yoshiki Okamoto und Capcom als ursprüngliche Idee, Sabnock Works und Michael Kahler, ausschließlich OpenAI ChatGPT als Programming Support und Runway AI für Sounds, Musik und Assets. Keine Visit-also-Zeile. Quellenbezug: https://www.arcade-museum.com/Videogame/1942--capcom
+
+83 UI-Prüfungen bestanden, einschließlich Credits/Zurück, vollständigem Audiostopp am Ergebnis, Wiederaufnahme der Titelmusik, Fokusverlust und permanentem Shutdown. Credits bei 1280×720 und 1920×1080 kontrolliert. Web-Quit und Neustart über die Abschlussseite tatsächlich geprüft. Beide Exporte neu gebaut; der vollständige Flug und die FPS-Daten oben stammen aus der zuvor geprüften 0.3.0-Fassung, vor diesem Menü-/Audio-Nachtrag. Keine erneute menschliche Hörabnahme.
+
+Beim tatsächlichen Web-Quit meldet Godot zusätzlich interne Cleanup-Warnungen (ObjectDB/WorkerThreadPool, zwei Ressourcen). Die Exit-Seite erscheint und ein Neustart funktioniert; die Warnungsursache wurde nicht isoliert. Der Audiostopp und Schutz vor erneutem Start sind separat automatisiert geprüft.

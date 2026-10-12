@@ -67,3 +67,5 @@ Fertige PNG- und OGG-Dateien sind versioniert. Die hochauflösende Grafikaufbere
 - `THIRD_PARTY_NOTICES.md`: Engine- und Asset-Hinweise.
 
 [GitHub-Repository](https://github.com/michaelingokahler-mordor/Carrier-Ace), Hauptbranch `main`. Engine, Builds, Importcache und private Rohentwürfe bleiben außerhalb des Repositorys.
+
+Credits sind über das Hauptmenü erreichbar. Quit beendet auch den Browserexport; die Abschlussseite bietet einen Neustart. Ergebnisbildschirme stoppen sämtliche Spielsounds.
