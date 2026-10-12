@@ -6,5 +6,4 @@ title = "First Contact"
 duration = 30.0
 pattern = "line"
 enemy_ids = PackedStringArray("biplane_1", "biplane_2")
-pickup = "double"
 density = 3

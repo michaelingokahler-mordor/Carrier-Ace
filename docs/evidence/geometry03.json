@@ -1,0 +1,119 @@
+{
+  "profiles": {
+    "biplane_1": {
+      "convex_parts": 16,
+      "vertices": 67,
+      "sprite_size": [
+        58.0,
+        58.0
+      ]
+    },
+    "biplane_2": {
+      "convex_parts": 15,
+      "vertices": 64,
+      "sprite_size": [
+        58.0,
+        58.0
+      ]
+    },
+    "biplane_ace": {
+      "convex_parts": 16,
+      "vertices": 68,
+      "sprite_size": [
+        62.0,
+        62.0
+      ]
+    },
+    "bomber_1": {
+      "convex_parts": 18,
+      "vertices": 82,
+      "sprite_size": [
+        90.0,
+        90.0
+      ]
+    },
+    "bomber_2": {
+      "convex_parts": 16,
+      "vertices": 77,
+      "sprite_size": [
+        90.0,
+        90.0
+      ]
+    },
+    "bomber_ace": {
+      "convex_parts": 24,
+      "vertices": 115,
+      "sprite_size": [
+        126.0,
+        126.0
+      ]
+    },
+    "boss": {
+      "convex_parts": 31,
+      "vertices": 163,
+      "sprite_size": [
+        168.0,
+        168.0
+      ]
+    },
+    "fighter_1": {
+      "convex_parts": 14,
+      "vertices": 65,
+      "sprite_size": [
+        66.0,
+        66.0
+      ]
+    },
+    "fighter_2": {
+      "convex_parts": 14,
+      "vertices": 64,
+      "sprite_size": [
+        66.0,
+        66.0
+      ]
+    },
+    "fighter_ace": {
+      "convex_parts": 22,
+      "vertices": 99,
+      "sprite_size": [
+        68.0,
+        68.0
+      ]
+    },
+    "player": {
+      "convex_parts": 16,
+      "vertices": 75,
+      "sprite_size": [
+        72.0,
+        72.0
+      ]
+    }
+  },
+  "coasts": {
+    "island_1_shore": {
+      "size": [
+        1216,
+        960
+      ],
+      "added_margin_per_side": 96,
+      "max_border_value": 0
+    },
+    "island_2_shore": {
+      "size": [
+        1216,
+        960
+      ],
+      "added_margin_per_side": 96,
+      "max_border_value": 0
+    },
+    "island_3_shore": {
+      "size": [
+        1216,
+        960
+      ],
+      "added_margin_per_side": 96,
+      "max_border_value": 0
+    }
+  },
+  "inset": "2 logical pixels; 1 at narrow center fuselage; 0.5px contour simplification"
+}

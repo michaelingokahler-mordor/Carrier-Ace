@@ -17,7 +17,7 @@ var speed: float:
 @export var flight_style: String = "inherit"
 @export var sprite_size: Vector2 = Vector2(66, 56)
 @export var propeller_positions: PackedVector2Array = PackedVector2Array([Vector2(0, 22)])
-@export var radius: float = 17.0
+@export var hit_polygons: Array[PackedVector2Array] = []
 @export var points: int = 100
 @export var shoot_interval: float = 4.0
 @export var texture_id: String = "fighter"

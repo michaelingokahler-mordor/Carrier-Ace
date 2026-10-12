@@ -6,5 +6,4 @@ title = "Crossfire"
 duration = 30.0
 pattern = "cross"
 enemy_ids = PackedStringArray("fighter_1", "fighter_2")
-pickup = "speed"
 density = 4

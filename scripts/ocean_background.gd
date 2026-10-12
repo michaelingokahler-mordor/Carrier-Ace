@@ -12,6 +12,7 @@ var water: ColorRect
 var water_material: ShaderMaterial
 var islands: Array[Node2D] = []
 var surf_materials: Array[ShaderMaterial] = []
+var island_extents: Array[Vector2] = []
 var scroll_offset := 0.0
 
 func _ready() -> void:
@@ -42,14 +43,19 @@ func _ready() -> void:
 		surf_material.shader = preload("res://shaders/shore.gdshader")
 		surf_material.set_shader_parameter("noise_tex", noise_texture)
 		surf_materials.append(surf_material)
+		var land_texture: Texture2D = load("res://assets/art/" + item.id + ".png")
+		var pixel_scale: Vector2 = item.size / Vector2(land_texture.get_size())
+		var extent: Vector2 = item.size / 2
 		for suffix in ["_shore", ""]:
 			var path: String = "res://assets/art/" + item.id + suffix + ".png"
 			if ResourceLoader.exists(path):
 				var sprite := Sprite2D.new()
 				sprite.texture = load(path)
-				sprite.scale = item.size / Vector2(sprite.texture.get_size())
+				sprite.scale = pixel_scale
+				extent = extent.max(Vector2(sprite.texture.get_size()) * pixel_scale / 2)
 				if suffix != "": sprite.material = surf_material
 				island.add_child(sprite)
+		island_extents.append(extent)
 	update_route()
 
 func _process(_delta: float) -> void:
@@ -64,6 +70,6 @@ func update_route() -> void:
 	water_material.set_shader_parameter("scroll_offset", scroll_offset)
 	for i in islands.size():
 		islands[i].position = ROUTE[i].origin + Vector2(0, scroll_offset)
-		var half_size: Vector2 = ROUTE[i].size / 2
+		var half_size: Vector2 = island_extents[i]
 		islands[i].visible = islands[i].position.y + half_size.y >= 0 and islands[i].position.y - half_size.y <= 540
 		surf_materials[i].set_shader_parameter("mission_seconds", seconds)

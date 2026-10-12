@@ -15,6 +15,8 @@ var speed: float:
 @export var shot_interval: float = 0.145
 @export var texture_id: String = "player"
 @export var initial_weapon: int = 1
+@export_range(1, 18) var bullet_capacity: int = 6
+@export var hit_polygons: Array[PackedVector2Array] = []
 @export var sprite_size: Vector2 = Vector2(72, 72)
 @export var propeller_positions: PackedVector2Array = PackedVector2Array([Vector2(0, -24)])
 

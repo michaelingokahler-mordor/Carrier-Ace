@@ -1,31 +1,37 @@
-# Carrier Ace 0.2.0 – Operation Blue Horizon
+# Carrier Ace 0.3.0 – Operation Blue Horizon
 
-Ein Arcade-Flugspiel mit F6F Hellcat, sechs Gegnerwellen, neun regulären Gegnerprofilen, separatem B-99-Boss und Trägerlandung. Die Spieloberfläche ist Englisch; diese Dokumentation bleibt Deutsch. Ein erfolgreicher Prüfflug dauert rund 4:07 Minuten.
+Ein Arcade-Flugspiel mit F6F Hellcat, sechs Gegnerwellen, neun regulären Gegnerprofilen, separatem B-99-Boss und Trägerlandung. Die Spieloberfläche ist Englisch; diese Dokumentation bleibt Deutsch. Ein erfolgreicher Prüfflug dauert rund 4:15 Minuten.
 
 ## Spielen
 
-Windows: `CarrierAce-0.2.0-Windows-x64.zip` entpacken und `CarrierAce.exe` starten. Es ist keine Installation erforderlich.
+Windows: `CarrierAce-0.3.0-Windows-x64.zip` entpacken und `CarrierAce.exe` starten. Es ist keine Installation erforderlich.
 
-Browser: `CarrierAce-0.2.0-Web.zip` entpacken und `Start-Browser.cmd` starten. Der mitgelieferte Server stellt das Spiel unter `http://127.0.0.1:1942/` bereit; Strg+C beendet ihn. Bei belegtem Port: `CarrierServer.exe --port=1943`. Der Server benötigt das in Windows enthaltene .NET Framework 4.x. Alternativ im Webordner `python -m http.server 1942 --bind 127.0.0.1` ausführen.
+Browser: `CarrierAce-0.3.0-Web.zip` entpacken und `Start-Browser.cmd` starten. Der mitgelieferte Server stellt das Spiel unter `http://127.0.0.1:1942/` bereit; Strg+C beendet ihn. Bei belegtem Port: `CarrierServer.exe --port=1943`. Der Server benötigt das in Windows enthaltene .NET Framework 4.x. Alternativ im Webordner `python -m http.server 1942 --bind 127.0.0.1` ausführen.
 
 `index.html` über HTTP öffnen. Der Browser benötigt WebGL 2. Die erste Eingabe schaltet Audio frei. Alle Laufzeitdateien liegen lokal; das Spiel ruft keine externen Generierungsdienste auf.
 
 | Aktion | Tastatur | Gamepad |
 |---|---|---|
 | Fliegen | WASD / Pfeile | Linker Stick / Steuerkreuz |
-| Feuern, gedrückt halten | Leertaste / Z | Hauptbutton / A |
+| Einzelne Salve feuern | Leertaste / Z, jeder Druck eine Salve | Hauptbutton / A, jeder Druck eine Salve |
 | Rolle | Shift / X | Zweiter Button / B |
 | Pause / Zurück | Esc / P | Start |
 | Menü bedienen | Pfeile / Tab / Enter | Steuerkreuz / A |
 | Vollbild | F11 | — |
 
-Die Hellcat startet mit Armor 3/3, Penetration 0, Speed Rating 2 und Single Shot. Normale Treffer kosten einen Panzerungspunkt, angekündigte Ace-Raketen zwei. Drei Rollen geben jeweils eine Sekunde Schutz. Nach einem Flugzeugverlust beginnt die gesamte Mission mit dem nächsten der drei Leben von vorn.
+Die Hellcat startet mit Armor 3/3, Penetration 0, Speed Rating 2 und Single Shot. Normale Treffer kosten einen Panzerungspunkt, angekündigte Ace-Raketen zwei. Drei Rollen geben jeweils eine Sekunde Schutz. Bei Armor null explodiert die Hellcat; nach 0,8 Sekunden erscheint Game Over. Ein neuer Flug startet nur auf ausdrückliche Eingabe.
 
-Goldmarkierte Viererformationen vollständig abschießen: Reparatur +1 bis zum Maximum, Doppel-/Trippelschuss oder Speed. Waffen werden durch schwächere Pickups nicht herabgestuft. Speed addiert je Pickup 10% des Grundtempos; die Hellcat erreicht 195 → 214,5 → 234 → 253,5 → 260 logische Pixel/s.
+Sechs gleichzeitig aktive Kugelplätze begrenzen die Bordkanone. Single/Double/Triple Shot brauchen jeweils 1/2/3 freie Plätze. Nur vollständige Salven sind möglich; Halten und Tastaturwiederholung feuern nicht. Bullets erhöht die Kapazität um zwei bis maximal 18. Ein Platz wird nach dem letzten zulässigen Treffer oder Verlassen des Spielfelds frei.
+
+Goldmarkierte Viererformationen vollständig abschießen: ein garantierter Drop aus der Loot-Tabelle. Reguläre Abschüsse außerhalb dieser Formationen haben 3 % Dropchance. Neben Armor, Waffen und Speed gibt es Bullets, Rolls (+1 bis maximal drei) und Penetration (+1 zusätzliches Ziel, maximal drei). Waffen werden durch schwächere Pickups nicht herabgestuft. Speed addiert je Pickup 10% des Grundtempos; die Hellcat erreicht 195 → 214,5 → 234 → 253,5 → 260 logische Pixel/s.
+
+Vollständig abgeschossene Anfluggruppen bringen 25 Bonus-Points je Mitglied. Ein nutzloses eingesammeltes Upgrade bringt 25. Landung schreibt die Flugpunkte dauerhaft gut; Game Over oder Abbruch verlieren nur ungesicherte Punkte. Score und Bonusbestand sind getrennt. Der Shop folgt später.
+
+Alle Flugzeuge besitzen Konturflächen für Rumpf, Flügel und Leitwerk. Schatten und Propellerunschärfe zählen nicht. Die Prüfung berücksichtigt bewegte Ziele und Geschossbreite.
 
 Nach dem Boss 0,75 Sekunden im grünen Einflugbereich bleiben; danach übernimmt das Spiel die Landung. Ein verfehlter Anflug kostet kein Leben. Die Flugzeugübersicht unter **Aircraft** zeigt nur Grundwerte. Sie lässt sich auch während der Pause öffnen.
 
-Highscore und Toneinstellungen werden lokal gespeichert: Windows unter `%APPDATA%\Godot\app_userdata\Carrier Ace\carrier_ace.cfg`, im Browser in dessen lokalem Speicher. Privates Browsen kann dauerhafte Speicherung verhindern.
+Highscore, Bonusbestand und Toneinstellungen werden lokal gespeichert: Windows unter `%APPDATA%\Godot\app_userdata\Carrier Ace\carrier_ace.cfg`, im Browser in dessen lokalem Speicher. Privates Browsen kann dauerhafte Speicherung verhindern.
 
 ## Projekt und Builds
 
@@ -37,12 +43,15 @@ Festgeschrieben: **Godot 4.7.2 Standard**, GDScript, Compatibility-Renderer und 
 python tools/build.py
 python tools/run_godot.py --headless --script tests/test_core.gd
 python tools/run_godot.py --headless --script tests/test_ui.gd
+python tools/run_godot.py --headless --script tests/test_flight.gd
 python tools/verify_windows.py
 ```
 
 `build.py` prüft die Engine-Version, importiert, exportiert Windows und Web und erstellt drei ZIPs einschließlich Quellprojekt und Dokumentation. SHA-256-Prüfsummen stehen in `builds/SHA256SUMS.json`. Einen laufenden `CarrierServer.exe` vor einem neuen Build schließen. `--package-only` aktualisiert ZIPs vorhandener Exporte.
 
-Der Export-Testpilot nutzt die normalen Kampfregeln. `CarrierAce.exe -- --verify --report=report.json` beschleunigt die Simulation zwölfmal; `--verify-real-time` arbeitet in normaler Missionsgeschwindigkeit. Im Web entsprechend `?verify=1` bzw. `?verify=1&realtime=1`. Die Parameter entfernen, um selbst zu spielen.
+Der Export-Testpilot nutzt die normalen Kampfregeln. `CarrierAce.exe -- --verify --report=report.json` beschleunigt die Simulation zwölfmal; `--verify-real-time` arbeitet in normaler Missionsgeschwindigkeit. Im Web entsprechend `?verify=1` bzw. `?verify=1&realtime=1`. Die Parameter entfernen, um selbst zu spielen. Diagnosekonturen: Windows `-- --collisions`, Web `?collisions=1`.
+
+Die Konturvorbereitung ist reproduzierbar aus den fertigen PNGs: `python tools/prepare_collision_contours.py`, danach `python tools/run_godot.py --headless --script tools/decompose_collision_contours.gd` und `python tools/create_profiles.py`. Dafür werden Pillow und NumPy benötigt. Laufzeit und Export verwenden nur die fertigen Ressourcen. Der normale Prüfflug benutzt Loot-Seed 1943; echte Flüge verwenden zufällige Loot-Werte.
 
 `resources/` enthält Profil- und Wellendaten. `AircraftCatalog` versorgt Mission und Übersicht mit denselben Ressourcen. `mission_model.gd` hält die Regeln; `ocean_background.gd` und `shaders/` steuern Meer, Brandung und Inselroute. `main.gd` verbindet Eingabe, Menüs, Speicher und Audio.
 

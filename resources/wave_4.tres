@@ -6,5 +6,4 @@ title = "Heavy Escort"
 duration = 30.0
 pattern = "line"
 enemy_ids = PackedStringArray("fighter_1", "fighter_ace", "bomber_1")
-pickup = "double"
 density = 4

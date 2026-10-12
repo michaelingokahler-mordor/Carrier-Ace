@@ -10,7 +10,7 @@ static func enemy_profiles() -> Dictionary:
 	return result
 
 static func entries(player: AircraftProfile, enemies: Dictionary) -> Array[Dictionary]:
-	var result: Array[Dictionary] = [{"profile": player, "team": "Player", "weapon": "Single Shot · upgrades to Double / Triple Shot"}]
+	var result: Array[Dictionary] = [{"profile": player, "team": "Player", "weapon": "Single Shot / Double / Triple Shot"}]
 	for id in ENEMY_IDS:
 		var profile: EnemyProfile = enemies[id]
 		result.append({"profile": profile, "team": "Boss" if id == "boss" else "Enemy", "weapon": profile.weapon_name})

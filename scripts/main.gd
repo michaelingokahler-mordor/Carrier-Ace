@@ -7,6 +7,9 @@ var audio := GameAudio.new()
 var ui_layer := CanvasLayer.new()
 var ui_root := Control.new()
 var high_score := 0
+var bonus_bank := 0
+var settled_run := -1
+var pending_fire := false
 var music_volume := 0.60
 var effects_volume := 0.70
 var menu := "title"
@@ -33,6 +36,7 @@ func _ready() -> void:
 	_read_preferences()
 	view.model = model
 	view.high_score = high_score
+	view.bonus_bank = bonus_bank
 	add_child(view)
 	add_child(audio)
 	audio.set_volumes(music_volume, effects_volume)
@@ -46,6 +50,7 @@ func _ready() -> void:
 	_show_title()
 	for argument in OS.get_cmdline_user_args():
 		if argument == "--verify": verify = true
+		if argument == "--collisions": model.debug_collisions = true
 		if argument == "--verify-real-time":
 			verify = true
 			verification_speed = 1
@@ -54,9 +59,12 @@ func _ready() -> void:
 		if argument.begins_with("--capture-dir="): capture_dir = argument.trim_prefix("--capture-dir=")
 	if OS.has_feature("web"):
 		verify = bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('verify') === '1'"))
+	if OS.has_feature("web"):
+		model.debug_collisions = bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('collisions') === '1'"))
 	if OS.has_feature("web") and verify:
 		verification_speed = 1 if bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('realtime') === '1'")) else 12
 	if verify:
+		model.loot_rng.seed = 1943
 		_start_run()
 		if OS.has_feature("web"):
 			JavaScriptBridge.eval("document.getElementById('verification').hidden=false")
@@ -68,7 +76,9 @@ func _physics_process(delta: float) -> void:
 			var command := bot.command(model)
 			model.tick(1.0 / 60.0, command.move, command.fire, command.roll)
 	else:
-		model.tick(delta, movement, Input.is_action_pressed("fire"), Input.is_action_just_pressed("roll"))
+		var fire_pressed := pending_fire
+		pending_fire = false
+		model.tick(delta, movement, fire_pressed, Input.is_action_just_pressed("roll"))
 	if int(model.phase) != state_seen:
 		state_seen = model.phase
 		_handle_phase()
@@ -98,6 +108,9 @@ func _input(event: InputEvent) -> void:
 		if event.is_pressed() and not silent: audio.unlock()
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("fire") and not event.is_echo() and menu == "flight" and not model.paused and model.phase in [MissionModel.Phase.WAVES, MissionModel.Phase.BOSS]:
+		pending_fire = true
+		get_viewport().set_input_as_handled()
 	if event is InputEventKey or event is InputEventJoypadButton or event is InputEventMouseButton:
 		if event.is_pressed() and not silent:
 			audio.unlock()
@@ -138,12 +151,18 @@ func _on_model_event(kind: String, data: Dictionary) -> void:
 			if data.name == "hit": view.flash = 0.12
 		"wave": view.announce("WAVE %d · %s" % [data.index + 1, data.title.to_upper()], 3.0)
 		"supply": view.announce("Destroy the entire gold-marked supply formation", 2.8)
+		"weapon_blocked": view.announce("BULLET CAPACITY FULL · wait for a complete salvo", 0.8)
+		"bonus": view.announce("FORMATION COMPLETE · +%d BONUS POINTS" % data.amount, 1.5)
 		"pickup":
-			var names := {"double": "DOUBLE SHOT", "triple": "TRIPLE SHOT", "repair": "ARMOR REPAIRED", "speed": "SPEED +10% BASE" if model.current_speed() < 260 else "SPEED LIMIT REACHED"}
-			view.announce(names.get(data.kind, "UPGRADE"), 2)
+			var names := {"double": "DOUBLE SHOT", "triple": "TRIPLE SHOT", "repair": "ARMOR REPAIRED", "speed": "SPEED +10% BASE", "bullets": "BULLETS +2", "rolls": "ROLL +1", "penetration": "PENETRATION +1"}
+			view.announce("+25 BONUS POINTS · upgrade already at limit" if data.converted else names.get(data.kind, "UPGRADE"), 2)
 		"attempt_finished":
 			high_score = maxi(high_score, data.score)
 			view.high_score = high_score
+			if data.success and data.run_serial == model.run_serial and settled_run != data.run_serial:
+				settled_run = data.run_serial
+				bonus_bank += data.bonus
+			view.bonus_bank = bonus_bank
 			if not verify: _save_preferences()
 		"restart": view.announce("F6F HELLCAT · CLEARED FOR TAKEOFF", 4)
 		"boss_maneuver": view.announce("BOMBER TURNING · PASS %d / 3" % data.pass, 3)
@@ -164,13 +183,14 @@ func _handle_phase() -> void:
 		MissionModel.Phase.LANDING:
 			view.announce("ARRESTING WIRE READY · LANDING", 3)
 		MissionModel.Phase.DOWNED:
-			view.announce("Aircraft lost · %d lives remaining" % model.lives, 2.3)
+			view.announce("AIRCRAFT LOST · GAME OVER", 0.8)
 		MissionModel.Phase.VICTORY:
 			_show_result(true)
 		MissionModel.Phase.GAME_OVER:
 			_show_result(false)
 
 func _start_run() -> void:
+	pending_fire = false
 	if not silent: audio.unlock()
 	_clear_ui()
 	menu = "flight"
@@ -178,13 +198,17 @@ func _start_run() -> void:
 	state_seen = -1
 
 func _resume() -> void:
+	pending_fire = false
 	model.paused = false
 	_clear_ui()
 	menu = "flight"
 
 func _title_again() -> void:
+	pending_fire = false
 	model.paused = false
 	model.phase = MissionModel.Phase.TITLE
+	model.bonus_pending = 0
+	model.particles.clear()
 	model.enemies.clear()
 	model.bullets.clear()
 	model.pickups.clear()
@@ -265,13 +289,14 @@ func _show_title() -> void:
 	audio.music("title_music")
 
 func _show_pause() -> void:
+	pending_fire = false
 	menu = "pause"
 	var panel := _panel("Flight Paused", Vector2(460, 440))
 	var first := _button(panel, "Resume", Vector2(26, 82), Vector2(408, 43), _resume, true)
 	_button(panel, "Aircraft", Vector2(26, 137), Vector2(408, 40), func() -> void: _show_aircraft("pause"))
 	_button(panel, "Controls", Vector2(26, 189), Vector2(408, 40), func() -> void: _show_controls("pause"))
 	_button(panel, "Sound & Music", Vector2(26, 241), Vector2(408, 40), func() -> void: _show_sound("pause"))
-	_button(panel, "Restart Mission · 3 Lives", Vector2(26, 293), Vector2(408, 40), _start_run)
+	_button(panel, "Restart Mission", Vector2(26, 293), Vector2(408, 40), _start_run)
 	_button(panel, "Main Menu", Vector2(26, 345), Vector2(408, 40), _title_again)
 	first.grab_focus()
 
@@ -326,16 +351,18 @@ func _update_aircraft_detail(index: int) -> void:
 	if ResourceLoader.exists(path): picture.texture = load(path)
 	aircraft_detail.add_child(picture)
 	_label(aircraft_detail, entry.team + " · " + profile.role, Vector2(289, 77), Vector2(303, 26), 15, Color("78dedb"))
-	_label(aircraft_detail, "Armor  %d\nSpeed Rating  %d (%d%%)\nPenetration  %d\nProjectile Damage  %d" % [profile.armor, profile.speed_rating, roundi(profile.speed / 260.0 * 100), profile.penetration, profile.projectile_damage], Vector2(289, 115), Vector2(303, 148), 18)
-	_label(aircraft_detail, "Weapon\n" + entry.weapon, Vector2(289, 235), Vector2(303, 74), 16, Color("e4c47f"), true)
+	var values := "Armor  %d\nSpeed Rating  %d (%d%%)\nPenetration  %d\nProjectile Damage  %d" % [profile.armor, profile.speed_rating, roundi(profile.speed / 260.0 * 100), profile.penetration, profile.projectile_damage]
+	if profile is AircraftProfile: values += "\nBullet Capacity  %d" % profile.bullet_capacity
+	_label(aircraft_detail, values, Vector2(289, 115), Vector2(303, 130), 15)
+	_label(aircraft_detail, "Weapon\n" + entry.weapon, Vector2(289, 255), Vector2(303, 54), 15, Color("e4c47f"), true)
 
 func _show_controls(back: String) -> void:
 	menu = "controls_" + back
-	var panel := _panel("Flight Controls", Vector2(730, 440))
+	var panel := _panel("Flight Controls", Vector2(730, 490))
 	_label(panel, "WASD / Arrows\nSpace / Z\nShift / X\nEsc / P\nF11", Vector2(28, 89), Vector2(190, 170), 18, Color("e4c47f"))
-	_label(panel, "Move · Stick / D-pad\nFire · Main button (A)\nRoll · Second button (B)\nPause · Start\nToggle Fullscreen", Vector2(224, 89), Vector2(478, 170), 18)
-	_label(panel, "Three lives. A loss restarts the entire mission.\nDestroy all four gold-marked aircraft for a supply pickup.\nRepair +1 armor · Speed +10% base speed, capped at 100%.\nPenetration counts additional targets (0–3). Align to land.", Vector2(28, 260), Vector2(674, 110), 16)
-	var first := _button(panel, "Back", Vector2(28, 378), Vector2(674, 40), func() -> void:
+	_label(panel, "Move · Stick / D-pad\nFire one salvo · Main button (A)\nRoll · Second button (B)\nPause · Start\nToggle Fullscreen", Vector2(224, 89), Vector2(478, 170), 18)
+	_label(panel, "Armor 0 means Game Over. Press Fire for each complete salvo.\nBullets = active shots / capacity (starts at 6, maximum 18).\nRolls: 1 second protection · repairs restore 1 armor.\nGold formations drop upgrades; ordinary enemies have a 3% chance.\nComplete groups earn Bonus Points. Land to bank them.\nPenetration counts additional targets (0–3). Align to land.", Vector2(28, 260), Vector2(674, 157), 15)
+	var first := _button(panel, "Back", Vector2(28, 438), Vector2(674, 36), func() -> void:
 		if back == "pause": _show_pause()
 		else: _show_title(), true)
 	first.grab_focus()
@@ -373,13 +400,14 @@ func _slider(parent: Control, position: Vector2, value: float, callback: Callabl
 
 func _show_result(success: bool) -> void:
 	menu = "result"
-	var panel := _panel("Welcome Aboard" if success else "Mission Failed", Vector2(510, 355))
-	var subtitle := "Carrier reached. Your Hellcat has landed safely." if success else "Three aircraft lost. Start a new mission."
+	var panel := _panel("Welcome Aboard" if success else "Game Over", Vector2(510, 425))
+	var subtitle := "Carrier reached. Your Hellcat has landed safely." if success else "Your aircraft was lost. Start a new mission."
 	_label(panel, subtitle, Vector2(28, 79), Vector2(454, 36), 16)
 	var ratio := float(model.kills) / maxi(1, model.spawned) * 100
 	_label(panel, "SCORE  %06d       HIGH SCORE  %06d\nKILLS  %d / %d   ·   RATE  %.0f%%\nFLIGHT TIME  %02d:%02d" % [model.last_attempt_score, high_score, model.kills, model.spawned, ratio, int(model.mission_time) / 60, int(model.mission_time) % 60], Vector2(28, 130), Vector2(454, 90), 18, Color("e4c47f"))
-	var first := _button(panel, "Fly Again", Vector2(28, 235), Vector2(454, 43), _start_run, true)
-	_button(panel, "Main Menu", Vector2(28, 291), Vector2(454, 40), _title_again)
+	_label(panel, ("BONUS DEPOSITED  %06d" if success else "BONUS LOST  %06d") % model.last_bonus + "\nBONUS BANK  %06d" % bonus_bank, Vector2(28, 229), Vector2(454, 55), 18, Color("78dedb"))
+	var first := _button(panel, "Fly Again", Vector2(28, 307), Vector2(454, 43), _start_run, true)
+	_button(panel, "Main Menu", Vector2(28, 364), Vector2(454, 40), _title_again)
 	first.grab_focus()
 
 func _read_preferences() -> void:
@@ -387,6 +415,7 @@ func _read_preferences() -> void:
 	if file.load(PREFS) != OK:
 		return
 	high_score = maxi(0, int(file.get_value("game", "high_score", 0)))
+	bonus_bank = maxi(0, int(file.get_value("game", "bonus_bank", 0)))
 	music_volume = clampf(float(file.get_value("audio", "music", 0.6)), 0, 1)
 	effects_volume = clampf(float(file.get_value("audio", "effects", 0.7)), 0, 1)
 
@@ -394,7 +423,9 @@ func _save_preferences() -> void:
 	if verify:
 		return
 	var file := ConfigFile.new()
+	file.load(PREFS)
 	file.set_value("game", "high_score", high_score)
+	file.set_value("game", "bonus_bank", bonus_bank)
 	file.set_value("audio", "music", music_volume)
 	file.set_value("audio", "effects", effects_volume)
 	var result := file.save(PREFS)
@@ -409,6 +440,8 @@ func _write_verification() -> void:
 	report["processed_seconds"] = performance_elapsed
 	report["engine"] = Engine.get_version_info().string
 	report["platform"] = OS.get_name()
+	report["bonus_bank"] = bonus_bank
+	report["loot_seed"] = 1943
 	report["fps_samples"] = fps_samples
 	print("CARRIER_ACE_VERIFY " + JSON.stringify(report))
 	if smoke_report_path != "":

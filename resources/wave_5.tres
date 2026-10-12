@@ -6,5 +6,4 @@ title = "Storm Front"
 duration = 30.0
 pattern = "arc"
 enemy_ids = PackedStringArray("bomber_1", "bomber_2", "fighter_ace")
-pickup = "triple"
 density = 4

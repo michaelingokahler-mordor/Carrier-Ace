@@ -1,82 +1,91 @@
-# Carrier Ace 0.2.0 – Prüfbericht
+# Carrier Ace 0.3.0 – Prüfbericht
 
-Stand: 11.10.2026. Godot 4.7.2 Standard, `4.7.2.stable.official.ed1daf0bf`, Compatibility/OpenGL 3.3 und WebGL 2. Web ohne Threads. Windows-Rechner mit NVIDIA GeForce RTX 4070 Laptop GPU; Chromium-basierter Codex-Browser.
+Stand: 12.10.2026. Godot 4.7.2 Standard (`4.7.2.stable.official.ed1daf0bf`), Compatibility/OpenGL 3.3, WebGL 2 ohne Threads. Testrechner: NVIDIA GeForce RTX 4070 Laptop GPU; Web im Chromium-basierten Codex-Browser.
 
 ## Ergebnis
 
-**192 automatisierte Prüfungen bestanden:** 135 Regelprüfungen und 57 Prüfungen von Oberfläche, Speicher, Eingabe und Unterbrechungen. Windows- und Webexport haben einen vollständigen Flug in normaler Missionsgeschwindigkeit bis zur Trägerlandung abgeschlossen. Der Testpilot bewegt, schießt und rollt mit denselben Regeln wie der Spieler; er setzt keine Trefferpunkte und überspringt keine Missionszustände.
+**290 automatisierte Prüfungen bestanden:** 214 Regel- und Geometrieprüfungen, 76 Prüfungen von Oberfläche, Eingabe, Speicherung und Unterbrechungen. Zusätzlich besteht ein vollständiger headless Prüfflug mit normalem Testpiloten. Der Pilot benutzt echte Bewegung, einzelne Schussimpulse, Konturprognosen und Rollen; er verändert weder Armor noch Gegnerzustände und überspringt keine Missionsabschnitte.
 
-Beide Läufe: 247,25 s, sechs Wellen, alle neun regulären Gegnertypen und separater Boss, 76 Abschüsse bei 94 erzeugten Gegnern, 16.700 Punkte, drei Leben, Armor 2/3, Trippelschuss und Speed 214,5. Alle drei Rollen wurden verwendet. Nachweise: `evidence/windows.json`, `evidence/web.json`, `evidence/rules.json`. Nach den letzten Layoutkorrekturen bestanden außerdem ein zweiter normaler Windows-Flug und ein zwölfmal beschleunigter vollständiger Webflug (`evidence/web-final.json`).
+Windows- und Webexport haben den vollständigen normalen Flug bestanden: 255,90 s, alle sechs Wellen, alle neun Gegnerarten und separater Boss, Trägeranflug und Landung. Beide Läufe enden mit 67 Abschüssen bei 94 Gegnern, Score 14.800, Armor 3/3, Kapazität 10, Double Shot, Penetration 1, einer verbleibenden Rolle und 775 gutgeschriebenen Bonus-Points.
+
+Nachweise: `evidence/rules.json`, `evidence/windows.json`, `evidence/web.json`. Die aktuellen Flüge verwenden zur Wiederholung Loot-Seed 1943. Echte Flüge randomisieren Loot. Die Export-Prüfmodi speichern keine persönlichen Einstellungen; die Bonus-Gutschrift wird dort im Speicher angezeigt. Positive Gutschrift, Neuladen, Verlust und Altstand-Kompatibilität werden separat über den tatsächlichen Einstellungs-Code geprüft.
+
+## Regeln, Eingabe und Speicherung
 
 | Prüfung | Ergebnis |
 |---|---|
-| Hellcat und neun Gegnerprofile | Grundwerte, gemeinsame Geschwindigkeitsskala und separater Boss mit Armor 300 geprüft |
-| Profilgrenzen | Penetration 0–3; Geschwindigkeitsrating 1–3; alternatives Spielerprofil mit Armor 5 |
-| Schadensmodell | Spielerprojektil 1; normales gegnerisches Projektil/Kollision 1; Rakete 2 |
-| Ki-21-Raketen | 0,6 s Warnung, gesperrte Zielrichtung, kein Nachführen nach Abschuss |
-| Ace-Doppelschuss | Zwei getrennte Geschosse |
-| Reparatur | +1, keine Überschreitung des Profilmaximums |
-| Speed | 195 → 214,5 → 234 → 253,5 → 260; weitere Pickups ohne Überschreitung oder Änderung der Grundstufe |
-| Waffen | Ein-/Doppel-/Trippelschuss; schwächere Pickups senken die Stufe nicht |
-| Penetration | Für 0–3 jeweils höchstens ein bis vier unterschiedliche Ziele, kein Mehrfachschaden an derselben ID |
-| Schnelle Geschosse | Segmentbasierte Kollisionsprüfung |
-| Versorgung | Vier eindeutige Abschüsse erzeugen einen Drop; Entkommen verhindert ihn; gleichzeitige/doppelte Auflösung sicher |
-| Drop-Lebensdauer | Sammlung einmalig, Verfall nach zwölf Sekunden |
-| Schutz | Drei Rollen, 1 s Schutz, Trefferschutz 0,6 s |
-| Drei Flugzeugverluste | Erste zwei starten dieselbe Mission von vorn; dritter führt zu Game Over |
-| Vollständiger Neustart | Armor, Waffe, Speed, Rollen, Gegner, Geschosse, Formationen, Drops, Effekte, Zeit und Punkte zurückgesetzt |
-| Landung | 0,75 s kontinuierlicher Korridoraufenthalt; Verlassen setzt Haltezeit zurück; Wiederholung ohne Lebensverlust |
-| Aircraft | Elf Einträge aus echten Mission-Ressourcen; Auswahl, Vor/Zurück, Tastatur- und simulierte D-Pad-Navigation |
-| Pause und Aircraft aus Pause | Mission, Wasser und Inselroute bleiben angehalten; Esc kehrt zur Pause zurück |
-| Hintergrundkontinuität | Wellen/Boss/Anflug/Landung erhalten dieselben Koordinaten; Reset beginnt bei null; Insel-Culling erst vollständig außerhalb |
-| Fokusverlust / Gamepad-Trennung | Callbacks in fünf Flugphasen geprüft; bewusste Fortsetzung |
-| Speicher | Highscore und Toneinstellungen im isolierten Windows-Testprofil gespeichert und gelesen |
-| Audio | Eingabefreischaltung, Loop-Flags, Pause/Fortsetzung und fehlende Sounds ohne Absturz |
-| Sprache | Hauptmenü, Übersicht, HUD, Meldungen, Ergebnis, Web-Ladebild und Serverausgaben Englisch |
+| Elf Konturprofile | Rumpf, linker/rechter Flügel und Leitwerk getroffen; transparente Zwischenräume, Außenseite und Randtoleranz verfehlt |
+| Konturaufbereitung | Alle gespeicherten Polygonvertices liegen auf festen Spritepixeln mit Alpha mindestens 192; Generator reproduziert die Ressourcen unverändert |
+| Bewegung | Geschossbreite, Streifkontakt, bewegtes Ziel und kontinuierlicher Flugzeugkontakt geprüft |
+| Raketen | Länglicher Körper zählt, Abgas nicht; zwei Armor-Punkte; Warnung und gesperrte Richtung bleiben erhalten |
+| Penetration | 0–3: ein bis vier unterschiedliche Gegner; kein Mehrfachtreffer durch überlappende Teilflächen |
+| Reihenfolge | Tatsächliche erste Konturberührung vor Abstand zur Gegner-Mitte |
+| Renderbreite | Kurvenflug und Trefferfläche teilen dieselbe Breitenfunktion |
+| Spielfeldrand | Vollständiges Spielersprite unter HUD sichtbar; Kugelplatz wird beim körperlichen Austritt frei, ohne unsichtbare Nachlaufzone |
+| Armor / Game Over | Drei normale Treffer bzw. passende Raketenmischung; Explosion vor Game Over nach 0,8 s; kein automatischer Neustart |
+| Schutz | 0,6 s Trefferschutz; drei einsekündige Rollen; vierte ohne Ladung unmöglich |
+| Bordkanone | Ganze Single/Double/Triple-Salven; Platzmangel verwirft den Druck; Abkühlzeit verwirft Eingaben ohne Nachholen |
+| Tastatur | Ein Druck, Halten, Echo, Loslassen und neuer Druck über echte InputEvents geprüft |
+| Gamepad | A, Halten, Loslassen, zweiter Druck und tatsächlicher GUI-Resume geprüft; Menüaktion erzeugt keinen Schuss |
+| Menüzustand | Aircraft aus Pause bleibt angehalten; Esc kehrt zur Pause zurück; keine gespeicherten Menü-Schüsse |
+| Upgrade-Grenzen | Kapazität 6→18, Penetration 0→3, Rollen maximal drei, Reparatur bis Profilmaximum, Speed bis 260 |
+| Profilwerte | Boni ändern keine Grundressourcen; fliegende Geschosse behalten ihre Abschuss-Penetration |
+| Loot | 3-%-Grenze mit kontrollierter Zufallsfolge; alle Tabellenintervalle; Rockets mit Gewicht null |
+| Nutzlose Pickups | +25 Bonus-Points; keine Waffenabstufung |
+| Gruppen | Vollständig, entkommen, gleichzeitig zerstört und doppelt aufgelöst: korrekte einmalige Belohnung |
+| Reguläre Gruppen | Bonus-Gruppenzugehörigkeit unterdrückt keine gegnerischen Angriffe |
+| Punkte | Landung schreibt einmal gut; doppelte Erfolgsereignisse werden ignoriert; Game Over/Abbruch verlieren nur ungesicherte Punkte |
+| Lokaler Speicher | Positiver Bankbestand gelesen; Altstand ohne Bank startet bei null; Score, Tonwerte und unbekannte Schlüssel erhalten |
+| Fokus / Trennung | Pause-Callbacks in fünf Flugphasen sowie bewusste Fortsetzung geprüft |
+| Audio | Eingabefreischaltung, Ogg-Loops, Pause/Fortsetzung und fehlende Dateien ohne Absturz |
+| Landung | Kontinuierlicher Aufenthalt 0,75 s; Verlassen setzt Haltezeit zurück; Wiederholung ohne Armor-Verlust |
 
-## Grafik und Leistung
+Bei der erweiterten Gamepad-Prüfung fehlte die A-Zuordnung im Standard-`ui_accept`. Menü-A und D-Pad sind jetzt ausdrücklich und für alle Geräte zugeordnet. Der anschließende GUI-Resume-Test besteht und feuert nicht versehentlich.
 
-Titel, Aircraft, Küstenbereich, HUD, Spieler, Gegner und Landekorridor wurden bei 1280×720 und 1920×1080 im GPU-gerenderten Projekt geprüft. Zusätzliche Kontrolle im tatsächlichen Windows-Export sowie Webexport, dort auch in einer schmalen Browserfläche mit freien Rändern. Lange Waffenbeschreibungen wurden nach einer gefundenen Überbreite umgebrochen und mit Abstand zum Fußtext angeordnet.
+## Sichtprüfung und Browser
 
-Das Titelbild zeigt eine einmotorige Hellcat; die grauen Schattenbalken und der frühere Untertitel entfallen. Spieler und Gegner besitzen klare Tragflächen und getrennte Leitwerke. Die Propelleranimation folgt den profilbezogenen Motorpositionen. Ki-21 und B-99 sind zweimotorig; ihre Motorpunkte wurden anhand der fertigen Sprites angepasst.
+Titel, Controls, Aircraft, Hellcat-Kapazität, Ki-21, normales Spiel, Konturansicht, Armor 2/1 und Landung wurden bei 1280×720 sowie 1920×1080 im GPU-gerenderten Projekt kontrolliert. Zusätzlich wurden tatsächliche Windows-Screenshots und der normale Webflug geprüft.
 
-Sechzehn hochauflösende Bilder liegen lokal vor. Alle freigestellten Assets besitzen vollständig transparente äußere Pixelränder; Größen und fehlende Farbquantisierung stehen in `evidence/art02.json`. Küstenmasken ergänzen weiche, unregelmäßige Brandung. Das Meer bewegt sich unabhängig vom schnellen Gegneranflug; die 5,4-Pixel/s-Route entspricht 2,47 Bildschirmhöhen im erfolgreichen Prüfflug. Phasenwechsel erzeugen keine Einblendung oder Positionssprünge.
+Die Diagnose zeigt elf individuelle feste Umrisse, einschließlich Motorgondeln und freier Bereiche zwischen Flügeln und Leitwerk. Unschärfe und der versetzte Schatten sind ausgeschlossen. Die Vorbereitung verwendet meist zwei Pixel Randtoleranz, am schmalen Rumpf einen Pixel; die Konturvereinfachung beträgt höchstens einen halben Pixel. Nachweise: `evidence/geometry03.json`, `evidence/contour-opacity.json`.
 
-Die FPS-Rohdaten stehen in beiden Exportberichten und zusammengefasst in `evidence/performance.json`. Einsekündige Engine-Stichproben ersetzen keine Messung jeder einzelnen Frame-Latenz. Beim ersten parallelen Windows-/Weblauf lag der Windows-Median nach dem Start bei 60 FPS; vier Stichproben lagen unter 59, Minimum 29 (`evidence/windows-parallel.json`). Beim abschließenden Windows-Lauf lag der Median erneut bei 60, Minimum 28, fünf von 246 Stichproben unter 59. Exporttests fertigen während des Flugs Bildschirmaufnahmen an; der Einfluss dieser Aufnahmen wurde nicht separat gemessen. Im normalen Webflug lagen die Stichproben nach dem Start bei 59–62, Median 60, keine unter 59. Startwerte des abschließenden Windows- und normalen Weblaufs: jeweils 2 FPS. Eine durchgehende 60-FPS-Garantie oder Aussage über schwächere Geräte folgt daraus nicht.
+Brandungsmasken messen 1216×960 bei 96 zusätzlichen Texturpixeln Rand je Seite. Alle Außenränder sind null. Landmaßstab und Mittelpunkt stimmen mit der Maske überein; Culling umfasst die vollständige Brandung. Die Missionsroute bleibt beim Wechsel zwischen Wellen, Boss und Landung kontinuierlich; Pause und Neustart sind geprüft.
 
-Im tatsächlichen Webexport wurden Hauptmenü, Controls, Aircraft und die Ki-21-Detailansicht mit Tastatur und Maus bedient. Die Musiklautstärke wurde von den vorhandenen 45 % auf 30 % geändert, nach Neuladen wieder bei 30 % vorgefunden und anschließend auf 45 % zurückgesetzt. Aircraft aus der Pause blieb angehalten; Esc kehrte zur Pause zurück, Resume setzte die Mission fort. Die Browserkonsole zeigte in diesen Prüfungen und beim abschließenden vollständigen Flug keine Warnungen oder Fehler. Nachweise: `evidence/browser-ui.json`.
+Die Aircraft-Werte und Waffenbeschreibung überlappen nicht. Ein im Web nicht verfügbarer Pfeil-Glyph wurde durch eine einfache ASCII-Trennung ersetzt. HUD und aktuelle Menüs enthalten keine Lives-Anzeige und keine untere WASD-/ESC-Legende.
 
-## Audio und Budget
+Im tatsächlichen Webexport wurden Aircraft mit Tastatur geöffnet und die Ki-21 per Maus ausgewählt. Controls und Sound wurden bei 1280×720 bedient. Die Musik wurde um einen Schritt von der vorhandenen Reglerposition nach links geändert; nach Neuladen lag der Regler wieder an dieser Position. Anschließend wurde die ursprüngliche Position wiederhergestellt. Der normale vollständige Flug zeigte keine Warnungen oder Fehler in der Browserkonsole. Nachweise: `evidence/browser-ui.json`.
 
-Audio aus 0.1 bleibt unverändert: elf Effekte einschließlich Motor und zwei instrumentale Musikstücke mit Tracker-Anmutung. Motor und Musik werden als Ogg-Streams abgespielt; technische Schleifen- und Pegelwerte sind in `evidence/assets01.json` erhalten. Die Aufbereitung ist kein Ersatz für eine menschliche Hörabnahme.
+## Leistung
 
-Runway 0.2: **340 von höchstens 500 zusätzlichen Credits**, fünfzehn 2K-Bilder zu 20 und ein 4K-Titel zu 40. Anfangs waren 100 Credits für Korrekturen reserviert. 160 Credits bleiben ungenutzt; keine Käufe. Lokale Freistellung, Größenanpassung und Shader kosten keine Generierungscredits. `assets/revision02.json` enthält Aufgaben und Prompts ohne signierte Downloadlinks. Der ursprüngliche Verbrauch von 138/200 Credits bleibt separat in `assets/manifest.json`.
+Beide Plattformen erreichen im Median 60 FPS. Nach dem Start: Windows 31–60 FPS, fünf von 254 Stichproben unter 59; Web 8–60 FPS, sechs von 254 Stichproben unter 59. Startwerte: Windows 11, Web 20. Die einzelnen erheblichen Einbrüche bleiben im Rohbericht sichtbar; ihre Ursache wurde nicht separat isoliert.
+
+Die Werte sind einsekündige Engine-FPS-Stichproben, keine Messung jeder einzelnen Frame-Latenz. Windows-/Webprüfungen, Bildschirmaufnahmen und weitere QA-Arbeiten liefen teilweise parallel. Eine durchgehende 60-FPS-Garantie oder Aussage über schwächere Hardware folgt daraus nicht. Rohdaten stehen in beiden Exportberichten; Zusammenfassung in `evidence/performance.json`.
 
 ## Lieferung und Wiederholung
 
-- Windows: `CarrierAce-0.2.0-Windows-x64.zip`, portabler x64-Build.
-- Web: `CarrierAce-0.2.0-Web.zip`, lokale Engine-/Spieldateien, HTTP-Server und Startskripte.
-- Quelle: `CarrierAce-0.2.0-Source.zip`, Projekt, fertige Assets, Tests und deutsche Dokumentation.
-- SHA-256-Prüfsummen: `builds/SHA256SUMS.json`.
-- Git: `main` im GitHub-Repository; Builds, Engine, Cache und Rohentwürfe sind ausgeschlossen.
+Windows-x64-ZIP, Web-ZIP und Quell-ZIP tragen Version 0.3.0. SHA-256-Prüfsummen stehen in `builds/SHA256SUMS.json`. ZIP-Integrität, erforderliche Dateien und Ausschluss von Engine, Rohentwürfen, Importcache und Builds aus dem Quellarchiv werden geprüft. Die Windows-EXE enthält ihr Spielpaket eingebettet.
 
 ```powershell
 python tools/run_godot.py --headless --script tests/test_core.gd
 python tools/run_godot.py --headless --script tests/test_ui.gd
+python tools/run_godot.py --headless --script tests/test_flight.gd
 python tools/build.py
 python tools/verify_windows.py
 ```
 
-`verify_windows.py` startet den tatsächlichen Export bei 1920×1080 mit normalem Testpiloten und isoliertem Windows-Speicherprofil. `--verify` bzw. Web-`?verify=1` beschleunigt die Simulation zwölfmal; `--verify-real-time` bzw. `?verify=1&realtime=1` läuft normal. Während Webtests einmal die Spielfläche anklicken oder eine Taste drücken. Zum eigenen Spielen Parameter entfernen.
+Windows-Diagnose: `CarrierAce.exe -- --collisions`; Web: `?collisions=1`. Exportprüfung normal: `--verify-real-time` bzw. `?verify=1&realtime=1`; beschleunigt: `--verify` bzw. `?verify=1`. Im Browser die erste Eingabe zur Audiofreigabe geben; zum eigenen Spielen Testparameter entfernen.
 
-## Grenzen der Abnahme
+Audio aus 0.1 und Grafiken aus 0.2 bleiben erhalten. 0.3 ergänzt Konturen, Schadenszeichnung und Brandungsrand lokal: **keine weiteren Runway-Credits**. Vorherige Generierungen und deren Verbrauch bleiben in den ursprünglichen Manifesten dokumentiert.
 
-Eine physische Gamepad-Verbindung/-Trennung, persönliche Schwierigkeit und Spielgefühl sowie eine menschliche Hörabnahme sind noch offen. Simulierte Eingaben und Callback-Tests sind getrennt davon dokumentiert. Browser außerhalb des verwendeten Chromium-Hosts, mobile Geräte, blockierter Speicher und schwächere GPUs wurden nicht gesondert geprüft. Der Windows-Build ist nicht digital signiert.
+## Grenzen
 
-![Titel](images/title.png)
+Physisches Gamepad-Anschließen/-Trennen, eine menschliche Hörabnahme und persönliche Schwierigkeit bzw. Spielgefühl sind noch offen. Simulierte Geräte und Callback-Prüfungen sind getrennt davon erfasst. Browser außerhalb des verwendeten Chromium-Hosts, blockierter Speicher, mobile Geräte und schwächere GPUs wurden nicht gesondert geprüft. Der Windows-Build ist nicht digital signiert.
 
-![Flugzeugübersicht](images/aircraft.png)
+![Konturansicht](images/contours.png)
 
-![Tatsächlicher Windows-Export](images/gameplay.png)
+![Armor 2](images/damage2.png)
 
-![Trägeranflug](images/landing.png)
+![Armor 1](images/damage1.png)
+
+![Tatsächlicher Windows-Flug](images/gameplay.png)
+
+![Web-Landung](images/web-victory.jpg)

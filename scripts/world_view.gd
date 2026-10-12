@@ -11,6 +11,7 @@ var clock := 0.0
 var font: Font = ThemeDB.fallback_font
 var flash := 0.0
 var high_score := 0
+var bonus_bank := 0
 var message := ""
 var message_time := 0.0
 
@@ -51,14 +52,15 @@ func _draw() -> void:
 			continue
 		var size: Vector2 = enemy.profile.sprite_size
 		var tint := Color.WHITE
-		if enemy.formation >= 0:
+		if enemy.supply:
 			tint = Color(1, 0.58, 0.38)
 		_sprite(enemy.profile.texture_id, enemy.pos, size, tint)
 		_draw_propellers(enemy.pos, 1.0, enemy.profile)
+		if model.debug_collisions: _debug_shape(enemy.shape, enemy.pos, Color(1, 0.4, 0.35, 0.9))
 		if enemy.warning > 0:
 			draw_line(enemy.pos, enemy.pos + enemy.aim * 100, Color(1, 0.53, 0.25, 0.55), 2, true)
 			draw_arc(enemy.pos, 35, 0, TAU, 48, Color(1, 0.60, 0.27, 0.7), 2, true)
-		if enemy.formation >= 0:
+		if enemy.supply:
 			draw_rect(Rect2(enemy.pos + Vector2(-5, -7), Vector2(10, 5)), GOLD)
 		if enemy.profile.id == "boss":
 			_draw_boss_bar(enemy)
@@ -72,21 +74,50 @@ func _draw() -> void:
 		var direction: Vector2 = bullet.velocity.normalized()
 		draw_line(bullet.pos - direction * 11, bullet.pos, color, 4 if bullet.friendly else 5)
 		draw_circle(bullet.pos, 2 if bullet.friendly else 3, Color("fff0cf"))
+	if model.debug_collisions:
+		for bullet in model.bullets:
+			draw_line(bullet.previous, bullet.pos, Color(1, 1, 0.3, 0.8), 1)
+			if bullet.kind == "rocket": _debug_shape(bullet.shape, bullet.pos, Color.YELLOW)
+			else: draw_arc(bullet.pos, 2 if bullet.friendly else 3, 0, TAU, 16, Color.YELLOW, 1, true)
 	for particle in model.particles:
 		_draw_explosion(particle)
 	if model.phase not in [MissionModel.Phase.DOWNED, MissionModel.Phase.GAME_OVER]:
 		var visible := model.invulnerable <= 0 or model.roll_time > 0 or int(clock * 20) % 2 == 0
 		if visible:
-			var width: float = 1.0 - absf(model.bank) * 0.10
-			if model.roll_time > 0:
-				width = maxf(0.16, absf(cos((1 - model.roll_time) * TAU)))
+			var width := model.player_draw_width()
 			_sprite("player", model.player, Vector2(model.aircraft.sprite_size.x * width, model.aircraft.sprite_size.y))
+			_draw_damage(model.player, width)
 			_draw_propellers(model.player, width, model.aircraft)
 			if model.roll_time > 0:
 				draw_arc(model.player, 32, clock * 5, clock * 5 + PI * 1.5, 20, Color(0.6, 1, 1, 0.5), 2)
+	if model.debug_collisions and model.armor > 0:
+		_debug_shape(model.player_collision_shape(), model.player, Color(0.35, 1, 0.7, 0.9))
+		draw_line(model.previous_player, model.player, Color.GREEN, 1)
 	_draw_hud()
 	if flash > 0:
 		draw_rect(Rect2(0, 0, 960, 540), Color(1, 0.3, 0.15, flash * 1.5))
+
+func _debug_shape(shape: Dictionary, position: Vector2, color: Color) -> void:
+	for polygon: PackedVector2Array in shape.polygons:
+		var points := PackedVector2Array()
+		for point in polygon: points.append(point + position)
+		points.append(points[0])
+		draw_polyline(points, color, 1, true)
+
+func _draw_damage(position: Vector2, width: float) -> void:
+	if model.armor >= model.aircraft.armor: return
+	var marks := [Vector2(-18, -3), Vector2(3, 9)]
+	if model.armor <= 1: marks.append_array([Vector2(16, -5), Vector2(-2, -12), Vector2(-7, 17)])
+	for mark in marks:
+		var center: Vector2 = position + mark * Vector2(width, 1)
+		draw_circle(center, 3.7, Color(0.13, 0.08, 0.045, 0.6))
+		draw_circle(center, 1.5, Color(0.025, 0.035, 0.035, 0.95))
+		draw_line(center + Vector2(-1, 2), center + Vector2(2, 1), Color(0.75, 0.68, 0.48, 0.7), 1, true)
+	if model.armor <= 1:
+		for index in range(6):
+			var age := fmod(clock * 0.8 + index / 6.0, 1.0)
+			var center := position + Vector2(3 + sin(age * 8) * 4, 16 + age * 38)
+			draw_circle(center, 2 + age * 6, Color(0.15, 0.16, 0.15, (1 - age) * 0.26))
 
 func _draw_title() -> void:
 	if textures.has("title"):
@@ -95,7 +126,8 @@ func _draw_title() -> void:
 	_text(Vector2(58, 99), "OPERATION BLUE HORIZON", 14, Color("183a4a"))
 	_text(Vector2(55, 175), "CARRIER", 64, Color("f2e6cd"))
 	_text(Vector2(55, 237), "ACE", 64, GOLD)
-	_text(Vector2(60, 511), "ARCADE FLIGHT MISSION  /  0.2", 12, Color("a3b8bc"))
+	_text(Vector2(60, 511), "ARCADE FLIGHT MISSION  /  0.3", 12, Color("a3b8bc"))
+	_text(Vector2(450, 511), "BONUS BANK  %06d" % bonus_bank, 12, GOLD)
 	_text(Vector2(710, 511), "HIGH SCORE  %06d" % high_score, 13, GOLD)
 
 func _draw_carrier(position: Vector2) -> void:
@@ -160,6 +192,9 @@ func _draw_pickup(pickup: Dictionary) -> void:
 	var label := "2×"
 	match pickup.kind:
 		"triple": label = "3×"
+		"bullets": label = "B"
+		"rolls": label = "R"
+		"penetration": label = "P"
 		"repair":
 			label = "+"
 			color = Color("a3f3b9")
@@ -194,8 +229,8 @@ func _draw_hud() -> void:
 	draw_line(Vector2(0, 66), Vector2(960, 66), Color("376b78"), 1)
 	_text(Vector2(22, 24), "ARMOR", 11, Color("92bdc5"))
 	_text(Vector2(22, 46), "%d/%d" % [model.armor, model.aircraft.armor], 22, Color("8dd7b5") if model.armor > 1 else Color("ff9c67"))
-	_text(Vector2(113, 24), "LIVES", 11, Color("92bdc5"))
-	_text(Vector2(113, 46), "%d/3" % model.lives, 20, GOLD)
+	_text(Vector2(113, 24), "BULLETS", 11, Color("92bdc5"))
+	_text(Vector2(113, 46), "%d/%d" % [model.active_bullets(), model.current_capacity()], 20, GOLD)
 	_text(Vector2(203, 24), "ROLLS", 11, Color("92bdc5"))
 	for index in range(3):
 		draw_arc(Vector2(214 + index * 25, 40), 7, -PI / 2, PI * 1.25, 28, GOLD if index < model.rolls else Color("31535c"), 2, true)
@@ -204,7 +239,7 @@ func _draw_hud() -> void:
 	_text(Vector2(414, 24), "SPEED", 11, Color("92bdc5"))
 	_text(Vector2(414, 46), "%d +%.0f%%" % [model.aircraft.speed_rating, model.current_speed_bonus()], 19, CYAN)
 	_text(Vector2(549, 24), "PENETRATION", 10, Color("92bdc5"))
-	_text(Vector2(549, 46), "%d" % model.aircraft.penetration, 20, CYAN)
+	_text(Vector2(549, 46), "%d" % model.current_penetration(), 20, CYAN)
 	var phase_text := "WAVE %d/6" % (model.wave_index + 1)
 	match model.phase:
 		MissionModel.Phase.TAKEOFF: phase_text = "TAKEOFF"
@@ -221,8 +256,7 @@ func _draw_hud() -> void:
 		var left := (960 - text_width) / 2
 		draw_rect(Rect2(left - 20, 83, text_width + 40, 37), Color(0.02, 0.10, 0.14, 0.91))
 		_text(Vector2(left, 108), message, 18, GOLD)
-	_text(Vector2(22, 524), "WASD / ARROWS   MOVE     SPACE   FIRE     SHIFT   ROLL", 11, Color("c4dcdb"))
-	_text(Vector2(778, 524), "ESC / START   PAUSE", 11, Color("c4dcdb"))
+	_text(Vector2(22, 524), "BONUS POINTS  %06d" % model.bonus_pending, 12, GOLD)
 
 func _text(position: Vector2, text: String, size: int, color: Color) -> void:
 	draw_string(font, position, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)

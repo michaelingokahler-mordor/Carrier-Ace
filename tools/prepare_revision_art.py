@@ -39,7 +39,8 @@ def prepare(name):
     ART.mkdir(parents=True, exist_ok=True)
     image.save(ART / f'{name}.png', optimize=True)
     if name.startswith('island'):
-        alpha = image.getchannel('A')
+        alpha = Image.new('L', (image.width + 192, image.height + 192))
+        alpha.paste(image.getchannel('A'), (96, 96))
         expanded = alpha.filter(ImageFilter.MaxFilter(81)).filter(ImageFilter.GaussianBlur(12))
         outer = np.maximum(0, np.asarray(expanded).astype(float) - np.asarray(alpha).astype(float))
         mask = Image.fromarray(outer.astype(np.uint8))

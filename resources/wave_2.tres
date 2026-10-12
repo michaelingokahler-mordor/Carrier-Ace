@@ -6,5 +6,4 @@ title = "Island Patrol"
 duration = 30.0
 pattern = "arc"
 enemy_ids = PackedStringArray("biplane_1", "biplane_2", "biplane_ace")
-pickup = "repair"
 density = 3

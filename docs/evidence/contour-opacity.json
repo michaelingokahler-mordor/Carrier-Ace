@@ -1,0 +1,46 @@
+{
+  "biplane_1": {
+    "minimum_vertex_sprite_opacity": 255,
+    "vertices_checked": 67
+  },
+  "biplane_2": {
+    "minimum_vertex_sprite_opacity": 255,
+    "vertices_checked": 64
+  },
+  "biplane_ace": {
+    "minimum_vertex_sprite_opacity": 251,
+    "vertices_checked": 68
+  },
+  "bomber_1": {
+    "minimum_vertex_sprite_opacity": 255,
+    "vertices_checked": 82
+  },
+  "bomber_2": {
+    "minimum_vertex_sprite_opacity": 255,
+    "vertices_checked": 77
+  },
+  "bomber_ace": {
+    "minimum_vertex_sprite_opacity": 255,
+    "vertices_checked": 115
+  },
+  "boss": {
+    "minimum_vertex_sprite_opacity": 255,
+    "vertices_checked": 163
+  },
+  "fighter_1": {
+    "minimum_vertex_sprite_opacity": 255,
+    "vertices_checked": 65
+  },
+  "fighter_2": {
+    "minimum_vertex_sprite_opacity": 255,
+    "vertices_checked": 64
+  },
+  "fighter_ace": {
+    "minimum_vertex_sprite_opacity": 255,
+    "vertices_checked": 99
+  },
+  "player": {
+    "minimum_vertex_sprite_opacity": 255,
+    "vertices_checked": 75
+  }
+}
