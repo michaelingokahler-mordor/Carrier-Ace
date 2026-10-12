@@ -58,6 +58,14 @@ var particles: Array[Dictionary] = []
 var next_id := 1
 var last_attempt_score := 0
 var run_events: Array[String] = []
+var survivor_reserve: Array[Dictionary] = []
+var counter_queue: Array[Dictionary] = []
+var counterattack := false
+var counter_round := 0
+var counter_time := 0.0
+var counter_started := false
+var counter_batches := 0
+var counter_completed := 0
 
 func _init() -> void:
 	profiles = AircraftCatalog.enemy_profiles()
@@ -75,6 +83,14 @@ func start_run() -> void:
 	_reset_attempt()
 
 func _reset_attempt() -> void:
+	survivor_reserve.clear()
+	counter_queue.clear()
+	counterattack = false
+	counter_round = 0
+	counter_completed = 0
+	counter_time = 0
+	counter_started = false
+	counter_batches = 0
 	enemies.clear()
 	bullets.clear()
 	pickups.clear()
@@ -189,7 +205,8 @@ func tick(delta: float, movement: Vector2 = Vector2.ZERO, firing: bool = false, 
 	if firing and fire_timer <= 0:
 		if _fire_player(): fire_timer = aircraft.shot_interval
 	if phase == Phase.WAVES:
-		combat_time += delta
+		if not counterattack: combat_time += delta
+		else: counter_time += delta
 		_update_waves()
 	_update_enemies(delta)
 	_update_bullets(delta)
@@ -203,6 +220,21 @@ func tick(delta: float, movement: Vector2 = Vector2.ZERO, firing: bool = false, 
 				return
 
 func _update_waves() -> void:
+	if counterattack:
+		_update_counterattack()
+		return
+	var boundary := 0.0
+	for i in waves.size():
+		boundary += waves[i].duration
+		if i in [2, 5] and combat_time >= boundary and counter_completed < (i + 1) / 3:
+			combat_time = boundary
+			counterattack = true
+			counter_round = (i + 1) / 3
+			counter_time = 0
+			counter_started = false
+			counter_batches = 0
+			event.emit("counterattack", {"round": counter_round, "regrouping": true})
+			return
 	var cumulative := 0.0
 	var index := -1
 	var elapsed := 0.0
@@ -245,6 +277,34 @@ func _update_waves() -> void:
 					x = 80 if side == 1 else 880
 				_spawn_enemy(kind, Vector2(x, -50 - member * 46), wave.pattern, group_id, side)
 
+func _update_counterattack() -> void:
+	if not counter_started:
+		# Existing flights finish their maneuver before survivors return: no teleportation.
+		if not enemies.is_empty(): return
+		counter_queue.assign(survivor_reserve)
+		survivor_reserve.clear()
+		counter_started = true
+		counter_time = 0
+		event.emit("counterattack", {"round": counter_round, "count": counter_queue.size(), "regrouping": false})
+	var total_batches := ceili(counter_queue.size() / 4.0)
+	if counter_batches < total_batches and counter_time >= counter_batches * 3.5:
+		var first := counter_batches * 4
+		var members := mini(4, counter_queue.size() - first)
+		var group_id := next_group
+		next_group += 1
+		formations.register(group_id, members)
+		for member in members:
+			var survivor := counter_queue[first + member]
+			var enemy := _spawn_enemy(survivor.kind, Vector2(240 + member * 150, -60 - member * 38), "zigzag" if counter_batches % 2 == 0 else "loop", group_id, 1 if member % 2 == 0 else -1)
+			enemy.hp = survivor.hp
+			enemy.counter = true
+		counter_batches += 1
+	if counter_batches == total_batches and enemies.is_empty() and counter_time >= 3.0:
+		counter_completed = counter_round
+		counterattack = false
+		counter_queue.clear()
+		event.emit("counterattack_complete", {"round": counter_round})
+
 func _spawn_supply(index: int) -> void:
 	var formation_id := next_group
 	next_group += 1
@@ -256,14 +316,19 @@ func _spawn_supply(index: int) -> void:
 
 func _spawn_enemy(kind: String, position: Vector2, pattern: String, formation: int = -1, side: int = 1, supply: bool = false) -> Dictionary:
 	var profile: EnemyProfile = profiles[kind]
-	if pattern not in ["boss", "supply"] and profile.flight_style != "inherit": pattern = profile.flight_style
+	if pattern not in ["boss", "supply", "zigzag", "loop"] and profile.flight_style != "inherit": pattern = profile.flight_style
 	var enemy: Dictionary = {"id": next_id, "profile": profile, "pos": position, "origin": position,
 		"age": 0.0, "hp": profile.armor, "pattern": pattern, "formation": formation,
 		"supply": supply, "previous": position, "shape": enemy_shapes[kind], "resolved": false,
 		"loot": waves[wave_index].loot if wave_index >= 0 else preload("res://resources/loot_default.tres"),
 		"side": side, "shoot": 0.65 + fmod(next_id * 0.27, 0.65), "volley": 0, "dead": false,
 		"warning": 0.0, "aim": Vector2.DOWN,
-		"boss_pass": 1, "retreat": 0.0}
+		"boss_pass": 1, "retreat": 0.0, "retreat_from": 160.0, "counter": false, "heading": 0.0, "previous_heading": 0.0}
+	if pattern != "boss":
+		var direction: Vector2 = enemy_path(enemy, 0.01) - position
+		enemy.heading = direction.angle() - PI / 2
+		enemy.previous_heading = enemy.heading
+		enemy.shape = CollisionGeometry.rotated(enemy_shapes[kind], enemy.heading)
 	next_id += 1
 	enemies.append(enemy)
 	spawned += 1
@@ -275,6 +340,7 @@ func _update_enemies(delta: float) -> void:
 		if enemy.dead:
 			continue
 		enemy.previous = enemy.pos
+		enemy.previous_heading = enemy.heading
 		enemy.age += delta
 		var profile: EnemyProfile = enemy.profile
 		if enemy.pattern == "boss":
@@ -282,27 +348,30 @@ func _update_enemies(delta: float) -> void:
 			if enemy.retreat > 0:
 				enemy.retreat = maxf(0.0, enemy.retreat - delta)
 				var maneuver_time: float = 12.0 - enemy.retreat
-				boss_y = lerpf(160, -130, smoothstep(0.0, 1.2, maneuver_time))
+				boss_y = lerpf(enemy.retreat_from, -130, smoothstep(0.0, 1.2, maneuver_time))
 				if maneuver_time > 10.0:
 					boss_y = lerpf(-130, 160, smoothstep(10.0, 12.0, maneuver_time))
 			enemy.pos = Vector2(480 + sin(enemy.age * 0.48) * 255, boss_y)
 		else:
-			enemy.pos.y += profile.speed * delta
-			match enemy.pattern:
-				"arc": enemy.pos.x = enemy.origin.x + sin(enemy.age * 0.8) * 160 * enemy.side
-				"cross": enemy.pos.x = enemy.origin.x + enemy.age * 66 * enemy.side
-				"supply": enemy.pos.x = enemy.origin.x + sin(enemy.age * 0.6) * 28
-				_: enemy.pos.x = enemy.origin.x + sin(enemy.age * 1.25) * 28
-		if enemy.pos.y > HEIGHT + 70 or enemy.pos.x < -130 or enemy.pos.x > WIDTH + 130:
+			enemy.pos = enemy_path(enemy, enemy.age)
+		var movement: Vector2 = enemy.pos - enemy.previous
+		if enemy.pattern == "boss": enemy.heading = 0.0
+		elif movement.length_squared() > 0.000001:
+			enemy.heading = movement.angle() - PI / 2
+		enemy.shape = CollisionGeometry.turning_shape(enemy_shapes[profile.id], enemy.previous_heading, enemy.heading)
+		if enemy.pattern == "loop" and enemy.age < 8.0:
+			pass
+		elif enemy.pos.y > HEIGHT + 90 or enemy.pos.y < -600 or enemy.pos.x < -180 or enemy.pos.x > WIDTH + 180:
 			enemy.dead = true
 			_resolve_enemy(enemy, false)
 			continue
 		if enemy.pos.y > 80 and enemy.pos.y < 390:
 			if enemy.warning > 0:
+				enemy.aim = Vector2.DOWN.rotated(enemy.heading)
 				enemy.warning = maxf(0.0, enemy.warning - delta)
 				if enemy.warning <= 0:
 					_fire_enemy(enemy)
-					enemy.shoot = profile.shoot_interval
+					enemy.shoot = profile.shoot_interval * 0.7
 				continue
 			enemy.shoot -= delta
 			if enemy.shoot <= 0:
@@ -311,21 +380,22 @@ func _update_enemies(delta: float) -> void:
 					enemy.shoot = profile.shoot_interval
 				elif not enemy.supply:
 					if profile.weapon_name == "Rockets":
-						enemy.aim = enemy.pos.direction_to(player)
+						enemy.aim = Vector2.DOWN.rotated(enemy.heading)
 						enemy.warning = 0.6
 					else:
 						_fire_enemy(enemy)
-						enemy.shoot = profile.shoot_interval
+						enemy.shoot = profile.shoot_interval * 0.7
 				else:
 					enemy.shoot = 99.0
 	enemies = enemies.filter(func(enemy: Dictionary) -> bool: return not enemy.dead)
 
 func _fire_enemy(enemy: Dictionary) -> void:
 	var profile: EnemyProfile = enemy.profile
-	var direction: Vector2 = enemy.aim if profile.weapon_name == "Rockets" else enemy.pos.direction_to(player)
+	var direction := Vector2.DOWN.rotated(enemy.heading)
+	var side := Vector2.RIGHT.rotated(enemy.heading)
 	var offsets := [-14, 14] if profile.weapon_name == "Double Shot" else [0]
 	for offset in offsets:
-		_spawn_bullet(enemy.pos + Vector2(offset, profile.sprite_size.y * 0.35), direction * (120 if profile.weapon_name == "Rockets" else 155), false, profile.projectile_damage, "rocket" if profile.weapon_name == "Rockets" else "bullet")
+		_spawn_bullet(enemy.pos + side * offset + direction * profile.sprite_size.y * 0.4, direction * (180 if profile.weapon_name == "Rockets" else 245), false, profile.projectile_damage, "rocket" if profile.weapon_name == "Rockets" else "bullet")
 	event.emit("sound", {"name": "enemy_shot"})
 
 func _fire_boss(enemy: Dictionary) -> void:
@@ -338,6 +408,26 @@ func _fire_boss(enemy: Dictionary) -> void:
 		for index in range(-2, 3):
 			_spawn_bullet(enemy.pos + Vector2(0, 35), Vector2.DOWN.rotated(index * 0.20) * 170, false)
 	event.emit("sound", {"name": "enemy_shot"})
+
+func enemy_path(enemy: Dictionary, age: float) -> Vector2:
+	var speed: float = enemy.profile.speed
+	var origin: Vector2 = enemy.origin
+	match enemy.pattern:
+		"zigzag":
+			return origin + Vector2(sin(age * 1.65) * 140 * enemy.side, age * speed * 0.62)
+		"loop":
+			var entry := 2.0
+			var turn := 6.0
+			var radius := speed * turn / TAU
+			if age < entry: return origin + Vector2(0, age * speed)
+			if age < entry + turn:
+				var angle := (age - entry) * TAU / turn
+				return origin + Vector2((1 - cos(angle)) * radius * enemy.side, entry * speed + sin(angle) * radius)
+			return origin + Vector2(0, entry * speed + (age - entry - turn) * speed)
+		"arc": return origin + Vector2(sin(age * 0.8) * 160 * enemy.side, age * speed)
+		"cross": return origin + Vector2(age * 66 * enemy.side, age * speed)
+		"supply": return origin + Vector2(sin(age * 0.6) * 28, age * speed)
+	return origin + Vector2(sin(age * 1.25) * 28, age * speed)
 
 func _fire_player() -> bool:
 	var pattern: WeaponProfile = weapons[weapon]
@@ -446,6 +536,7 @@ func damage_enemy(enemy: Dictionary, amount: int) -> void:
 			if enemy.boss_pass < 3 and enemy.hp <= threshold:
 				enemy.boss_pass += 1
 				enemy.retreat = 12.0
+				enemy.retreat_from = enemy.pos.y
 				enemy.shoot = 1.2
 				event.emit("boss_maneuver", {"pass": enemy.boss_pass})
 		return
@@ -475,6 +566,8 @@ func _drop(position: Vector2, loot: LootProfile) -> void:
 func _resolve_enemy(enemy: Dictionary, killed: bool) -> void:
 	if enemy.resolved: return
 	enemy.resolved = true
+	if not killed and enemy.formation >= 0 and enemy.profile.id != "boss" and not enemy.get("counter", false):
+		survivor_reserve.append({"kind": enemy.profile.id, "hp": enemy.hp})
 	var reward := formations.resolve(enemy.formation, enemy.id, killed)
 	if not reward.is_empty():
 		bonus_pending += reward.bonus
@@ -546,6 +639,7 @@ func _update_particles(delta: float) -> void:
 
 func status() -> Dictionary:
 	return {"phase": Phase.keys()[phase], "wave": wave_index + 1, "armor": armor,
+		"counterattack": counterattack, "counter_round": counter_round, "counter_completed": counter_completed, "reserve": survivor_reserve.size(),
 		"weapon": weapon, "rolls": rolls, "active_bullets": active_bullets(), "bullet_capacity": current_capacity(), "penetration": current_penetration(), "bonus_pending": bonus_pending, "last_bonus": last_bonus, "score": score, "kills": kills, "spawned": spawned,
 		"seconds": snappedf(mission_time, 0.01), "enemies": enemies.size(), "bullets": bullets.size(),
 		"enemy_types": encountered_types.keys(), "speed_rating": aircraft.speed_rating, "speed": current_speed(), "events": run_events.duplicate()}

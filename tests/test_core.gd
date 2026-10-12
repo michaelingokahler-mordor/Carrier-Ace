@@ -194,12 +194,15 @@ func _test_damage() -> void:
 	ace.shoot = 0
 	model._update_enemies(0.01)
 	expect(ace.warning > 0 and model.bullets.is_empty(), "Rocket warning precedes launch")
-	var aim: Vector2 = ace.aim
 	model.player.x = 800
 	model._update_enemies(0.3)
 	expect(model.bullets.is_empty(), "Rocket warning remains active")
 	model._update_enemies(0.31)
-	expect(model.bullets.size() == 1 and model.bullets[0].velocity.normalized().is_equal_approx(aim), "Rocket direction remains locked")
+	expect(model.bullets.size() == 1 and model.bullets[0].velocity.normalized().is_equal_approx(Vector2.DOWN.rotated(ace.heading)), "Rocket launches along aircraft heading")
+	var velocity: Vector2 = model.bullets[0].velocity
+	model.player.x = 50
+	model._update_bullets(0.01)
+	expect(model.bullets[0].velocity == velocity, "Rocket does not home after launch")
 
 func _test_loot() -> void:
 	var loot: LootProfile = load("res://resources/loot_default.tres")

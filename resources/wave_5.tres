@@ -4,6 +4,6 @@
 script = ExtResource("1")
 title = "Storm Front"
 duration = 30.0
-pattern = "arc"
+pattern = "loop"
 enemy_ids = PackedStringArray("bomber_1", "bomber_2", "fighter_ace")
 density = 4

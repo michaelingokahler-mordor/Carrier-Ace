@@ -7,10 +7,10 @@ func capture(name: String) -> void:
 	await process_frame
 	await process_frame
 	await RenderingServer.frame_post_draw
-	root.get_texture().get_image().save_png("res://output/preview03/" + name + ".png")
+	root.get_texture().get_image().save_png("res://output/preview04/" + name + ".png")
 
 func run() -> void:
-	DirAccess.make_dir_recursive_absolute("res://output/preview03")
+	DirAccess.make_dir_recursive_absolute("res://output/preview04")
 	var game = load("res://scenes/main.tscn").instantiate()
 	root.add_child(game)
 	await process_frame
@@ -22,6 +22,12 @@ func run() -> void:
 		await capture("title_" + suffix)
 		game._show_credits()
 		await capture("credits_" + suffix)
+		game._show_options()
+		await capture("options_" + suffix)
+		game._show_graphics()
+		await capture("graphics_" + suffix)
+		game._show_highscores("title")
+		await capture("highscores_" + suffix)
 		game._show_controls("title")
 		await capture("controls_" + suffix)
 		game._show_aircraft("title")
@@ -38,6 +44,8 @@ func run() -> void:
 		for index in range(6):
 			game.model._spawn_enemy(AircraftCatalog.ENEMY_IDS[index], Vector2(200 + index * 112, 135 + (index % 2) * 62), "line")
 		game.model._fire_player()
+		for index in range(7):
+			game.model.pickups.append({"kind":["bullets","double","triple","speed","rolls","repair","penetration"][index],"pos":Vector2(230 + index*75,360),"age":0.0,"dead":false})
 		await capture("gameplay_" + suffix)
 		game.model.armor = 2
 		await capture("damage2_" + suffix)

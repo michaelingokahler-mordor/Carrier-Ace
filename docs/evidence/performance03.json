@@ -1,0 +1,30 @@
+{
+  "windows": {
+    "version": "0.3.0",
+    "verification": "PASS",
+    "mission_seconds": 255.9,
+    "seed": 1943,
+    "startup_fps": 11.0,
+    "samples": 254,
+    "min": 31.0,
+    "median": 60.0,
+    "max": 60.0,
+    "below_59": 5,
+    "resolution": "1920x1080",
+    "note": "One-second Engine FPS samples; parallel Windows/Web QA and screenshots; not a per-frame latency measurement."
+  },
+  "web": {
+    "version": "0.3.0",
+    "verification": "PASS",
+    "mission_seconds": 255.9,
+    "seed": 1943,
+    "startup_fps": 20.0,
+    "samples": 254,
+    "min": 8.0,
+    "median": 60.0,
+    "max": 60.0,
+    "below_59": 6,
+    "resolution": "1920x1080, full run",
+    "note": "One-second Engine FPS samples; parallel Windows/Web QA and screenshots; not a per-frame latency measurement."
+  }
+}

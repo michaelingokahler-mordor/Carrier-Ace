@@ -12,6 +12,7 @@ var cooldowns: Dictionary = {}
 var current_music := ""
 var backgrounded := false
 var shutting_down := false
+var flight_ended := false
 
 func _ready() -> void:
 	# Long loops stream from Ogg instead of duplicating browser sample buffers.
@@ -36,7 +37,7 @@ func _process(delta: float) -> void:
 		cooldowns[id] = maxf(0, cooldowns[id] - delta)
 
 func unlock() -> void:
-	if enabled or shutting_down:
+	if enabled or shutting_down or flight_ended:
 		return
 	enabled = true
 	if current_music != "":
@@ -55,10 +56,28 @@ func stop_all() -> void:
 	current_music = ""
 	cooldowns.clear()
 
+func stop_combat() -> void:
+	music_player.stop()
+	engine_player.stop()
+	current_music = ""
+	for voice in voices:
+		if voice.stream in [sounds.get("shot"), sounds.get("enemy_shot")]: voice.stop()
+
+func end_flight() -> void:
+	flight_ended = true
+	stop_all()
+	AudioServer.set_bus_mute(AudioServer.get_bus_index("Master"), true)
+
+func begin_playback() -> void:
+	if shutting_down: return
+	flight_ended = false
+	AudioServer.set_bus_mute(AudioServer.get_bus_index("Master"), false)
+
 func shutdown() -> void:
 	shutting_down = true
 	enabled = false
 	stop_all()
+	AudioServer.set_bus_mute(AudioServer.get_bus_index("Master"), true)
 
 func pause_all(paused: bool) -> void:
 	for player in [music_player, engine_player] + voices:
@@ -73,7 +92,7 @@ func set_volumes(music_value: float, effects_value: float) -> void:
 		voice.volume_db = linear_to_db(maxf(effects_volume * 0.55, 0.0001))
 
 func sound(id: String) -> void:
-	if not enabled or not sounds.has(id) or cooldowns.get(id, 0.0) > 0:
+	if not enabled or flight_ended or shutting_down or not sounds.has(id) or cooldowns.get(id, 0.0) > 0:
 		return
 	cooldowns[id] = 0.075 if id == "shot" else 0.10
 	for voice in voices:
@@ -84,7 +103,7 @@ func sound(id: String) -> void:
 			return
 
 func music(id: String) -> void:
-	if shutting_down: return
+	if shutting_down or flight_ended: return
 	if id == current_music:
 		return
 	current_music = id
@@ -96,7 +115,7 @@ func music(id: String) -> void:
 		music_player.play()
 
 func flight(active: bool, moving: bool, paused: bool) -> void:
-	if shutting_down: return
+	if shutting_down or flight_ended: return
 	paused = paused or backgrounded
 	if music_player.stream_paused != paused:
 		music_player.stream_paused = paused

@@ -54,8 +54,10 @@ func _draw() -> void:
 		var tint := Color.WHITE
 		if enemy.supply:
 			tint = Color(1, 0.58, 0.38)
-		_sprite(enemy.profile.texture_id, enemy.pos, size, tint)
-		_draw_propellers(enemy.pos, 1.0, enemy.profile)
+		draw_set_transform(enemy.pos, enemy.get("heading", 0.0))
+		_sprite(enemy.profile.texture_id, Vector2.ZERO, size, tint)
+		_draw_propellers(Vector2.ZERO, 1.0, enemy.profile)
+		draw_set_transform(Vector2.ZERO)
 		if model.debug_collisions: _debug_shape(enemy.shape, enemy.pos, Color(1, 0.4, 0.35, 0.9))
 		if enemy.warning > 0:
 			draw_line(enemy.pos, enemy.pos + enemy.aim * 100, Color(1, 0.53, 0.25, 0.55), 2, true)
@@ -126,8 +128,8 @@ func _draw_title() -> void:
 	_text(Vector2(58, 99), "OPERATION BLUE HORIZON", 14, Color("183a4a"))
 	_text(Vector2(55, 175), "CARRIER", 64, Color("f2e6cd"))
 	_text(Vector2(55, 237), "ACE", 64, GOLD)
-	_text(Vector2(60, 511), "ARCADE FLIGHT MISSION  /  0.3", 12, Color("a3b8bc"))
-	_text(Vector2(450, 511), "BONUS BANK  %06d" % bonus_bank, 12, GOLD)
+	_text(Vector2(60, 511), "ARCADE FLIGHT MISSION  /  0.4", 12, Color("a3b8bc"))
+	_text(Vector2(450, 511), "(C)2026 by Sabnock Works", 12, GOLD)
 	_text(Vector2(710, 511), "HIGH SCORE  %06d" % high_score, 13, GOLD)
 
 func _draw_carrier(position: Vector2) -> void:
@@ -189,23 +191,33 @@ func _draw_rocket(bullet: Dictionary) -> void:
 
 func _draw_pickup(pickup: Dictionary) -> void:
 	var color := GOLD
-	var label := "2×"
-	match pickup.kind:
-		"triple": label = "3×"
-		"bullets": label = "B"
-		"rolls": label = "R"
-		"penetration": label = "P"
-		"repair":
-			label = "+"
-			color = Color("a3f3b9")
-		"speed":
-			label = ">>"
-			color = CYAN
-	var rect := Rect2(pickup.pos - Vector2(15, 15), Vector2(30, 30))
+	if pickup.kind == "repair": color = Color("a3f3b9")
+	if pickup.kind == "speed": color = CYAN
 	draw_circle(pickup.pos, 22 + sin(clock * 6) * 2, Color(color, 0.14))
-	draw_rect(rect, INK)
-	draw_rect(rect, color, false, 2)
-	_text(pickup.pos + Vector2(-10, 6), label, 18, color)
+	draw_circle(pickup.pos + Vector2(1, 2), 17, Color(0, 0, 0, 0.4))
+	draw_circle(pickup.pos, 16, INK)
+	draw_arc(pickup.pos, 16, 0, TAU, 48, color, 2, true)
+	match pickup.kind:
+		"bullets", "double", "triple":
+			var count := 3 if pickup.kind == "triple" else 2 if pickup.kind == "double" else 1
+			for index in count:
+				var center: Vector2 = pickup.pos + Vector2((index - (count - 1) * 0.5) * 7, 0)
+				draw_rect(Rect2(center + Vector2(-2, -5), Vector2(4, 12)), color)
+				draw_colored_polygon(PackedVector2Array([center + Vector2(-2, -5), center + Vector2(0, -9), center + Vector2(2, -5)]), Color("fff0cf"))
+				draw_line(center + Vector2(-3, 5), center + Vector2(3, 5), INK, 1)
+		"speed": _text(pickup.pos + Vector2(-6, 6), "S", 18, color)
+		"repair":
+			draw_colored_polygon(PackedVector2Array([pickup.pos + Vector2(-8,-8), pickup.pos + Vector2(8,-8), pickup.pos + Vector2(7,3), pickup.pos + Vector2(0,10), pickup.pos + Vector2(-7,3)]), color)
+			draw_line(pickup.pos + Vector2(-4,-1), pickup.pos + Vector2(4,-1), INK, 2)
+			draw_line(pickup.pos + Vector2(0,-5), pickup.pos + Vector2(0,3), INK, 2)
+		"rolls":
+			draw_arc(pickup.pos, 8, -PI * 0.8, PI * 0.9, 28, color, 2, true)
+			draw_colored_polygon(PackedVector2Array([pickup.pos + Vector2(-11,0), pickup.pos + Vector2(-2,3), pickup.pos + Vector2(-6,9)]), color)
+		"penetration":
+			draw_line(pickup.pos + Vector2(-8,-8), pickup.pos + Vector2(-8,8), color, 2)
+			draw_line(pickup.pos + Vector2(-1,-8), pickup.pos + Vector2(-1,8), color, 2)
+			draw_line(pickup.pos + Vector2(-11,0), pickup.pos + Vector2(10,0), Color("fff0cf"), 2)
+			draw_colored_polygon(PackedVector2Array([pickup.pos + Vector2(6,-4), pickup.pos + Vector2(12,0), pickup.pos + Vector2(6,4)]), Color("fff0cf"))
 
 func _draw_explosion(particle: Dictionary) -> void:
 	var progress: float = particle.age / particle.duration
@@ -241,6 +253,7 @@ func _draw_hud() -> void:
 	_text(Vector2(549, 24), "PENETRATION", 10, Color("92bdc5"))
 	_text(Vector2(549, 46), "%d" % model.current_penetration(), 20, CYAN)
 	var phase_text := "WAVE %d/6" % (model.wave_index + 1)
+	if model.counterattack: phase_text = "COUNTER %d/2" % model.counter_round
 	match model.phase:
 		MissionModel.Phase.TAKEOFF: phase_text = "TAKEOFF"
 		MissionModel.Phase.BOSS: phase_text = "BEHEMOTH"

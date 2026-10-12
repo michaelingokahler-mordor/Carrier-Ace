@@ -8,6 +8,11 @@ var ui_layer := CanvasLayer.new()
 var ui_root := Control.new()
 var high_score := 0
 var bonus_bank := 0
+var high_scores: Array[Dictionary] = []
+var player_name := "Pilot"
+var submitted_run := -1
+var result_success := false
+var score_name_input: LineEdit
 var settled_run := -1
 var pending_fire := false
 var music_volume := 0.60
@@ -65,6 +70,7 @@ func _ready() -> void:
 	if OS.has_feature("web") and verify:
 		verification_speed = 1 if bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('realtime') === '1'")) else 12
 	if verify:
+		silent = true
 		model.loot_rng.seed = 1943
 		_start_run()
 		if OS.has_feature("web"):
@@ -116,13 +122,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.is_pressed() and not silent:
 			audio.unlock()
 	if event.is_action_pressed("fullscreen"):
-		var window := get_window()
-		window.mode = Window.MODE_WINDOWED if window.mode == Window.MODE_FULLSCREEN else Window.MODE_FULLSCREEN
+		_toggle_fullscreen()
 		get_viewport().set_input_as_handled()
 	if event.is_action_pressed("pause_game"):
-		if menu in ["controls_pause", "sound_pause", "aircraft_pause"]:
+		if menu in ["controls_options", "sound_options", "graphics_options"]:
+			_show_options()
+		elif menu == "highscores_result":
+			_show_result(result_success)
+		elif menu in ["controls_pause", "sound_pause", "aircraft_pause"]:
 			_show_pause()
-		elif menu in ["controls_title", "sound_title", "aircraft_title", "credits_title"]:
+		elif menu in ["controls_title", "sound_title", "aircraft_title", "credits_title", "options_title", "highscores_title"]:
 			_show_title()
 		elif model.phase not in [MissionModel.Phase.TITLE, MissionModel.Phase.VICTORY, MissionModel.Phase.GAME_OVER, MissionModel.Phase.DOWNED]:
 			if model.paused:
@@ -153,6 +162,8 @@ func _on_model_event(kind: String, data: Dictionary) -> void:
 			if not silent: audio.sound(data.name)
 			if data.name == "hit": view.flash = 0.12
 		"wave": view.announce("WAVE %d · %s" % [data.index + 1, data.title.to_upper()], 3.0)
+		"counterattack":
+			view.announce("COUNTERATTACK %d · ENEMY REGROUPING" % data.round if data.regrouping else "COUNTERATTACK %d · %d SURVIVORS RETURNING" % [data.round, data.count], 4)
 		"supply": view.announce("Destroy the entire gold-marked supply formation", 2.8)
 		"weapon_blocked": view.announce("BULLET CAPACITY FULL · wait for a complete salvo", 0.8)
 		"bonus": view.announce("FORMATION COMPLETE · +%d BONUS POINTS" % data.amount, 1.5)
@@ -186,6 +197,7 @@ func _handle_phase() -> void:
 		MissionModel.Phase.LANDING:
 			view.announce("ARRESTING WIRE READY · LANDING", 3)
 		MissionModel.Phase.DOWNED:
+			audio.stop_combat()
 			view.announce("AIRCRAFT LOST · GAME OVER", 0.8)
 		MissionModel.Phase.VICTORY:
 			_show_result(true)
@@ -194,6 +206,7 @@ func _handle_phase() -> void:
 
 func _start_run() -> void:
 	pending_fire = false
+	audio.begin_playback()
 	if not silent: audio.unlock()
 	_clear_ui()
 	menu = "flight"
@@ -282,15 +295,83 @@ func _panel(title: String, size: Vector2 = Vector2(460, 390)) -> Panel:
 
 func _show_title() -> void:
 	_clear_ui()
+	audio.begin_playback()
 	menu = "title"
 	var first := _button(ui_root, "Start Mission", Vector2(60, 264), Vector2(300, 43), _start_run, true)
 	_button(ui_root, "Aircraft", Vector2(60, 312), Vector2(300, 34), func() -> void: _show_aircraft("title"))
-	_button(ui_root, "Controls", Vector2(60, 350), Vector2(300, 34), func() -> void: _show_controls("title"))
-	_button(ui_root, "Sound & Music", Vector2(60, 388), Vector2(300, 34), func() -> void: _show_sound("title"))
+	_button(ui_root, "Options", Vector2(60, 350), Vector2(300, 34), _show_options)
+	_button(ui_root, "Highscore", Vector2(60, 388), Vector2(300, 34), func() -> void: _show_highscores("title"))
 	_button(ui_root, "Credits", Vector2(60, 426), Vector2(300, 34), _show_credits)
 	_button(ui_root, "Quit", Vector2(60, 464), Vector2(300, 30), _quit_game)
 	first.grab_focus()
 	audio.music("title_music")
+
+func _return_menu(back: String) -> void:
+	if back == "pause": _show_pause()
+	elif back == "options": _show_options()
+	else: _show_title()
+
+func _show_options() -> void:
+	menu = "options_title"
+	var panel := _panel("Options", Vector2(460, 370))
+	var first := _button(panel, "Controls", Vector2(28, 90), Vector2(404, 43), func() -> void: _show_controls("options"), true)
+	_button(panel, "Sound & Music", Vector2(28, 148), Vector2(404, 43), func() -> void: _show_sound("options"))
+	_button(panel, "Graphics", Vector2(28, 206), Vector2(404, 43), _show_graphics)
+	_button(panel, "Back", Vector2(28, 293), Vector2(404, 43), _show_title)
+	first.grab_focus()
+
+func _show_graphics() -> void:
+	menu = "graphics_options"
+	var panel := _panel("Graphics", Vector2(510, 340))
+	_label(panel, "Fullscreen keeps the original aspect ratio.\nF11 also toggles fullscreen.\nIn the browser, Esc leaves fullscreen.", Vector2(28, 86), Vector2(454, 95), 17)
+	var first := _button(panel, "Toggle Fullscreen", Vector2(28, 195), Vector2(454, 43), _toggle_fullscreen, true)
+	_button(panel, "Back", Vector2(28, 267), Vector2(454, 43), _show_options)
+	first.grab_focus()
+
+func _toggle_fullscreen() -> void:
+	var window := get_window()
+	window.mode = Window.MODE_WINDOWED if window.mode == Window.MODE_FULLSCREEN else Window.MODE_FULLSCREEN
+
+func _show_highscores(back: String) -> void:
+	menu = "highscores_" + back
+	var panel := _panel("Highscore", Vector2(680, 490))
+	_label(panel, "RANK", Vector2(28, 80), Vector2(70, 25), 15, Color("e4c47f"))
+	_label(panel, "PILOT", Vector2(100, 80), Vector2(310, 25), 15, Color("e4c47f"))
+	_label(panel, "SCORE / RESULT", Vector2(426, 80), Vector2(226, 25), 15, Color("e4c47f"))
+	if high_scores.is_empty():
+		_label(panel, "No entries yet. Finish a flight and save your score.", Vector2(28, 135), Vector2(624, 65), 18)
+	for index in high_scores.size():
+		var row: Dictionary = high_scores[index]
+		var y := 116 + index * 28
+		_label(panel, str(index + 1), Vector2(28, y), Vector2(60, 26), 17)
+		_label(panel, row.name, Vector2(100, y), Vector2(310, 26), 17)
+		_label(panel, "%06d  ·  %s" % [row.score, "RECORD" if row.get("legacy", false) else "LANDED" if row.success else "LOST"], Vector2(426, y), Vector2(226, 26), 17)
+	_label(panel, "Top 10 · saved locally on this device", Vector2(28, 407), Vector2(624, 25), 14)
+	var first := _button(panel, "Back", Vector2(28, 443), Vector2(624, 32), func() -> void:
+		if back == "result": _show_result(result_success)
+		else: _show_title(), true)
+	first.grab_focus()
+
+func _record_highscore(name: String) -> bool:
+	if model.phase not in [MissionModel.Phase.GAME_OVER, MissionModel.Phase.VICTORY] or submitted_run == model.run_serial:
+		return false
+	player_name = _clean_pilot_name(name)
+	high_scores.append({"name": player_name, "score": model.last_attempt_score, "success": model.phase == MissionModel.Phase.VICTORY})
+	_sort_highscores()
+	submitted_run = model.run_serial
+	_save_preferences()
+	return true
+
+func _clean_pilot_name(name: String) -> String:
+	var clean := ""
+	for character in name.strip_edges():
+		if character.unicode_at(0) >= 32: clean += character
+	clean = clean.left(16)
+	return "Pilot" if clean.is_empty() else clean
+
+func _sort_highscores() -> void:
+	high_scores.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.score > b.score)
+	if high_scores.size() > 10: high_scores.resize(10)
 
 func _quit_game() -> void:
 	pending_fire = false
@@ -396,8 +477,7 @@ func _show_controls(back: String) -> void:
 	_label(panel, "Move · Stick / D-pad\nFire one salvo · Main button (A)\nRoll · Second button (B)\nPause · Start\nToggle Fullscreen", Vector2(224, 89), Vector2(478, 170), 18)
 	_label(panel, "Armor 0 means Game Over. Press Fire for each complete salvo.\nBullets = active shots / capacity (starts at 6, maximum 18).\nRolls: 1 second protection · repairs restore 1 armor.\nGold formations drop upgrades; ordinary enemies have a 3% chance.\nComplete groups earn Bonus Points. Land to bank them.\nPenetration counts additional targets (0–3). Align to land.", Vector2(28, 260), Vector2(674, 157), 15)
 	var first := _button(panel, "Back", Vector2(28, 438), Vector2(674, 36), func() -> void:
-		if back == "pause": _show_pause()
-		else: _show_title(), true)
+		_return_menu(back), true)
 	first.grab_focus()
 
 func _show_sound(back: String) -> void:
@@ -414,8 +494,7 @@ func _show_sound(back: String) -> void:
 		audio.set_volumes(music_volume, effects_volume)
 		_save_preferences())
 	_button(panel, "Back", Vector2(28, 268), Vector2(404, 40), func() -> void:
-		if back == "pause": _show_pause()
-		else: _show_title(), true)
+		_return_menu(back), true)
 	music_slider.grab_focus()
 
 func _slider(parent: Control, position: Vector2, value: float, callback: Callable) -> HSlider:
@@ -432,17 +511,35 @@ func _slider(parent: Control, position: Vector2, value: float, callback: Callabl
 	return slider
 
 func _show_result(success: bool) -> void:
-	audio.stop_all()
+	audio.end_flight()
+	result_success = success
 	menu = "result"
-	var panel := _panel("Welcome Aboard" if success else "Game Over", Vector2(510, 425))
+	var panel := _panel("Welcome Aboard" if success else "Game Over", Vector2(660, 490))
 	var subtitle := "Carrier reached. Your Hellcat has landed safely." if success else "Your aircraft was lost. Start a new mission."
 	_label(panel, subtitle, Vector2(28, 79), Vector2(454, 36), 16)
 	var ratio := float(model.kills) / maxi(1, model.spawned) * 100
 	_label(panel, "SCORE  %06d       HIGH SCORE  %06d\nKILLS  %d / %d   ·   RATE  %.0f%%\nFLIGHT TIME  %02d:%02d" % [model.last_attempt_score, high_score, model.kills, model.spawned, ratio, int(model.mission_time) / 60, int(model.mission_time) % 60], Vector2(28, 130), Vector2(454, 90), 18, Color("e4c47f"))
 	_label(panel, ("BONUS DEPOSITED  %06d" if success else "BONUS LOST  %06d") % model.last_bonus + "\nBONUS BANK  %06d" % bonus_bank, Vector2(28, 229), Vector2(454, 55), 18, Color("78dedb"))
-	var first := _button(panel, "Fly Again", Vector2(28, 307), Vector2(454, 43), _start_run, true)
-	_button(panel, "Main Menu", Vector2(28, 364), Vector2(454, 40), _title_again)
+	_label(panel, "Pilot name", Vector2(28, 294), Vector2(135, 27), 17)
+	score_name_input = LineEdit.new()
+	score_name_input.position = Vector2(163, 289)
+	score_name_input.size = Vector2(260, 36)
+	score_name_input.max_length = 16
+	score_name_input.text = player_name
+	score_name_input.add_theme_font_size_override("font_size", 17)
+	panel.add_child(score_name_input)
+	var save := _button(panel, "Score Saved" if submitted_run == model.run_serial else "Save Score", Vector2(437, 289), Vector2(195, 36), func() -> void:
+		if _record_highscore(score_name_input.text): _show_result(success))
+	save.disabled = submitted_run == model.run_serial
+	score_name_input.editable = not save.disabled
+	score_name_input.text_submitted.connect(func(name: String) -> void:
+		if _record_highscore(name): _show_result(success))
+	_label(panel, "Save before leaving · one entry per flight", Vector2(28, 333), Vector2(604, 24), 14)
+	_button(panel, "Highscore", Vector2(28, 371), Vector2(604, 36), func() -> void: _show_highscores("result"))
+	var first := _button(panel, "Fly Again", Vector2(28, 428), Vector2(288, 40), _start_run, true)
+	_button(panel, "Main Menu", Vector2(330, 428), Vector2(302, 40), _title_again)
 	first.grab_focus()
+	if not save.disabled: score_name_input.grab_focus()
 
 func _read_preferences() -> void:
 	var file := ConfigFile.new()
@@ -452,6 +549,16 @@ func _read_preferences() -> void:
 	bonus_bank = maxi(0, int(file.get_value("game", "bonus_bank", 0)))
 	music_volume = clampf(float(file.get_value("audio", "music", 0.6)), 0, 1)
 	effects_volume = clampf(float(file.get_value("audio", "effects", 0.7)), 0, 1)
+	player_name = _clean_pilot_name(str(file.get_value("game", "player_name", "Pilot")))
+	high_scores.clear()
+	var stored = file.get_value("game", "high_scores", [])
+	if stored is Array:
+		for entry in stored:
+			if entry is Dictionary and entry.get("score") is int and entry.score >= 0:
+				high_scores.append({"name": _clean_pilot_name(str(entry.get("name", "Pilot"))), "score": entry.score, "success": bool(entry.get("success", false)), "legacy": bool(entry.get("legacy", false))})
+	if not file.has_section_key("game", "high_scores") and high_score > 0:
+		high_scores.append({"name": "Previous record", "score": high_score, "success": false, "legacy": true})
+	_sort_highscores()
 
 func _save_preferences() -> void:
 	if verify:
@@ -460,6 +567,8 @@ func _save_preferences() -> void:
 	file.load(PREFS)
 	file.set_value("game", "high_score", high_score)
 	file.set_value("game", "bonus_bank", bonus_bank)
+	file.set_value("game", "high_scores", high_scores)
+	file.set_value("game", "player_name", player_name)
 	file.set_value("audio", "music", music_volume)
 	file.set_value("audio", "effects", effects_volume)
 	var result := file.save(PREFS)
@@ -476,6 +585,10 @@ func _write_verification() -> void:
 	report["platform"] = OS.get_name()
 	report["bonus_bank"] = bonus_bank
 	report["loot_seed"] = 1943
+	var active_effects := 0
+	for voice in audio.voices:
+		if voice.playing: active_effects += 1
+	report["audio_end"] = {"master_muted": AudioServer.is_bus_mute(AudioServer.get_bus_index("Master")), "music_playing": audio.music_player.playing, "engine_playing": audio.engine_player.playing, "active_effects": active_effects}
 	report["fps_samples"] = fps_samples
 	print("CARRIER_ACE_VERIFY " + JSON.stringify(report))
 	if smoke_report_path != "":

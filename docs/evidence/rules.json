@@ -1,52 +1,9 @@
 {
-  "core": {
-    "checks": 214,
-    "failures": 0,
-    "stdout": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCORE_TESTS checks=214 failures=0\n"
-  },
-  "ui": {
-    "checks": 76,
-    "failures": 0,
-    "stdout": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nUI_TESTS checks=76 failures=0\n"
-  },
-  "flight": {
-    "active_bullets": 0,
-    "armor": 3,
-    "bonus_pending": 0,
-    "bullet_capacity": 10,
-    "bullets": 0,
-    "enemies": 0,
-    "enemy_types": [
-      "biplane_1",
-      "biplane_2",
-      "biplane_ace",
-      "fighter_1",
-      "fighter_2",
-      "fighter_ace",
-      "bomber_1",
-      "bomber_2",
-      "bomber_ace",
-      "boss"
-    ],
-    "events": [
-      "TAKEOFF",
-      "WAVES",
-      "BOSS",
-      "APPROACH",
-      "LANDING",
-      "VICTORY"
-    ],
-    "kills": 67,
-    "last_bonus": 775,
-    "penetration": 1,
-    "phase": "VICTORY",
-    "rolls": 1,
-    "score": 14800,
-    "seconds": 255.9,
-    "spawned": 94,
-    "speed": 195.0,
-    "speed_rating": 2,
-    "wave": 6,
-    "weapon": 2
-  }
+  "version": "0.4.0",
+  "date": "2026-10-12",
+  "core": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCORE_TESTS checks=215 failures=0\n",
+  "mission": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nMISSION04_TESTS checks=95 failures=0\n",
+  "ui": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nUI_TESTS checks=104 failures=0\n",
+  "headless_flight": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nFULL_MISSION {\"active_bullets\":0,\"armor\":1,\"bonus_pending\":0,\"bullet_capacity\":6,\"bullets\":0,\"counter_completed\":2,\"counter_round\":2,\"counterattack\":false,\"enemies\":0,\"enemy_types\":[\"biplane_1\",\"biplane_2\",\"biplane_ace\",\"fighter_1\",\"fighter_2\",\"fighter_ace\",\"bomber_1\",\"bomber_2\",\"bomber_ace\",\"boss\"],\"events\":[\"TAKEOFF\",\"WAVES\",\"BOSS\",\"APPROACH\",\"LANDING\",\"VICTORY\"],\"kills\":94,\"last_bonus\":1975,\"penetration\":1,\"phase\":\"VICTORY\",\"reserve\":0,\"rolls\":0,\"score\":20100,\"seconds\":287.13,\"spawned\":106,\"speed\":214.5,\"speed_rating\":2,\"wave\":6,\"weapon\":3}\n",
+  "total_checks": 414
 }

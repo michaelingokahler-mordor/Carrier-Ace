@@ -4,6 +4,6 @@
 script = ExtResource("1")
 title = "Crossfire"
 duration = 30.0
-pattern = "cross"
+pattern = "zigzag"
 enemy_ids = PackedStringArray("fighter_1", "fighter_2")
 density = 4

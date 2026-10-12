@@ -25,6 +25,28 @@ static func rocket(direction: Vector2) -> Dictionary:
 	var polygons: Array[PackedVector2Array] = [points]
 	return prepare(polygons, Vector2.ONE)
 
+static func rotated(shape: Dictionary, angle: float) -> Dictionary:
+	var polygons: Array[PackedVector2Array] = []
+	for polygon: PackedVector2Array in shape.polygons:
+		var points := PackedVector2Array()
+		for point in polygon: points.append(point.rotated(angle))
+		polygons.append(points)
+	return prepare(polygons, Vector2.ONE)
+
+static func turning_shape(base: Dictionary, previous_angle: float, angle: float) -> Dictionary:
+	# Each convex component covers its short angular movement for this physics step.
+	var polygons: Array[PackedVector2Array] = []
+	var difference := wrapf(angle - previous_angle, -PI, PI)
+	var steps := maxi(1, ceili(absf(difference) / 0.035))
+	for polygon: PackedVector2Array in base.polygons:
+		var points := PackedVector2Array()
+		for step in range(steps + 1):
+			for point in polygon: points.append(point.rotated(previous_angle + difference * float(step) / steps))
+		var hull := Geometry2D.convex_hull(points)
+		if hull.size() > 1 and hull[0] == hull[-1]: hull.remove_at(hull.size() - 1)
+		polygons.append(hull)
+	return prepare(polygons, Vector2.ONE)
+
 static func path_bounds(start: Vector2, finish: Vector2) -> Rect2:
 	return Rect2(start.min(finish), (finish - start).abs()).grow(EPS)
 

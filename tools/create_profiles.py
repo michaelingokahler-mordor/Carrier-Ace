@@ -1,4 +1,4 @@
-"""Write the approved Carrier Ace 0.3 balancing resources."""
+"""Write the approved Carrier Ace 0.4 balancing resources."""
 from pathlib import Path
 import json
 ROOT=Path(__file__).resolve().parents[1]
@@ -44,9 +44,9 @@ for level,name,angles,offsets in [(1,'Single Shot','0.0','0.0'),(2,'Double Shot'
 for index,(name,pattern,enemies,density) in enumerate([
  ('First Contact','line',['biplane_1','biplane_2'],3),
  ('Island Patrol','arc',['biplane_1','biplane_2','biplane_ace'],3),
- ('Crossfire','cross',['fighter_1','fighter_2'],4),
+ ('Crossfire','zigzag',['fighter_1','fighter_2'],4),
  ('Heavy Escort','line',['fighter_1','fighter_ace','bomber_1'],4),
- ('Storm Front','arc',['bomber_1','bomber_2','fighter_ace'],4),
+ ('Storm Front','loop',['bomber_1','bomber_2','fighter_ace'],4),
  ('Final Defense','cross',['bomber_ace','fighter_ace','biplane_ace','bomber_2','fighter_2'],5)],1):
     resource(f'wave_{index}','WaveProfile','wave_profile',{'title':json.dumps(name),'duration':30.0,'pattern':json.dumps(pattern),'enemy_ids':'PackedStringArray('+', '.join(json.dumps(x) for x in enemies)+')','density':density})
-print('Wrote 20 balancing resources for Carrier Ace 0.3.')
+print('Wrote 20 balancing resources for Carrier Ace 0.4.')

@@ -1,0 +1,52 @@
+{
+  "core": {
+    "checks": 214,
+    "failures": 0,
+    "stdout": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nCORE_TESTS checks=214 failures=0\n"
+  },
+  "ui": {
+    "checks": 76,
+    "failures": 0,
+    "stdout": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\n\nUI_TESTS checks=76 failures=0\n"
+  },
+  "flight": {
+    "active_bullets": 0,
+    "armor": 3,
+    "bonus_pending": 0,
+    "bullet_capacity": 10,
+    "bullets": 0,
+    "enemies": 0,
+    "enemy_types": [
+      "biplane_1",
+      "biplane_2",
+      "biplane_ace",
+      "fighter_1",
+      "fighter_2",
+      "fighter_ace",
+      "bomber_1",
+      "bomber_2",
+      "bomber_ace",
+      "boss"
+    ],
+    "events": [
+      "TAKEOFF",
+      "WAVES",
+      "BOSS",
+      "APPROACH",
+      "LANDING",
+      "VICTORY"
+    ],
+    "kills": 67,
+    "last_bonus": 775,
+    "penetration": 1,
+    "phase": "VICTORY",
+    "rolls": 1,
+    "score": 14800,
+    "seconds": 255.9,
+    "spawned": 94,
+    "speed": 195.0,
+    "speed_rating": 2,
+    "wave": 6,
+    "weapon": 2
+  }
+}

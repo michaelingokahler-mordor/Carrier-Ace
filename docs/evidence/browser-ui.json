@@ -1,20 +1,11 @@
 {
-  "version": "0.3.0",
-  "date": "2026-10-12",
-  "method": "Actual Chromium Web export via canvas keyboard/mouse UI; headless real InputEvent tests separate",
-  "resolutions": [
-    "1280x720",
-    "1920x1080"
-  ],
-  "aircraft_keyboard": true,
-  "ki21_mouse_selection": true,
-  "controls": true,
-  "music_slider_reload_persistence": true,
-  "music_slider_original_position_restored": true,
-  "normal_complete_flight": "PASS",
-  "console_warnings_or_errors": 0,
-  "physical_gamepad_tested": false,
-  "aircraft_from_pause_and_return_stays_paused": true,
-  "main_menu_abort": true,
-  "aircraft_weapon_text_in_web": "Single Shot / Double / Triple Shot"
+  "version": "0.4.0",
+  "options_and_graphics": true,
+  "fullscreen_visual_enter_and_escape": true,
+  "fullscreen_note": "Viewport visibly expanded with aspect-ratio letterboxing and Esc restored original size; DOM-only fullscreenElement inspection did not expose the state in this host.",
+  "name_input_individual_keypresses": "ace",
+  "save_score_and_list": true,
+  "verify_mode_entries_persisted": false,
+  "console_errors_during_final_flight": 0,
+  "physical_gamepad_tested": false
 }

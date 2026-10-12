@@ -1,4 +1,4 @@
-# Carrier Ace 0.3.0 – Flugzeugkonturen, Bordkanone und Bonus-Points
+# Carrier Ace 0.4.0 – Counterattack, Options und Highscore
 
 Stand: 12.10.2026. Die Spieloberfläche ist Englisch, Entwicklungsdokumentation Deutsch. Godot 4.7.2 Standard, Compatibility-Renderer, logische Welt 960×540 und hochauflösende Canvas-Skalierung bleiben erhalten.
 
@@ -50,7 +50,7 @@ Rating 1 = 130, Rating 2 = 195, Rating 3 = 260 Pixel/s. Jeder Speed-Pickup addie
 
 Lackierungen, Flugmuster, Motorpositionen und Warnungen bleiben erhalten. Ki-21-Raketen kündigen den Abschuss 0,6 s an, behalten die vorher festgelegte Richtung und verfolgen ihr Ziel nicht.
 
-Titel → Trägerstart (8 s) → sechs Wellen (180 s) → Boss → Rückkehr (14 s) → Anflug → automatisches Aufsetzen (2,8 s) → Ergebnis. Die Wellen führen Doppeldecker, Jäger und Bomber ein; die sechste kombiniert alle Familien. Der Boss wendet bei 200 und 100 Armor für jeweils zwölf Sekunden. Sein Profil bleibt separat von der regulären Ki-21.
+Titel → Trägerstart (8 s) → Wellen 1–3 (90 s) → Counterattack 1 → Wellen 4–6 (90 s) → Counterattack 2 → Boss → Rückkehr (14 s) → Anflug → automatisches Aufsetzen (2,8 s) → Ergebnis. Die Wellen führen Doppeldecker, Jäger und Bomber ein; die sechste kombiniert alle Familien. Der Boss wendet bei 200 und 100 Armor für jeweils zwölf Sekunden. Sein Profil bleibt separat von der regulären Ki-21.
 
 Pro Welle reguläre Gruppen bei 0,6, 15 und 23 s; eine goldmarkierte Vierer-Versorgungsformation bei 7 s. Reguläre Gruppen enthalten drei bis fünf Mitglieder. Jede Gruppe hat eine eindeutige ID; Versorgung und Gruppenzugehörigkeit sind getrennt, damit normale Gruppen weiterhin feuern.
 
@@ -88,3 +88,23 @@ Die Brandungsmasken haben 96 Texturpixel Rand je Seite, insgesamt 1216×960 stat
 Das HUD zeigt Armor, Bullets, Rolls, Weapon, Speed, Penetration, Mission, Score und ungesicherte Bonus-Points. Tastenbelegung steht im Controls-Menü. Aircraft enthält elf Profile und zeigt nur Grundwerte, einschließlich Spieler-Kugelkapazität. Öffnen aus der Pause setzt den Flug nicht fort.
 
 Fokusverlust und Gamepad-Trennung pausieren; Fortsetzung ist bewusst. Audio aus 0.1 und Grafik aus 0.2 bleiben erhalten. Konturen, Brandungsrand und Schadensdarstellung wurden lokal aus bestehenden Daten ergänzt; 0.3 benötigt keine neuen Generierungscredits. Kampagne, weiterer Flugzeugausbau, Shop und Spieler-Raketen folgen später.
+
+## Counterattack und Flugrichtung (0.4)
+
+Entkommene Mitglieder regulärer und goldmarkierter Anfluggruppen werden mit Flugzeug-ID und verbleibender Armor gesammelt. Nach Welle 3 und 6 pausiert die reguläre Wellenzeit. Bereits sichtbare Gruppen beenden ihren Anflug ohne Ausblendung; danach kehren die Überlebenden in neuen Gruppen zu höchstens vier Mitgliedern zurück. Neue Gruppen starten im Abstand von 3,5 s. Die Gegenwelle endet nach Auflösung aller Rückkehrer, frühestens nach drei Sekunden. Ohne Überlebende bleibt nur diese kurze Sammlung. Erst danach beginnen Welle 4 bzw. der Boss.
+
+Rückkehrer sind normale bewaffnete Gegner und keine Versorgungsformationen; sie erhalten dieselben Abschusswerte und 3% Lootchance. Komplette neue Gruppen vergeben 25 Bonus-Points je Mitglied. Entkommene Rückkehrer werden endgültig aufgelöst; kein endloses Recycling. Neustart löscht Reserve, Rückkehrliste, Timer und Abschlussmarkierungen. Anflüge zählen in der Abschussquote als Begegnungen, auch wenn dasselbe Flugzeug zurückkehrt.
+
+Welle 3 nutzt Zickzack, Welle 5 eine horizontale 360-Grad-Schleife. Die Schleife hat zwei Sekunden geraden Anflug, sechs Sekunden Wende und einen erneuten Anflug. Seitenbereiche außerhalb des Bildes werden während der Wende nicht als Entkommen gewertet. Rückkehrgruppen wechseln Zickzack und Schleife. Normale Varianten behalten außerdem Bogen- und Kreuzflüge.
+
+Die Bewegungsrichtung bestimmt Spritewinkel, Propellerpositionen, Mündung und Geschossrichtung. Jede Teilkontur wird entsprechend gedreht; ihre kurzzeitige Winkelbewegung wird durch konvexe Hüllen über Zwischenwinkel erfasst. Reguläre Gegner richten sich nicht auf den Spieler aus. Doppel-MGs feuern parallel. Der B-99-Boss behält ausdrücklich sein ursprüngliches Verhalten: seitliches Pendeln, feste nach unten gerichtete Darstellung, Fächersalven und jeden dritten Angriff zwei gezielte Geschosse. Keine Schleife; Rückzüge bei 200 und 100 Armor bleiben. Raketen warnen 0,6 s entlang der Nase und fliegen anschließend unverändert geradeaus. Normale MGs feuern mit 70% des bisherigen Intervalls (1,96 s statt 2,8 s), Geschosse mit 245 und Raketen mit 180 Pixel/s. Bossintervall bleibt zwei Sekunden.
+
+## Options, Highscore und Upgrade-Symbole (0.4)
+
+Hauptmenü: Start Mission, Aircraft, Options, Highscore, Credits, Quit. Options enthält Controls, Sound & Music und Graphics. Vollbild ist über Graphics und weiterhin F11 erreichbar. Die Hauptseitenmitte zeigt (C)2026 by Sabnock Works statt Bonus Bank; der Bankbestand bleibt im Ergebnis verfügbar.
+
+Highscore zeigt die zehn höchsten lokal gespeicherten Punkte mit Namen und Flugergebnis. Game Over und Landung bieten eine Namenseingabe mit Save Score; ein Flug darf nur einmal eingetragen werden. Leere Namen werden Pilot, Namen maximal 16 Zeichen. Der alte Einzelrekord bleibt als Previous record erhalten, ohne ein früheres Landungs-/Verlustergebnis zu erfinden. Listen und Name werden im bestehenden ConfigFile gespeichert, ohne Bonusbestand, Tonwerte oder andere Schlüssel zu löschen. Im Prüfpilotenmodus sind manuelle Listeneinträge nur im Arbeitsspeicher.
+
+Pickups sind runde Plaketten mit kleinen lokalen Zeichnungen: eine, zwei bzw. drei Patronen; S für Speed; Roll-Pfeil; Schild mit Kreuz für Armor; ein Pfeil durch zwei Platten für Penetration. Keine neuen KI-Generierungen oder Credits.
+
+Am Abschuss stoppen Musik, Motor und MG-Spieler sofort. Das Ergebnis stoppt alle Audioplayer und mutet den Master-Bus; verspätete Musik-/Schussanforderungen bleiben gesperrt. Neue Mission und bewusste Titel-Rückkehr aktivieren Audio wieder. Quit bleibt dauerhaft stumm. Prüfpiloten laufen immer stumm, damit Hintergrundtests keine Musik oder MG-Sounds hinterlassen.
