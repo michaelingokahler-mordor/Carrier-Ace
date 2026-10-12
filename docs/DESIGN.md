@@ -1,4 +1,4 @@
-# Carrier Ace 0.6.0 – Mission und Hangar
+# Carrier Ace 0.7.0 – Mission und Hangar
 
 Die verbindlichen neuen Profil-, Speed-, Shop- und Verlustregeln stehen in [HANGAR.md](HANGAR.md).
 
@@ -56,7 +56,7 @@ Titel → Trägerstart (8 s) → Wellen 1–3 (90 s) → Counterattack 1 → Wel
 
 Pro Welle reguläre Gruppen bei 0,6, 15 und 23 s; eine goldmarkierte Vierer-Versorgungsformation bei 7 s. Reguläre Gruppen enthalten drei bis fünf Mitglieder. Jede Gruppe hat eine eindeutige ID; Versorgung und Gruppenzugehörigkeit sind getrennt, damit normale Gruppen weiterhin feuern.
 
-Die Landung verlangt 0,75 s kontinuierlich im 84×82-Pixel-Korridor und vergibt 1.000 Score-Punkte. Ein verfehlter Anflug kostet keine Armor. Der Testpilot nutzt normale Bewegung, einzelne Schussimpulse, Konturprognosen und dieselben Kampfregeln; keine Sonderrechte.
+Die Landung prüft das Überqueren der Fangleine durch den Heckhaken, Korridor, Ausrichtung, Seitendrift und Anflugtempo. Zufälliger Wind, Böen, Regen und Deckbewegung wirken auf den Anflug. Sie vergibt 1.000 Score-Punkte; ein verfehlter Anflug kostet keine Armor und führt zum erneuten Versuch. Der Testpilot nutzt normale Bewegung, einzelne Schussimpulse, Konturprognosen und dieselben Kampfregeln; keine Sonderrechte.
 
 ## Loot und Bonus-Points
 

@@ -1,17 +1,15 @@
-# Carrier Ace 0.6.0 – Prüfbericht
+# Carrier Ace 0.7.0 – Prüfbericht
 
-Stand: 12.10.2026. Godot 4.7.2 Standard, Compatibility. Frühere Prüfungen bleiben in VALIDATION_0.5.md und den älteren Berichten erhalten.
+Stand: 12.10.2026. Godot 4.7.2, Compatibility, Windows x64 und Web ohne Threads. Frühere Berichte bleiben unter VALIDATION_0.6.md und älteren Versionen erhalten.
 
-Die sechs automatisierten Suiten umfassen 519 Prüfungen: Core 219, Mission04 95, UI 105, Hangar 75, Hangar-UI 11 und Briefing 14. Alle bestehen. Neue Prüfungen decken das Briefing vor dem Start, Rückkehr ohne Verbrauch reservierter Käufe, Aktivierung beim Start, Mission-1-Verlust ohne Fortschritt, Hellcat-Übergabe, Freischaltung und Speicherung von Mission 2, angepasste Wellen, kostenlosen Ersatz nach Verlust und Ende der derzeitigen Kampagne nach Mission 2 ab. Die ursprünglichen Ressourcen der ersten Mission bleiben unverändert.
+Sieben Suiten mit insgesamt 578 Prüfungen bestehen: Core 219, Mission04 95, UI 105, Hangar 75, Hangar-UI 11, Briefing 14 und Landing 59. Die neue Landung wird auf korrekten Heckhakenkontakt, Fehlschuss außerhalb des Korridors, zu hohes/zu niedriges Tempo, Seitendrift, falsche Ausrichtung, automatisches Durchstarten, Wettervielfalt und Pause geprüft. Dreißig kontrollierte Wetter-Seeds wurden mit normaler Pilotensteuerung erfolgreich gelandet. Keine direkten Positionskorrekturen oder erzwungene Fangfreigaben durch den Prüfpiloten.
 
-Der normale Regeltestpilot schafft Mission 2 mit der unveränderten F6F-Basisausführung: 275,20 Sekunden Missionszeit, Armor 2/3, Score 24.800, 1.875 Bonus-Points. Sechs Wellen, beide Counterattacks, schwerer Bomber und Trägerlandung sind vollständig enthalten. Keine Gesundheitskorrekturen oder Sonderrechte; Loot-Seed 1943.
+Der bisherige Haltebereich wurde entfernt. Der aktualisierte Core-Test prüft Kontakt und weiterhin einmalige Gutschrift. Hangar-, Missionsfortschritts-, Audio-Endschutz- und Briefingtests bleiben bestanden. Bei Durchstarten bleiben Armor und Flugpunkte erhalten.
 
-Native Briefing-Aufnahmen bei 1280×720 und 1920×1080 wurden auf Lesbarkeit und Überlappungen kontrolliert. Beide Briefings und die Missionsauswahl liegen lokal in output/preview06/. Das Briefing bleibt Englisch. Der Hangar erklärt die vorhandenen Maschinen- und Verlustregeln weiterhin.
+Visuelle Prüfung in 1280×720 und 1920×1080: Korridor, goldene Fangleine, Heckhaken, Regen, Wettereinblendung und Flugzeug auf dem Deck. Aufnahmen liegen lokal in output/preview07/. Die Steuerungshinweise im Landeminispiel erklären Gegensteuern und Tempo; der normale Kampf bleibt unverändert.
 
-Die Exportprüfungen werden in verification06-*.json festgehalten. Für Windows wurde ein separater lokaler Test-Spielstand mit bestehender Hellcat-Freischaltung verwendet; echte Spielstände bleiben unberührt. Der beschleunigte Prüfpilot verarbeitet zwölf normale Physikschritte pro Bild. FPS aus diesen Läufen sind kein Nachweis für durchgehend 60 FPS im menschlichen Spieltempo. Der normale Windows-Leistungsbeleg aus 0.5 bleibt als ältere Messung dokumentiert.
+Vollständige Exportflüge und Endzustände werden in verification07-*.json festgehalten. Der Pilot nutzt normale Physikschritte mit Loot-Seed 1943 und separatem Wetter-Seed 1944. Beschleunigte Flüge sind keine Messung menschlichen Spielgefühls oder stabiler Mindest-FPS. Physischer Gamepad-Test und menschliche Abstimmung der Landeschwierigkeit bleiben offen. Keine neuen Runway-Generierungen oder Credits erforderlich.
 
-Physische Gamepad-Prüfung und menschliche Spielgefühlabnahme bleiben offen. Keine neuen Grafiken, Audiodateien oder Runway-Credits benötigt. Die Inselroute und der bisherige Boss bleiben erhalten; Mission 2 unterscheidet sich durch Gegnerzusammenstellung, Formationsmuster und Gruppengrößen.
+Pakete: CarrierAce-0.7.0-Windows-x64.zip, CarrierAce-0.7.0-Web.zip und CarrierAce-0.7.0-Source.zip außerhalb von Git unter builds/. SHA256SUMS.json enthält die Prüfsummen.
 
-Windows-, Web- und Quell-ZIP für 0.6.0 liegen außerhalb von Git unter builds/. SHA256SUMS.json enthält die Prüfsummen.
-
-Die Windows- und Webexporte bestehen Mission 2 mit identischem Ergebnis: 275,20 s, Armor 2/3, Score 24.800, 1.875 gesicherte Punkte und beide abgeschlossenen Counterattacks. Beide Endberichte bestätigen gestoppte Musik, Motor und Effektstimmen sowie Master-Mute. Im Browser wurde anschließend der Hangar geöffnet und das zweite Briefing über Mission Briefing aufgerufen. Mission 1 besteht den F4F-Regelprüfflug weiterhin mit 299,13 s und Score 19.900.
+Mission 1 mit F4F besteht einschließlich Minispiel: 304,30 s, Armor 2/2, Score 19.900. Windows- und Webexporte bestehen Mission 2 mit identischem Ergebnis: 280,43 s, Armor 2/3, Score 24.800, 1.875 gesicherte Punkte, Wetter Clear, ein Anflug und bestätigter Fangleinenkontakt. Beide Endberichte bestätigen Master-Mute sowie gestoppte Musik, Motor und Effektstimmen. Alle vier Wetterbilder werden durch die zusätzlichen Landetests abgedeckt.

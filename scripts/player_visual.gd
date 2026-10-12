@@ -18,6 +18,7 @@ func _process(delta: float) -> void:
  if model==null: return
  if not model.paused: clock+=delta
  position=model.player
+ rotation=model.landing.heading if model.phase in [MissionModel.Phase.APPROACH,MissionModel.Phase.LANDING] else 0.0
  visible=model.phase not in [MissionModel.Phase.TITLE,MissionModel.Phase.DOWNED,MissionModel.Phase.GAME_OVER]
  body.visible=model.invulnerable<=0 or model.roll_time>0 or int(clock*20)%2==0
  shadow.visible=body.visible
@@ -38,6 +39,9 @@ func _draw() -> void:
    draw_polyline(outline,Color(0.35,1,0.7,0.9),1,true)
   draw_line(model.previous_player-model.player,Vector2.ZERO,Color.GREEN,1)
  if not body.visible: return
+ if model.phase in [MissionModel.Phase.APPROACH,MissionModel.Phase.LANDING]:
+  var hook:=Vector2(0,model.aircraft.sprite_size.y*0.28)
+  draw_line(hook-Vector2(0,5),hook,Color("e4c47f"),1.5,true)
  var width:=model.player_draw_width()
  if model.armor < model.aircraft.armor:
   var marks: Array[Vector2]=[Vector2(-18,-3),Vector2(3,9)]

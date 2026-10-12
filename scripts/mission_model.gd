@@ -6,7 +6,6 @@ signal event(kind: String, data: Dictionary)
 enum Phase { TITLE, TAKEOFF, WAVES, BOSS, APPROACH, LANDING, VICTORY, DOWNED, GAME_OVER }
 const WIDTH := 960.0
 const HEIGHT := 540.0
-const LANDING_ZONE := Rect2(438, 406, 84, 82)
 const CARRIER_RETURN_TIME := 14.0
 
 var aircraft: AircraftProfile = preload("res://resources/player.tres")
@@ -51,8 +50,8 @@ var score := 0
 var kills := 0
 var spawned := 0
 var encountered_types: Dictionary = {}
-var landing_hold := 0.0
 var landing_from := Vector2.ZERO
+var landing := CarrierLanding.new()
 var enemies: Array[Dictionary] = []
 var bullets: Array[Dictionary] = []
 var pickups: Array[Dictionary] = []
@@ -124,7 +123,10 @@ func _reset_attempt() -> void:
 	kills = 0
 	spawned = 0
 	encountered_types.clear()
-	landing_hold = 0.0
+	landing.caught=false
+	landing.ready=false
+	landing.attempts=1
+	landing.heading=0
 	player = Vector2(480, 498)
 	previous_player = player
 	bank = 0.0
@@ -135,6 +137,10 @@ func _reset_attempt() -> void:
 func _set_phase(value: Phase) -> void:
 	phase = value
 	state_time = 0.0
+	if value == Phase.APPROACH:
+		landing.begin(player)
+		roll_time=0
+		bank=0
 	run_events.append(Phase.keys()[phase])
 	event.emit("phase", {"phase": Phase.keys()[phase]})
 
@@ -142,7 +148,9 @@ func carrier_position() -> Vector2:
 	if phase == Phase.TAKEOFF:
 		return Vector2(480, 374 + pow(clampf(state_time / 8.0, 0, 1), 1.6) * 540)
 	if phase == Phase.APPROACH:
+		if state_time >= CARRIER_RETURN_TIME: return landing.carrier()
 		return Vector2(480, lerpf(-220, 220, smoothstep(0.0, CARRIER_RETURN_TIME, state_time)))
+	if phase in [Phase.LANDING,Phase.VICTORY]: return landing.wire_at_catch-Vector2(0,92)
 	return Vector2(480, 220)
 
 func current_speed() -> float:
@@ -177,7 +185,7 @@ func tick(delta: float, movement: Vector2 = Vector2.ZERO, firing: bool = false, 
 			_set_phase(Phase.WAVES)
 		return
 	if phase == Phase.LANDING:
-		player = landing_from.lerp(Vector2(480, 244), smoothstep(0.0, 2.8, state_time))
+		player = landing_from.lerp(landing_from+Vector2(0,-46), smoothstep(0.0, 1.4, state_time))
 		if state_time >= 2.8:
 			score += 1000
 			last_attempt_score = score
@@ -187,6 +195,20 @@ func tick(delta: float, movement: Vector2 = Vector2.ZERO, firing: bool = false, 
 			bonus_settled = true
 			event.emit("attempt_finished", {"score": score, "success": true, "bonus": last_bonus, "run_serial": run_serial})
 		return
+	if phase == Phase.APPROACH:
+		previous_player = player
+		if state_time < CARRIER_RETURN_TIME:
+			player = landing.start_from.lerp(Vector2(480,495),smoothstep(0.0,CARRIER_RETURN_TIME,state_time))
+			return
+		landing.ready = true
+		var result := landing.update(delta,player,movement,aircraft.sprite_size.y*0.28)
+		player = result.position
+		bank = landing.heading
+		if result.caught:
+			landing_from=player
+			_set_phase(Phase.LANDING)
+			event.emit("sound", {"name":"landing"})
+		return
 	invulnerable = maxf(0.0, invulnerable - delta)
 	roll_time = maxf(0.0, roll_time - delta)
 	bank = lerpf(bank, clampf(movement.x, -1, 1), minf(delta * 8, 1.0))
@@ -194,16 +216,6 @@ func tick(delta: float, movement: Vector2 = Vector2.ZERO, firing: bool = false, 
 	player += movement.limit_length(1.0) * current_speed() * delta
 	var arena := flight_bounds()
 	player = player.clamp(arena.position, arena.end)
-	if phase == Phase.APPROACH:
-		if state_time >= CARRIER_RETURN_TIME and LANDING_ZONE.has_point(player):
-			landing_hold += delta
-		else:
-			landing_hold = 0.0
-		if landing_hold >= 0.75:
-			landing_from = player
-			_set_phase(Phase.LANDING)
-			event.emit("sound", {"name": "landing"})
-		return
 	if rolling and rolls > 0 and roll_time <= 0:
 		rolls -= 1
 		roll_time = 1.0
@@ -646,7 +658,7 @@ func _update_particles(delta: float) -> void:
 	particles = particles.filter(func(particle: Dictionary) -> bool: return particle.age < particle.duration)
 
 func status() -> Dictionary:
-	return {"phase": Phase.keys()[phase], "mission":mission_id, "wave": wave_index + 1, "armor": armor,
+	return {"phase": Phase.keys()[phase], "mission":mission_id, "landing_weather":CarrierLanding.WEATHER[landing.weather], "landing_attempts":landing.attempts, "wire_caught":landing.caught, "wave": wave_index + 1, "armor": armor,
 		"counterattack": counterattack, "counter_round": counter_round, "counter_completed": counter_completed, "reserve": survivor_reserve.size(),
 		"weapon": weapon, "rolls": rolls, "active_bullets": active_bullets(), "bullet_capacity": current_capacity(), "penetration": current_penetration(), "bonus_pending": bonus_pending, "last_bonus": last_bonus, "score": score, "kills": kills, "spawned": spawned,
 		"seconds": snappedf(mission_time, 0.01), "enemies": enemies.size(), "bullets": bullets.size(),

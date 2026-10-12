@@ -49,6 +49,10 @@ func _draw() -> void:
 		_draw_carrier(model.carrier_position())
 	if model.phase == MissionModel.Phase.APPROACH and model.state_time >= MissionModel.CARRIER_RETURN_TIME:
 		_draw_landing()
+	if model.phase == MissionModel.Phase.LANDING:
+		var wire := model.landing.wire_at_catch
+		var hook := model.player+Vector2(0,model.aircraft.sprite_size.y*0.28).rotated(model.landing.heading)
+		draw_polyline(PackedVector2Array([wire+Vector2(-42,0),hook,wire+Vector2(42,0)]),GOLD,2,true)
 	for pickup in model.pickups:
 		_draw_pickup(pickup)
 	for enemy in model.enemies:
@@ -105,7 +109,7 @@ func _draw_title() -> void:
 	_text(Vector2(58, 99), "OPERATION BLUE HORIZON", 14, Color("183a4a"))
 	_text(Vector2(55, 175), "CARRIER", 64, Color("f2e6cd"))
 	_text(Vector2(55, 237), "ACE", 64, GOLD)
-	_text(Vector2(60, 511), "ARCADE FLIGHT MISSION  /  0.6", 12, Color("a3b8bc"))
+	_text(Vector2(60, 511), "ARCADE FLIGHT MISSION  /  0.7", 12, Color("a3b8bc"))
 	_text(Vector2(450, 511), "(C)2026 by Sabnock Works", 12, GOLD)
 	_text(Vector2(710, 511), "HIGH SCORE  %06d" % high_score, 13, GOLD)
 
@@ -126,16 +130,30 @@ func _draw_carrier(position: Vector2) -> void:
 		draw_polyline(wake, Color(0.83, 0.97, 0.94, 0.29), 3, true)
 
 func _draw_landing() -> void:
-	var zone := MissionModel.LANDING_ZONE
-	draw_rect(zone, Color(0.3, 0.95, 0.8, 0.08 + sin(clock * 4) * 0.025))
-	draw_rect(zone, Color("a2f4cc"), false, 2)
-	var center := zone.get_center()
-	draw_line(center + Vector2(0, 32), center + Vector2(0, -25), GOLD, 2)
-	draw_line(center + Vector2(0, -25), center + Vector2(-8, -12), GOLD, 2)
-	draw_line(center + Vector2(0, -25), center + Vector2(8, -12), GOLD, 2)
-	draw_arc(center, 34, -PI / 2, -PI / 2 + TAU * clampf(model.landing_hold / 0.75, 0, 1), 30, GOLD, 3)
-	_text(Vector2(553, 443), "ALIGN HERE", 15, GOLD)
-	_text(Vector2(553, 466), "Hold inside the corridor", 13, Color("cbe7e2"))
+	var approach := model.landing
+	var corridor := approach.corridor()
+	draw_colored_polygon(corridor,Color(0.3,0.95,0.8,0.10))
+	draw_polyline(PackedVector2Array([corridor[0],corridor[1]]),CYAN,2,true)
+	draw_polyline(PackedVector2Array([corridor[3],corridor[2]]),CYAN,2,true)
+	var wire := approach.wire()
+	draw_line(wire+Vector2(-42,0),wire+Vector2(42,0),GOLD,3,true)
+	for index in 10:
+		var y := wire.y+index*19
+		draw_line(Vector2(wire.x,y),Vector2(wire.x,y+8),Color(0.6,1,0.85,0.65),1.5,true)
+	_text(Vector2(wire.x+57,wire.y+5),"ARRESTING WIRE",13,GOLD)
+	if approach.weather>=2:
+		draw_rect(Rect2(0,67,960,473),Color(0.32,0.44,0.53,0.06*approach.weather))
+		for index in 90:
+			var x := fmod(index*137.0+approach.clock*approach.wind*0.4+1920,960)
+			var y := 67+fmod(index*83.0+approach.clock*270,473)
+			draw_line(Vector2(x,y),Vector2(x+approach.wind*0.08,y+11),Color(0.72,0.87,0.93,0.16),1,true)
+	draw_rect(Rect2(625,340,313,144),Color(0.02,0.10,0.14,0.86))
+	_text(Vector2(641,364),"CARRIER RECOVERY · "+CarrierLanding.WEATHER[approach.weather].to_upper(),14,GOLD)
+	_text(Vector2(641,390),"WIND %s %.0f PX/S" % ["→" if approach.wind>=0 else "←",absf(approach.wind)],16,CYAN)
+	_text(Vector2(641,414),"APPROACH SPEED %.0f · TARGET 20–44" % approach.forward,13,CYAN)
+	_text(Vector2(641,438),"Left / Right: counter the wind",13,Color("d4e3df"))
+	_text(Vector2(641,460),"Up: faster · Down: slower",13,Color("d4e3df"))
+	if approach.message!="": _text(Vector2(230,100),approach.message,16,GOLD)
 
 func _sprite(id: String, position: Vector2, size: Vector2, tint: Color = Color.WHITE) -> void:
 	var rect := Rect2((position - size / 2), size)

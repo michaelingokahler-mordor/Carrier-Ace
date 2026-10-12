@@ -279,15 +279,13 @@ func _test_landing() -> void:
 	model.player = Vector2(100,400)
 	model.tick(1)
 	expect(model.phase == MissionModel.Phase.APPROACH, "Missed approach costs no armor")
-	model.player = MissionModel.LANDING_ZONE.get_center()
-	model.tick(0.5)
-	model.player = Vector2(100,400)
-	model.tick(0.1)
-	expect(model.landing_hold == 0, "Leaving corridor resets hold")
-	model.player = MissionModel.LANDING_ZONE.get_center()
+	expect(model.landing.retry_time == 0, "No wire catch outside flight path")
+	model.player = Vector2(480,315)
+	model.landing.base_wind = 0
+	model.landing.weather = 0
 	model.bonus_pending = 125
-	model.tick(0.76)
-	expect(model.phase == MissionModel.Phase.LANDING, "Continuous corridor hold starts landing")
+	model.tick(0.9)
+	expect(model.phase == MissionModel.Phase.LANDING, "Tail hook crossing starts arrest")
 	model.tick(2.9)
 	expect(model.phase == MissionModel.Phase.VICTORY and model.last_bonus == 125 and model.bonus_pending == 0, "Landing settles bonus and score")
 	model.tick(10)

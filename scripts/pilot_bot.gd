@@ -8,7 +8,8 @@ var shots := 0
 func command(model: MissionModel) -> Dictionary:
 	var desired := Vector2(480, 448)
 	if model.phase == MissionModel.Phase.APPROACH:
-		desired = MissionModel.LANDING_ZONE.get_center()
+		var correction := (model.landing.wire().x-model.player.x)*1.8-model.landing.wind
+		return {"move":Vector2(clampf(correction/95,-1,1),0),"fire":false,"roll":false}
 	elif model.phase in [MissionModel.Phase.WAVES, MissionModel.Phase.BOSS]:
 		var target: Dictionary = {}
 		var priority := -INF

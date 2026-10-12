@@ -87,6 +87,7 @@ func _ready() -> void:
 	if verify:
 		silent = true
 		model.loot_rng.seed = 1943
+		model.landing.rng.seed = 1944
 		_start_run()
 		if OS.has_feature("web"):
 			JavaScriptBridge.eval("document.getElementById('verification').hidden=false")
@@ -220,9 +221,9 @@ func _handle_phase() -> void:
 		MissionModel.Phase.BOSS:
 			view.announce("BEHEMOTH · HEAVY BOMBER", 4)
 		MissionModel.Phase.APPROACH:
-			view.announce("Airspace clear · return to the carrier", 4)
+			view.announce("RETURN TO CARRIER · WIND-AFFECTED APPROACH", 4)
 		MissionModel.Phase.LANDING:
-			view.announce("ARRESTING WIRE READY · LANDING", 3)
+			view.announce("WIRE CAUGHT · AIRCRAFT ARRESTED", 3)
 		MissionModel.Phase.DOWNED:
 			audio.stop_combat()
 			view.announce("AIRCRAFT LOST · GAME OVER", 0.8)
@@ -612,7 +613,7 @@ func _show_controls(back: String) -> void:
 	var panel := _panel("Flight Controls", Vector2(730, 490))
 	_label(panel, "WASD / Arrows\nSpace / Z\nShift / X\nEsc / P\nF11", Vector2(28, 89), Vector2(190, 170), 18, Color("e4c47f"))
 	_label(panel, "Move · Stick / D-pad\nFire one salvo · Main button (A)\nRoll · Second button (B)\nPause · Start\nToggle Fullscreen", Vector2(224, 89), Vector2(478, 170), 18)
-	_label(panel, "Armor 0 means Game Over and loss of this machine's upgrades and paints.\nPress Fire for each complete salvo. Bullets: active / capacity (maximum 18).\nRolls refill to 3 before takeoff. Speed pickups add 0.25 (maximum 5.00).\nGold formations drop upgrades; ordinary enemies have a 3% chance.\nComplete groups earn Bonus Points. Land to bank them and enter the Hangar.\nPenetration counts additional targets (0–3). Align to land.", Vector2(28, 260), Vector2(674, 157), 15)
+	_label(panel, "Armor 0 means Game Over and loss of this machine's upgrades and paints.\nPress Fire for each complete salvo. Bullets: active / capacity (maximum 18).\nRolls refill to 3 before takeoff. Speed pickups add 0.25 (maximum 5.00).\nGold formations drop upgrades; ordinary enemies have a 3% chance.\nComplete groups earn Bonus Points. Land to bank them and enter the Hangar.\nPenetration: additional targets (0–3). Landing: counter wind; Up/Down set speed.", Vector2(28, 260), Vector2(674, 157), 15)
 	var first := _button(panel, "Back", Vector2(28, 438), Vector2(674, 36), func() -> void:
 		_return_menu(back), true)
 	first.grab_focus()

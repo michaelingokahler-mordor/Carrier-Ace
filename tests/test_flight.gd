@@ -5,6 +5,7 @@ func _init() -> void:
 	if "--wildcat" in OS.get_cmdline_user_args(): model.aircraft = load("res://resources/player_wildcat.tres")
 	if "--mission2" in OS.get_cmdline_user_args(): model.select_mission(2)
 	model.loot_rng.seed = 1943
+	model.landing.rng.seed = 1944
 	model.start_run()
 	var pilot := PilotBot.new()
 	for frame in range(36000):
