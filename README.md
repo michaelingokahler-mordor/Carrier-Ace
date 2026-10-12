@@ -1,12 +1,12 @@
-# Carrier Ace 0.5.0 – Operation Blue Horizon
+# Carrier Ace 0.6.0 – Operation Blue Horizon
 
 Ein Arcade-Flugspiel mit F4F Wildcat und freischaltbarer F6F Hellcat, sechs Gegnerwellen, zwei Counterattacks, neun regulären Gegnerprofilen, separatem B-99-Boss und Trägerlandung. Die Spieloberfläche ist Englisch; diese Dokumentation bleibt Deutsch. Ein erfolgreicher Prüfflug dauert rund fünf Minuten.
 
 ## Spielen
 
-Windows: `CarrierAce-0.5.0-Windows-x64.zip` entpacken und `CarrierAce.exe` starten. Es ist keine Installation erforderlich.
+Windows: `CarrierAce-0.6.0-Windows-x64.zip` entpacken und `CarrierAce.exe` starten. Es ist keine Installation erforderlich.
 
-Browser: `CarrierAce-0.5.0-Web.zip` entpacken und `Start-Browser.cmd` starten. Der mitgelieferte Server stellt das Spiel unter `http://127.0.0.1:1942/` bereit; Strg+C beendet ihn. Bei belegtem Port: `CarrierServer.exe --port=1943`. Der Server benötigt das in Windows enthaltene .NET Framework 4.x. Alternativ im Webordner `python -m http.server 1942 --bind 127.0.0.1` ausführen.
+Browser: `CarrierAce-0.6.0-Web.zip` entpacken und `Start-Browser.cmd` starten. Der mitgelieferte Server stellt das Spiel unter `http://127.0.0.1:1942/` bereit; Strg+C beendet ihn. Bei belegtem Port: `CarrierServer.exe --port=1943`. Der Server benötigt das in Windows enthaltene .NET Framework 4.x. Alternativ im Webordner `python -m http.server 1942 --bind 127.0.0.1` ausführen.
 
 `index.html` über HTTP öffnen. Der Browser benötigt WebGL 2. Die erste Eingabe schaltet Audio frei. Alle Laufzeitdateien liegen lokal; das Spiel ruft keine externen Generierungsdienste auf.
 
@@ -83,3 +83,5 @@ Für --report und --capture-dir absolute, beschreibbare Pfade verwenden.
 Für einen gezielten F4F-Exportprüfflug: Windows `-- --verify-wildcat`, Web `?verify=1&aircraft=wildcat`. Die Auswahl benutzt das kostenlos freigeschaltete Basismodell; sie verändert keine Kampfregeln und schreibt keine Prüfdaten in den Spielstand.
 
 Start Mission führt zur Flugvorbereitung im Hangar. Rollen werden vor jedem Start auf drei aufgefüllt. Reparaturen kosten 150 pro fehlendem Armor-Punkt; ein Speed-Flugbonus kostet 200. Vollständige Preise, Ausbaugrenzen und Verlustregeln: [Hangar](docs/HANGAR.md). Die F4F-Grafik wurde lokal als SVG erstellt; neue Runway-Generierungen waren dafür nicht erforderlich.
+
+Vor jedem Flug erscheint ein englisches Missionsbriefing. Mission 1: Coastal Reconnaissance mit der F4F. Nach der ersten Landung werden F6F und Mission 2 freigeschaltet; die Hellcat wird für die nächste Mission ausgewählt. Mission 2: Fleet Air Patrol mit früheren Jägern, größeren Gruppen und Bombereskorten. Beide Missionen enden mit einer Trägerlandung. Im Hangar lassen sich freigeschaltete Missionen wiederholen.

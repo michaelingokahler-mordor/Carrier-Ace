@@ -1,42 +1,17 @@
-# Carrier Ace 0.5.0 – Prüfbericht
+# Carrier Ace 0.6.0 – Prüfbericht
 
-Stand: 12.10.2026. Godot 4.7.2 Standard, Compatibility, Windows x64 und Web ohne Threads. Frühere Abnahmen stehen in VALIDATION_0.3.md und VALIDATION_0.4.md.
+Stand: 12.10.2026. Godot 4.7.2 Standard, Compatibility. Frühere Prüfungen bleiben in VALIDATION_0.5.md und den älteren Berichten erhalten.
 
-## Regeln und Integration
+Die sechs automatisierten Suiten umfassen 519 Prüfungen: Core 219, Mission04 95, UI 105, Hangar 75, Hangar-UI 11 und Briefing 14. Alle bestehen. Neue Prüfungen decken das Briefing vor dem Start, Rückkehr ohne Verbrauch reservierter Käufe, Aktivierung beim Start, Mission-1-Verlust ohne Fortschritt, Hellcat-Übergabe, Freischaltung und Speicherung von Mission 2, angepasste Wellen, kostenlosen Ersatz nach Verlust und Ende der derzeitigen Kampagne nach Mission 2 ab. Die ursprünglichen Ressourcen der ersten Mission bleiben unverändert.
 
-Die fünf Suiten umfassen 505 Prüfungen: Core 219, Mission04 95, UI 105, Hangar 75 und Hangar-UI 11. Sie prüfen die bisherigen Konturen, Geschosse, Loot, Gruppen, Counterattacks, Boss und Audio sowie die neue Maschinenverwaltung.
+Der normale Regeltestpilot schafft Mission 2 mit der unveränderten F6F-Basisausführung: 275,20 Sekunden Missionszeit, Armor 2/3, Score 24.800, 1.875 Bonus-Points. Sechs Wellen, beide Counterattacks, schwerer Bomber und Trägerlandung sind vollständig enthalten. Keine Gesundheitskorrekturen oder Sonderrechte; Loot-Seed 1943.
 
-Zusätzliche Prüfungen: Viertelschritte bis Rating 5; installierte individuelle Grenzen; temporäre globale Grenzen; ausreichendes Guthaben; Preissteigerungen; leere Armor-Erweiterungen und Reparatur pro fehlendem Punkt; keine Waffenherabstufung; reservierte Käufe nach Speichern/Laden; Verbrauch beim Start; Rollenauffüllung; Verlust von Ausbauten und Farben; Erhalt anderer Maschinen und Freischaltungen; kostenloser Ersatz; Abbruch mit gespeichertem Restzustand; Quit während einer tödlichen Explosion; Migration auf F4F und F6F; einmalige Landegutschrift; Ergebnis und Rückkehr zum Hangar.
+Native Briefing-Aufnahmen bei 1280×720 und 1920×1080 wurden auf Lesbarkeit und Überlappungen kontrolliert. Beide Briefings und die Missionsauswahl liegen lokal in output/preview06/. Das Briefing bleibt Englisch. Der Hangar erklärt die vorhandenen Maschinen- und Verlustregeln weiterhin.
 
-Die Wildcat wird zusätzlich auf Treffer in Rumpf, beiden Flügeln und Leitwerk sowie freie Zwischenräume getestet. Lackierung verändert die Geometrie nicht. Ganze +2-Käufe enden bei ungerader Grundkapazität bei 17 statt 18; die globale Grenze wird nicht überschritten.
+Die Exportprüfungen werden in verification06-*.json festgehalten. Für Windows wurde ein separater lokaler Test-Spielstand mit bestehender Hellcat-Freischaltung verwendet; echte Spielstände bleiben unberührt. Der beschleunigte Prüfpilot verarbeitet zwölf normale Physikschritte pro Bild. FPS aus diesen Läufen sind kein Nachweis für durchgehend 60 FPS im menschlichen Spieltempo. Der normale Windows-Leistungsbeleg aus 0.5 bleibt als ältere Messung dokumentiert.
 
-## Vollständige Flüge
+Physische Gamepad-Prüfung und menschliche Spielgefühlabnahme bleiben offen. Keine neuen Grafiken, Audiodateien oder Runway-Credits benötigt. Die Inselroute und der bisherige Boss bleiben erhalten; Mission 2 unterscheidet sich durch Gegnerzusammenstellung, Formationsmuster und Gruppengrößen.
 
-Der deterministische Pilot verwendet dieselben Bewegungs-, Waffen- und Kollisionsregeln wie Spieler. Loot-Seed 1943, keine Gesundheitskorrekturen oder Sonderrechte. Alle Prüfflüge sind stumm.
+Windows-, Web- und Quell-ZIP für 0.6.0 liegen außerhalb von Git unter builds/. SHA256SUMS.json enthält die Prüfsummen.
 
-| Quellprojekt, normale Simulationsschritte | Ergebnis | Flugzeit | Armor | Score | Gesicherte Flugpunkte |
-|---|---|---:|---:|---:|---:|
-| F4F Wildcat | Landung | 299,13 s | 2/2 | 19.900 | 1.375 |
-| F6F Hellcat | Landung | 289,05 s | 2/3 | 20.000 | 1.800 |
-
-Beide Flüge enthalten sechs Wellen, zwei abgeschlossene Counterattacks, alle neun Gegnerprofile, Boss und Landung. Die erste Mission war mit den neuen F4F-Grundwerten ohne zusätzliche Gegnerabschwächung durchspielbar. Das Bossverhalten bleibt unverändert.
-
-Exportbelege und Leistungsmessung werden in `verification05-*.json` festgehalten. Beschleunigte Exporte verarbeiten zwölf normale Physikschritte pro dargestelltem Frame. Ihre FPS sind kein Beleg für durchgehend 60 FPS im normalen Spieltempo.
-
-Der Windows-Export bestand außerdem den F4F-Flug in normalem Tempo mit 299,13 s Missionszeit, Armor 2/2 und 1.375 gesicherten Punkten. Nach den ersten zwei Messwerten lagen die einsekündigen FPS-Stichproben im Mittel bei 59,89, mindestens 27 und höchstens 62. Eine durchgehend stabile Mindestleistung von 60 FPS ist damit nicht bestätigt. Nach dieser Messung wurde die Darstellungsreihenfolge korrigiert, damit Flugzeug, Schäden und Diagnosekontur oberhalb des Trägerdecks liegen; die Kampfregeln blieben gleich. Die finalen Exporte werden erneut vollständig beschleunigt geprüft.
-
-## Visuelle und Menüprüfung
-
-Native Aufnahmen bei 1280×720 und 1920×1080: Repair, Paint und Upgrade, Wildcat-Kontur, weiße/rote/Tarnlackierung, HUD mit 55 % Deckkraft. Die anfänglich überlappende Shop-Beschriftung wurde korrigiert; Karten erhalten kleine Bilder für F4F/F6F. Quellaufnahmen liegen lokal in `output/preview05/`.
-
-Web-Prüfung über den mitgelieferten HTTP-Server: vollständige Landung, Ergebnis mit Highscore-Eingabe, Continue to Hangar, Rest-Armor, freigeschaltete Hellcat, Reparatur −150 Punkte, deaktivierte Reparatur bei voller Armor. Der Web-Endbericht bestätigt Master-Mute, keine laufende Musik, keinen laufenden Motor und null aktive Effektstimmen.
-
-Die finalen Windows- und Webexporte bestehen den F4F-Prüfflug mit identischem Ergebnis: 299,13 s, Armor 2/2, Score 19.900, 1.375 Bonus-Points und zwei abgeschlossene Counterattacks. Im finalen Web-Hangar wurde zusätzlich ein Speed-Flugbonus gekauft: −200 Punkte, Reservierung +0,25, unveränderter installierter Grundwert 1,00. Die vier gesperrten Vorschauen bleiben gesperrt; Hellcat ist nach der Landung auswählbar.
-
-Bestehende automatisierte UI-Prüfungen decken einzelne Feuerimpulse, Menüeingaben, Pause, Fokusverlust, Gamepad-Trennung, Options, Highscores und Audio-Endschutz weiterhin ab. Speicherung wird mit gesicherter Originalkonfiguration geprüft und anschließend zurückgesetzt; Prüfkäufe verändern keine echten Spielstände.
-
-## Grenzen der Abnahme
-
-Eine physische Gamepad-Prüfung und längere menschliche Spielgefühlabnahme wurden nicht durchgeführt. Die vier Spezialflugzeuge bleiben Vorschauen; Raketen, Bomben, Torpedos und passende Missionen sind noch nicht spielbar. Die neue F4F ist eine lokale Vektorillustration, keine neue Runway-Generierung. Keine zusätzlichen Credits verbraucht.
-
-Windows-, Web- und Quell-ZIP liegen außerhalb von Git unter `builds/`; SHA256SUMS.json enthält ihre Prüfsummen. Engine, Importcache und Builds bleiben ausgeschlossen.
+Die Windows- und Webexporte bestehen Mission 2 mit identischem Ergebnis: 275,20 s, Armor 2/3, Score 24.800, 1.875 gesicherte Punkte und beide abgeschlossenen Counterattacks. Beide Endberichte bestätigen gestoppte Musik, Motor und Effektstimmen sowie Master-Mute. Im Browser wurde anschließend der Hangar geöffnet und das zweite Briefing über Mission Briefing aufgerufen. Mission 1 besteht den F4F-Regelprüfflug weiterhin mit 299,13 s und Score 19.900.

@@ -14,6 +14,8 @@ const TEMP_PRICES := {"bullets":150,"speed":200,"double":250,"triple":450,"penet
 const PAINT_PRICES := {"standard":0,"white":500,"red":750,"camouflage":1000}
 var bank := 0
 var selected := "wildcat"
+var mission := 1
+var completed := 0
 var unlocked := {"wildcat":true}
 var machines: Dictionary = {}
 var active := ""
@@ -121,12 +123,17 @@ func launch() -> Dictionary:
 func track_armor(value: int) -> void:
  if active != "": machines[active].armor = clampi(value,0,maximum(active))
 
-func finish(success: bool, armor: int) -> void:
+func finish(success: bool, armor: int, mission_id: int = 1) -> void:
  if active == "": return
  var id := active
  if success:
   track_armor(armor)
+  var new_hellcat: bool = not unlocked.get("hellcat",false)
   unlocked["hellcat"] = true
+  completed = maxi(completed, mission_id)
+  if mission_id == 1 and completed == 1:
+   mission = 2
+   if new_hellcat: selected = "hellcat"
  else:
   machines[id] = fresh(id)
  active = ""
@@ -137,16 +144,19 @@ func abort(armor: int) -> void:
  active = ""
 
 func serialize() -> Dictionary:
- return {"version":1,"selected":selected,"unlocked":unlocked.duplicate(true),"machines":machines.duplicate(true),"active":active}
+ return {"version":2,"selected":selected,"mission":mission,"completed":completed,"unlocked":unlocked.duplicate(true),"machines":machines.duplicate(true),"active":active}
 
 func restore(data: Dictionary, legacy: bool = false) -> void:
  selected = "wildcat"
+ mission = 1
+ completed = 0
  unlocked = {"wildcat":true}
  active = ""
  for id in IDS: machines[id] = fresh(id)
  if legacy:
   unlocked["hellcat"] = true
   selected = "hellcat"
+  completed = 1
  if data.is_empty(): return
  var saved_unlocks = data.get("unlocked",{})
  if saved_unlocks is Dictionary:
@@ -175,6 +185,8 @@ func restore(data: Dictionary, legacy: bool = false) -> void:
     machines[id].pending = {"bullets":clampi(int(pending.get("bullets",0)),0,(18-capacity(id))/2),"speed":clampi(int(pending.get("speed",0)),0,20-speed_quarters(id)),"weapon":clampi(int(pending.get("weapon",1)),1,3),"penetration":clampi(int(pending.get("penetration",0)),0,3-penetration(id))}
  var desired: String = str(data.get("selected",selected))
  if available(desired): selected = desired
+ completed = clampi(int(data.get("completed",1 if unlocked.get("hellcat",false) else 0)),0,2)
+ mission = clampi(int(data.get("mission",1)),1,2 if completed >= 1 else 1)
  # A lost process is an aborted flight; reserved purchases were already consumed.
  # A zero-armor interrupted death must still lose the destroyed airframe.
  for id in IDS:

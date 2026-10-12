@@ -1,4 +1,4 @@
-# Carrier Ace 0.5.0 – Mission und Hangar
+# Carrier Ace 0.6.0 – Mission und Hangar
 
 Die verbindlichen neuen Profil-, Speed-, Shop- und Verlustregeln stehen in [HANGAR.md](HANGAR.md).
 
@@ -110,3 +110,5 @@ Highscore zeigt die zehn höchsten lokal gespeicherten Punkte mit Namen und Flug
 Pickups sind runde Plaketten mit kleinen lokalen Zeichnungen: eine, zwei bzw. drei Patronen; S für Speed; Roll-Pfeil; Schild mit Kreuz für Armor; ein Pfeil durch zwei Platten für Penetration. Keine neuen KI-Generierungen oder Credits.
 
 Am Abschuss stoppen Musik, Motor und MG-Spieler sofort. Das Ergebnis stoppt alle Audioplayer und mutet den Master-Bus; verspätete Musik-/Schussanforderungen bleiben gesperrt. Neue Mission und bewusste Titel-Rückkehr aktivieren Audio wieder. Quit bleibt dauerhaft stumm. Prüfpiloten laufen immer stumm, damit Hintergrundtests keine Musik oder MG-Sounds hinterlassen.
+
+Missionsbriefings, zweite Mission und Fortschritt: [MISSIONS.md](MISSIONS.md).

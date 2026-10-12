@@ -105,7 +105,7 @@ func _draw_title() -> void:
 	_text(Vector2(58, 99), "OPERATION BLUE HORIZON", 14, Color("183a4a"))
 	_text(Vector2(55, 175), "CARRIER", 64, Color("f2e6cd"))
 	_text(Vector2(55, 237), "ACE", 64, GOLD)
-	_text(Vector2(60, 511), "ARCADE FLIGHT MISSION  /  0.5", 12, Color("a3b8bc"))
+	_text(Vector2(60, 511), "ARCADE FLIGHT MISSION  /  0.6", 12, Color("a3b8bc"))
 	_text(Vector2(450, 511), "(C)2026 by Sabnock Works", 12, GOLD)
 	_text(Vector2(710, 511), "HIGH SCORE  %06d" % high_score, 13, GOLD)
 

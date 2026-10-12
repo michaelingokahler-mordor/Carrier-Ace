@@ -63,6 +63,10 @@ func _ready() -> void:
 		if argument == "--verify-wildcat":
 			verify = true
 			fleet.select("wildcat")
+		if argument == "--verify-mission2" and fleet.completed >= 1:
+			verify = true
+			fleet.mission = 2
+			fleet.select("hellcat")
 		if argument == "--collisions": model.debug_collisions = true
 		if argument == "--verify-real-time":
 			verify = true
@@ -77,6 +81,9 @@ func _ready() -> void:
 	if OS.has_feature("web") and verify:
 		verification_speed = 1 if bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('realtime') === '1'")) else 12
 		if bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('aircraft') === 'wildcat'")): fleet.select("wildcat")
+		if fleet.completed >= 1 and bool(JavaScriptBridge.eval("new URLSearchParams(location.search).get('mission') === '2'")):
+			fleet.mission = 2
+			fleet.select("hellcat")
 	if verify:
 		silent = true
 		model.loot_rng.seed = 1943
@@ -135,6 +142,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause_game"):
 		if menu == "hangar":
 			_title_again()
+		elif menu == "briefing":
+			_show_hangar()
 		elif menu == "aircraft_hangar":
 			_show_hangar()
 		elif menu in ["controls_options", "sound_options", "graphics_options"]:
@@ -193,7 +202,7 @@ func _on_model_event(kind: String, data: Dictionary) -> void:
 			if data.success and data.run_serial == model.run_serial and settled_run != data.run_serial:
 				settled_run = data.run_serial
 				bonus_bank += data.bonus
-			fleet.finish(data.success, model.armor)
+			fleet.finish(data.success, model.armor, model.mission_id)
 			view.bonus_bank = bonus_bank
 			if not verify: _save_preferences()
 		"restart": view.announce(model.aircraft.display_name.to_upper() + " · CLEARED FOR TAKEOFF", 4)
@@ -229,6 +238,7 @@ func _start_run() -> void:
 		_show_hangar()
 		return
 	model.aircraft = receipt.profile
+	model.select_mission(fleet.mission)
 	pending_fire = false
 	audio.begin_playback()
 	if not silent: audio.unlock()
@@ -354,7 +364,12 @@ func _show_hangar() -> void:
 	pending_fire = false
 	audio.end_flight()
 	menu = "hangar"
-	var panel := _panel("Hangar · Bonus Points %06d" % bonus_bank, Vector2(920, 520))
+	var panel := _panel("Hangar · Bank %06d" % bonus_bank, Vector2(920, 520))
+	for number in [1,2]:
+		var mission_button := _button(panel,"Mission %d" % number,Vector2(620+(number-1)*140,27),Vector2(130,34),func() -> void:
+			fleet.mission=number
+			_show_hangar(),fleet.mission==number)
+		mission_button.disabled=number==2 and fleet.completed<1
 	for index in HangarState.IDS.size():
 		var id: String = HangarState.IDS[index]
 		var card := _button(panel, HangarState.SPECS[id][0] + ("" if fleet.available(id) else "\nLocked"), Vector2(20 + index * 148, 72), Vector2(140, 64), func() -> void:
@@ -406,11 +421,28 @@ func _show_hangar() -> void:
 		buy.add_theme_font_size_override("font_size", 13)
 		buy.disabled = not fleet.can_buy(key)
 	_label(panel, "Installed upgrades and bought paints survive until this aircraft is destroyed.\nNext-flight purchases expire after flying. Armor extensions need repair.", Vector2(410, 416), Vector2(478, 52), 13, Color("e4c47f"), true)
-	var launch := _button(panel, "Launch Mission", Vector2(24, 467), Vector2(270, 34), _start_run, true)
+	var launch := _button(panel, "Mission Briefing", Vector2(24, 467), Vector2(270, 34), _show_briefing, true)
 	launch.disabled = machine.armor <= 0
 	_button(panel, "Main Menu", Vector2(310, 467), Vector2(270, 34), _title_again)
 	_button(panel, "Aircraft", Vector2(596, 467), Vector2(292, 34), func() -> void: _show_aircraft("hangar"))
 	launch.grab_focus()
+
+func _show_briefing() -> void:
+	pending_fire=false
+	menu="briefing"
+	audio.end_flight()
+	var briefing: Dictionary=MissionCatalog.BRIEFINGS[fleet.mission]
+	var panel:=_panel("MISSION %d · %s" % [fleet.mission,briefing.title],Vector2(840,490))
+	_label(panel,"ASSIGNED AIRCRAFT · "+HangarState.SPECS[fleet.selected][0],Vector2(28,78),Vector2(784,28),18,Color("78dedb"))
+	_label(panel,"ORDERS",Vector2(28,126),Vector2(784,25),16,Color("e4c47f"))
+	_label(panel,briefing.orders,Vector2(28,157),Vector2(784,112),18,Color("d4e3df"),true)
+	_label(panel,"INTELLIGENCE",Vector2(28,284),Vector2(784,25),16,Color("e4c47f"))
+	_label(panel,briefing.intel,Vector2(28,314),Vector2(784,62),16,Color("d4e3df"),true)
+	_label(panel,briefing.reward,Vector2(28,387),Vector2(784,38),15,Color("78dedb"),true)
+	var start:=_button(panel,"Begin Sortie",Vector2(28,439),Vector2(380,34),_start_run,true)
+	start.disabled=fleet.machines[fleet.selected].armor<=0
+	_button(panel,"Back to Hangar",Vector2(430,439),Vector2(382,34),_show_hangar)
+	start.grab_focus()
 
 func _show_options() -> void:
 	menu = "options_title"

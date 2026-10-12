@@ -13,6 +13,7 @@ var aircraft: AircraftProfile = preload("res://resources/player.tres")
 var profiles: Dictionary = {}
 var weapons: Dictionary = {}
 var waves: Array[WaveProfile] = []
+var mission_id := 1
 var formations := FormationTracker.new()
 var phase: Phase = Phase.TITLE
 var paused := false
@@ -75,8 +76,11 @@ func _init() -> void:
 		enemy_shapes[id] = CollisionGeometry.prepare(profiles[id].hit_polygons, profiles[id].sprite_size)
 	for level in range(1, 4):
 		weapons[level] = load("res://resources/weapon_%d.tres" % level)
-	for index in range(1, 7):
-		waves.append(load("res://resources/wave_%d.tres" % index))
+	waves = MissionCatalog.waves(1)
+
+func select_mission(id: int) -> void:
+	mission_id = clampi(id, 1, 2)
+	waves = MissionCatalog.waves(mission_id)
 
 func start_run() -> void:
 	run_serial += 1
@@ -642,7 +646,7 @@ func _update_particles(delta: float) -> void:
 	particles = particles.filter(func(particle: Dictionary) -> bool: return particle.age < particle.duration)
 
 func status() -> Dictionary:
-	return {"phase": Phase.keys()[phase], "wave": wave_index + 1, "armor": armor,
+	return {"phase": Phase.keys()[phase], "mission":mission_id, "wave": wave_index + 1, "armor": armor,
 		"counterattack": counterattack, "counter_round": counter_round, "counter_completed": counter_completed, "reserve": survivor_reserve.size(),
 		"weapon": weapon, "rolls": rolls, "active_bullets": active_bullets(), "bullet_capacity": current_capacity(), "penetration": current_penetration(), "bonus_pending": bonus_pending, "last_bonus": last_bonus, "score": score, "kills": kills, "spawned": spawned,
 		"seconds": snappedf(mission_time, 0.01), "enemies": enemies.size(), "bullets": bullets.size(),
